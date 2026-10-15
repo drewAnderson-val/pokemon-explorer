@@ -2,6 +2,7 @@ import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
+import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
 import { apiResponse, searchParamOf, stubFetch } from '@/test/fake-api'
 import { setIntersecting } from '@/test/intersection-observer'
 import { renderWithClient } from '@/test/render'
@@ -206,6 +207,20 @@ describe('ExplorerScreen', () => {
     await user.click(screen.getByRole('button', { name: 'Try again' }))
     const lastLoaded = within(grid()).getAllByRole('button')[19]
     expect(lastLoaded).toHaveFocus()
+  })
+
+  it('adds a creature to the team from its card', async () => {
+    stubFetch()
+    const { user } = await renderLoaded()
+    await user.click(within(grid()).getAllByRole('button')[0])
+    await user.click(
+      screen.getByRole('button', { name: 'Add Geovanni to team' })
+    )
+    const team = screen.getByRole('list', { name: 'Team members' })
+    expect(await within(team).findByText('Geovanni')).toBeInTheDocument()
+    expect(screen.getByText('Geovanni joined your team!')).toBeInTheDocument()
+    expect(localStorage.getItem(TEAM_STORAGE_KEY)).toContain('"creatureId":1')
+    expect(screen.getByRole('button', { name: 'On your team' })).toBeDisabled()
   })
 
   it('focuses search with /', async () => {

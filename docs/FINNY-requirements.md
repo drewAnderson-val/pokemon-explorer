@@ -33,6 +33,9 @@ middleware in dev, pnpm.
   (`src/data/pokemon.json`) and the UI: an explorer at `/explore` (search, type filter, sort,
   infinite scroll, expandable cards) and a landing page at `/`, in the "Battle Box" style
   (`docs/specs/2026-10-15-battle-box-handoff.md`). Tested with Vitest + Testing Library.
+- **Extra:** a turn-based battle screen at `/battle`, with a team of up to 6 saved in the browser (built from
+  expanded cards and by catching), levels, XP and critical hits (see `docs/decisions.md`, 2026-10-15: Battle screen
+  and Team, catching and levels).
 
 ## API
 

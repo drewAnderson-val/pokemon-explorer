@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -78,6 +78,64 @@ describe('CreatureCard', () => {
     expect(screen.getByText('Sleeps in warm sand.')).toBeInTheDocument()
   })
 
+  it('links to a battle only when expanded', () => {
+    renderCard(false)
+    expect(screen.queryByRole('link', { name: /Battle/ })).toBeNull()
+    cleanup()
+    renderCard(true)
+    expect(
+      screen.getByRole('link', { name: 'Battle with Geovanni' })
+    ).toHaveAttribute('href', '/battle?id=4')
+  })
+
+  it('adds to the team from an expanded card', async () => {
+    const onAddToTeam = vi.fn()
+    render(
+      <ul>
+        <CreatureCard
+          expanded
+          onAddToTeam={onAddToTeam}
+          onToggle={() => {}}
+          pokemon={pokemon}
+        />
+      </ul>
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Add Geovanni to team' })
+    )
+    expect(onAddToTeam).toHaveBeenCalledWith(pokemon)
+  })
+
+  it('shows a creature already on the team as added', () => {
+    render(
+      <ul>
+        <CreatureCard
+          expanded
+          onAddToTeam={() => {}}
+          onTeam
+          onToggle={() => {}}
+          pokemon={pokemon}
+        />
+      </ul>
+    )
+    expect(screen.getByRole('button', { name: 'On your team' })).toBeDisabled()
+  })
+
+  it('disables adding when the team is full', () => {
+    render(
+      <ul>
+        <CreatureCard
+          expanded
+          onAddToTeam={() => {}}
+          onToggle={() => {}}
+          pokemon={pokemon}
+          teamFull
+        />
+      </ul>
+    )
+    expect(screen.getByRole('button', { name: 'Team full' })).toBeDisabled()
+  })
+
   it('swaps a failed image for the letter fallback', () => {
     const { container } = render(
       <ul>
@@ -86,7 +144,7 @@ describe('CreatureCard', () => {
     )
     const img = container.querySelector('img')!
     expect(img.getAttribute('src')).toBe(
-      'https://loremflickr.com/480/360?lock=1'
+      'https://loremflickr.com/640/320?lock=1'
     )
     fireEvent.error(img)
     expect(container.querySelector('img')).toBeNull()

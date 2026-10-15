@@ -10,11 +10,16 @@ import { HpBar } from './HpBar'
 import { MetaRow } from './MetaRow'
 import { StatList } from './StatList'
 import { TypeBadge } from './TypeBadge'
+import { Button, buttonClass } from './ui/button'
 
 type CreatureCardProps = {
   expanded: boolean
+  onAddToTeam?: (pokemon: Pokemon) => void
+  // Already travelling with you, so it can't be added again.
+  onTeam?: boolean
   onToggle: (id: number) => void
   pokemon: Pokemon
+  teamFull?: boolean
 }
 
 // "Stretched button": the name is the real <button>, and its ::after covers
@@ -22,8 +27,11 @@ type CreatureCardProps = {
 // would put stats and description into the button's accessible name.
 export const CreatureCard = memo(function CreatureCard({
   expanded,
+  onAddToTeam,
+  onTeam = false,
   onToggle,
-  pokemon
+  pokemon,
+  teamFull = false
 }: CreatureCardProps) {
   const detailsId = `creature-${pokemon.id}-details`
   return (
@@ -79,6 +87,36 @@ export const CreatureCard = memo(function CreatureCard({
             <DialogBox tone="dark">
               <p className="text-body">{pokemon.description}</p>
             </DialogBox>
+            {/* Above the stretched name button's ::after so they get the click. */}
+            <div className="relative z-10 flex flex-wrap gap-2">
+              <a
+                aria-label={`Battle with ${pokemon.name}`}
+                className={buttonClass()}
+                href={`/battle?id=${pokemon.id}`}
+              >
+                ▶ Battle
+              </a>
+              {onAddToTeam && (
+                <Button
+                  aria-label={
+                    onTeam
+                      ? 'On your team'
+                      : teamFull
+                        ? 'Team full'
+                        : `Add ${pokemon.name} to team`
+                  }
+                  disabled={onTeam || teamFull}
+                  onClick={() => onAddToTeam(pokemon)}
+                  variant="secondary"
+                >
+                  {onTeam
+                    ? 'On your team'
+                    : teamFull
+                      ? 'Team full'
+                      : '+ Add to team'}
+                </Button>
+              )}
+            </div>
           </>
         )}
       </div>

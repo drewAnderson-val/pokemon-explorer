@@ -168,3 +168,81 @@
 - **Isolation:** the app's ESLint ignores `infra/**`, `.dockerignore` keeps `infra`, `docs` and markdown out of the
   image, and Pulumi's Docker build context is now the repo root (`..` from `infra/`). CI triggers on everything except
   `docs/**` and markdown.
+
+## 2026-10-15: Battle screen
+
+- **What:** `/battle?id=N` runs a one-on-one, turn-based battle between creature N (picked with the ▶ BATTLE link on
+  an expanded card) and a random wild creature. Rules live in `src/lib/battle/` as pure, unit-tested modules
+  (`type-chart`, `moves`, `engine`, `script`, `flow`); the UI is `src/components/battle/` and
+  `src/screens/BattleScreen.tsx`.
+- **No new API route.** Ids are 1…1000 with no gaps, so `?sort=id&limit=1&page=N` returns creature N, and a random
+  page gives the wild one. The client checks the returned id, so a gap would fail loudly instead of fetching the wrong
+  creature. Rejected: `GET /api/pokemon/:id` (a server change the brief didn't ask for).
+- **Max HP uses the level-50 formula** (`base + 60`), not the raw base stat. With base HP as max HP, a 20 HP creature
+  faints to almost any hit. Damage follows the formula given in the brief exactly; non-immune hits do at least 1.
+- **Moves are generated, original and deterministic:** 2 of the main type, 1 of the second type (or Normal), 1 Normal,
+  from a fixed table of made-up names (power 40–90, accuracy 85–100). The same creature always knows the same moves.
+- **Randomness is injected** (`rng`) everywhere, so tests script exact rolls. The reducer (`flow.ts`) stays pure: the
+  turn is resolved in the click handler and dispatched as data, which keeps StrictMode's double reducer calls safe.
+- **The wild creature is "Wild X" in messages**, because names repeat and both sides can share one.
+- **Entry point only on expanded cards**, so the default card keeps one tab stop and the brief's "name and type
+  badges" summary. The link is an `<a>` above the stretched name button (`z-10`).
+- **Accessibility:** the message box is a stretched "Next message" button, which keeps it valid HTML (unlike a box
+  inside a button). A separate `aria-live` region announces whole messages, not each typed character. Focus moves to
+  each phase's control (message → FIGHT → last move → Battle again). Typing and HP drain are JS-driven, so they also
+  check `prefers-reduced-motion` (CSS already disables the keyframes).
+- **Not done:** returning to the explorer is a full page load, so search/filter state resets (same as the existing
+  plain-link navigation; state-in-URL was already out of scope). No status moves, items, switching, or crits.
+
+## 2026-10-15: Team, catching and levels
+
+Spec: `docs/superpowers/specs/2026-10-15-team-and-levels-design.md`. Plan: `docs/superpowers/plans/2026-10-15-team-and-levels.md`.
+
+- **What:** a team of up to 6 that travels with you, built from expanded explorer cards and grown by catching. HP,
+  fainting, levels and XP carry over between battles until you REST. Battles gain switching (TEAM), catching (CATCH),
+  critical hits and real levels.
+- **Saved in `localStorage`, keyed by uid.** `{ version: 1, members: [{ uid, creatureId, level, xp, hp }] }`, where
+  `hp: null` means full, so REST needs no creature data. Only progress is stored; creature data is fetched by id. A
+  corrupt, old or hand-edited save becomes an empty team (or loses just the bad members); blocked storage falls back
+  to memory for the session. Rejected: server storage (Cloud Run is stateless; needs a database for one browser's
+  team) and URL state (long, brittle links).
+- **Stats from the games' formula** (`floor(2·base·L/100) + 5`, HP `+ L + 10`, no IVs/EVs/natures), and the damage
+  formula uses the attacker's level. At Lv50 stats are base + 5, so old battles barely change. Rejected: keeping base
+  stats and only adding the level term, because then a Lv50 creature barely out-hits a Lv5 one.
+- **Catching follows the Gen III curve:** `a = (3·max − 2·hp)·rate / (3·max)`, chance `a / 255`, four shake checks.
+  The data has no catch rate, so it's derived from total base stats (255 at 300 → 30 at 1,070, halved for
+  legendaries). A failed throw uses the turn. Switch and catch happen before moves, as in the games.
+- **XP:** `floor(totalStats/4) × enemyLevel / 7`, level n needs n³ total XP, and catching gives XP too. Crits are
+  1/24 at ×1.5 (Gen VII+). Wild levels are the team average ±2, since there's no map.
+- **The battle saves after every turn**, so closing the tab keeps the damage. A started battle keeps running even when
+  that save makes the team "tired"; the rest prompt only shows before the next battle.
+- **The ▶ Battle link** adds that creature only when the team is empty; otherwise battles use the team.
+- **Out of scope:** storage boxes (catching past 6), status effects, stat stages, PP, items, run odds, evolution.
+- **A creature joins the team once (changed after trying it).** Duplicates were allowed at first, but repeated copies
+  of one creature felt wrong in the browser. `addMember` refuses a creature already on the team, the card shows
+  "On your team", wild picks skip every team member (so a duplicate can't be caught), and loading an older save keeps
+  only the first copy.
+
+## 2026-10-15: Battle juice, sound and timing
+
+Spec: `docs/superpowers/specs/2026-10-15-battle-juice-and-timing-design.md` (built straight from the approved design;
+no separate plan document).
+
+- **Timing bar, bonus only.** After picking a move a pointer sweeps a bar; stopping in the middle tenth is ×1.25
+  ("Perfect!"), the middle half ×1.1 ("Nice!"), anything else or no press within 2.4 s ×1. It scales only the
+  player's damage, after misses and crits are decided. Rejected: a defence press (two presses a turn) and a penalty
+  for missing (punishes people who find timing hard). The press position comes from elapsed time against the same
+  0.6 s linear CSS animation, so what you see is what's scored, with no per-frame React state.
+- **Off under reduced motion, and toggleable.** Timing needs motion, so reduced motion turns it off (the toggle shows
+  disabled); screen readers hear "Timing bar: press Space or Enter to strike."
+- **Sound synthesised with Web Audio**, no files or library: short square/triangle tunes per cue (hit, crit,
+  super-effective, faint, ball throw/shake/catch, level-up, victory). Off by default, since a page that beeps
+  unasked is a nuisance; the toggle's click unlocks audio (browsers require a gesture). Rejected: audio files
+  (sourcing, licences, weight) and Tone.js (~100 KB for a dozen beeps).
+- **Cues live on message steps** (`Step.cue`, `Step.damage`, `Step.at`), so sound and effects fire exactly when the
+  line that causes them appears, and are unit-tested without audio.
+- **Effects:** floating damage numbers, crit flash + scene shake, super-effective sparkles, an original pixel capture
+  orb that wobbles per shake, a gold flash on level-up and a VICTORY!/GOTCHA! ribbon. All stepped, all off under
+  reduced motion (flashes and sparkles aren't rendered at all there, since a frozen frame would be a static overlay).
+- **One localStorage store helper** (`src/lib/localStore.ts`) now backs both the team and the settings, so the
+  blocked-storage fallback is written once.

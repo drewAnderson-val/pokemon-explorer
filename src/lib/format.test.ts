@@ -26,17 +26,20 @@ describe('height and weight', () => {
 })
 
 describe('cardImageUrl', () => {
-  it('requests a card-sized picsum image and keeps the query', () => {
+  it('requests a card-sized picsum image without the blur', () => {
     expect(
       cardImageUrl(
         'https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8'
       )
-    ).toBe('https://picsum.photos/seed/ps3GTyrI/480/360?grayscale&blur=8')
+    ).toBe('https://picsum.photos/seed/ps3GTyrI/640/320?grayscale')
+    expect(
+      cardImageUrl('https://picsum.photos/seed/abc/100/200?blur=3', 400, 400)
+    ).toBe('https://picsum.photos/seed/abc/400/400')
   })
 
   it('requests a card-sized loremflickr image and keeps the lock', () => {
     expect(cardImageUrl('https://loremflickr.com/3266/1298?lock=27188')).toBe(
-      'https://loremflickr.com/480/360?lock=27188'
+      'https://loremflickr.com/640/320?lock=27188'
     )
   })
 

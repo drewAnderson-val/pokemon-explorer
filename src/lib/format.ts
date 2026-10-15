@@ -5,11 +5,15 @@ export const formatHeight = (meters: number) => `${meters.toFixed(1)} m`
 export const formatWeight = (kg: number) => `${kg.toFixed(1)} kg`
 
 // Fixture images are Picsum/LoremFlickr URLs ending in /{width}/{height}, some
-// ~4000px wide. Ask for a card-sized image instead.
-export function cardImageUrl(src: string) {
+// ~4000px wide. Ask for the size it's shown at (2x for retina screens) instead,
+// and drop Picsum's baked-in `blur` so the photo comes back sharp.
+export function cardImageUrl(src: string, width = 640, height = 320) {
   try {
     const url = new URL(src)
-    url.pathname = url.pathname.replace(/\/\d+\/\d+$/, '/480/360')
+    url.pathname = url.pathname.replace(/\/\d+\/\d+$/, `/${width}/${height}`)
+    url.searchParams.delete('blur')
+    // URLSearchParams writes a bare flag as "grayscale="; Picsum wants "grayscale".
+    url.search = url.searchParams.toString().replace(/=(&|$)/g, '$1')
     return url.toString()
   } catch {
     return src
