@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import '@fontsource/pixelify-sans/400.css';
+@import '@fontsource/pixelify-sans/500.css';
+@import '@fontsource/pixelify-sans/700.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -40,28 +43,118 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Spec token names, aliased to the shadcn variables (one source of truth). */
+  --color-field: var(--background);
+  --color-box: var(--card);
+  --color-inset: var(--secondary);
+  --color-ink: var(--foreground);
+  --color-ink-muted: var(--muted-foreground);
+  --color-track: var(--muted);
+  --color-focus: var(--ring);
+  --color-danger: var(--destructive);
+}
+
+@theme {
+  --breakpoint-xs: 30rem;
+  --font-pixel: 'Pixelify Sans', ui-monospace, monospace;
+
+  --color-rule: #8a8a8a;
+  --color-hp-good: #48c050;
+  --color-sky-top: #1b74da;
+  --color-sky-2: #3c98ec;
+  --color-sky-3: #7cc3f4;
+  --color-sky-horizon: #bfe6fa;
+  --color-hill-far: #9cc6ea;
+  --color-hill-1: #7dc65a;
+  --color-hill-2: #56ae3e;
+  --color-hill-3: #3e9431;
+  --color-title-outline: #1a3f7a;
+
+  --radius-box: 12px;
+  --radius-inset: 6px;
+  --radius-tag: 4px;
+  --shadow-press: 0 8px 0 #2b2b2b;
+
+  --text-display: clamp(56px, 11vw, 132px);
+  --text-display--line-height: 0.9;
+  --text-heading: 28px;
+  --text-heading--line-height: 1.1;
+  --text-card-title: 19px;
+  --text-card-title--line-height: 1.15;
+  --text-body-lg: 20px;
+  --text-body-lg--line-height: 1.4;
+  --text-body: 17px;
+  --text-body--line-height: 1.35;
+  --text-label: 15px;
+  --text-label--line-height: 1.1;
+  --text-label--letter-spacing: 0.04em;
+  --text-caption: 14px;
+  --text-caption--line-height: 1.3;
+
+  --animate-blink: blink 1s steps(1) infinite;
+  --animate-reveal: reveal 240ms steps(4) both;
+  --animate-pulse-soft: pulse-soft 1.5s ease-in-out infinite;
+  --animate-bob: bob 2.4s ease-in-out infinite;
+  --animate-drift: drift var(--drift-duration, 120s) linear infinite;
+  --animate-marquee: marquee 40s linear infinite;
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  @keyframes pulse-soft {
+    50% {
+      opacity: 0.5;
+    }
+  }
+  @keyframes bob {
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+  @keyframes drift {
+    from {
+      transform: translateX(-30vw);
+    }
+    to {
+      transform: translateX(110vw);
+    }
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --radius: 12px;
+  --background: #dce6ee;
+  --foreground: #2b2b2b;
+  --card: #ffffff;
+  --card-foreground: #2b2b2b;
+  --popover: #ffffff;
+  --popover-foreground: #2b2b2b;
+  --primary: #2b2b2b;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f6f8;
+  --secondary-foreground: #2b2b2b;
+  --muted: #e8e8e8;
+  --muted-foreground: #4a4a4a;
+  --accent: #f8d030;
+  --accent-foreground: #2b2b2b;
+  --destructive: #e04038;
+  --border: #2b2b2b;
+  --input: #2b2b2b;
+  --ring: #3060c8;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -77,38 +170,39 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* Spec border tokens (border-box/inset/tag). Named frame-* because border-box
+   would collide with the border-color utility for --color-box. */
+@utility frame-box {
+  border: 6px double var(--color-ink);
+}
+@utility frame-inset {
+  border: 2px solid var(--color-ink);
+}
+@utility frame-tag {
+  border: 2px solid var(--color-ink);
+}
+@utility focus-ring {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+@utility title-outline {
+  text-shadow:
+    -4px -4px 0 var(--color-title-outline),
+    0 -4px 0 var(--color-title-outline),
+    4px -4px 0 var(--color-title-outline),
+    4px 0 0 var(--color-title-outline),
+    4px 4px 0 var(--color-title-outline),
+    0 4px 0 var(--color-title-outline),
+    -4px 4px 0 var(--color-title-outline),
+    -4px 0 0 var(--color-title-outline),
+    0 10px 0 var(--color-title-outline);
+}
+@utility sky-shadow {
+  text-shadow:
+    0 2px 0 var(--color-title-outline),
+    2px 0 0 var(--color-title-outline),
+    -2px 0 0 var(--color-title-outline),
+    0 -2px 0 var(--color-title-outline);
 }
 
 @layer base {
@@ -116,6 +210,16 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-pixel text-body text-foreground;
+  }
+}
+
+/* Spec: with reduced motion, every animation is off and state changes stay instant. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
   }
 }
