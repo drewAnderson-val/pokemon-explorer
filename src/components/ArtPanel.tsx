@@ -4,7 +4,6 @@ import { cardImageUrl, formatNumber } from '@/lib/format'
 import { typeStyle } from '@/lib/type-colors'
 
 type ArtPanelProps = {
-  expanded: boolean
   legendary: boolean
   name: string
   number: number
@@ -13,7 +12,6 @@ type ArtPanelProps = {
 }
 
 export function ArtPanel({
-  expanded,
   legendary,
   name,
   number,
@@ -57,12 +55,6 @@ export function ArtPanel({
           Legend
         </span>
       )}
-      <span
-        aria-hidden
-        className="absolute right-1.5 bottom-1.5 rounded-tag bg-ink px-1.5 text-label font-bold text-white uppercase"
-      >
-        {expanded ? '▲ Less' : '▼ More'}
-      </span>
     </div>
   )
 }

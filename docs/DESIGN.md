@@ -140,3 +140,5 @@ Changed from the spec after seeing it in the browser:
   keep the spec's single swipeable row.
 - Sort is a plain text row under the chips, not a boxed DialogBox: two boxed panels made the toolbar look heavy.
   Below 480px the decorative "SORT" word is hidden so NO. / STRONGEST / FASTEST fit on one row.
+- Removed the "▼ MORE" / "▲ LESS" corner tag from the card art: it cluttered every card. The ▶ cursor on hover and
+  focus, plus `aria-expanded`, still signal that a card opens.

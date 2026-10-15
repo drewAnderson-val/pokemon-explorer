@@ -34,7 +34,6 @@ export const CreatureCard = memo(function CreatureCard({
       )}
     >
       <ArtPanel
-        expanded={expanded}
         legendary={pokemon.isLegendary === true}
         name={pokemon.name}
         number={pokemon.id}

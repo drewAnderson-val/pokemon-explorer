@@ -50,6 +50,14 @@ describe('CreatureCard', () => {
     expect(screen.queryByText('Sleeps in warm sand.')).not.toBeInTheDocument()
   })
 
+  it.each([false, true])(
+    'has no more/less corner tag (expanded: %s)',
+    expanded => {
+      renderCard(expanded)
+      expect(screen.queryByText(/more|less/i)).not.toBeInTheDocument()
+    }
+  )
+
   it('toggles by id', async () => {
     const { button, onToggle } = renderCard(false)
     await userEvent.click(button)
