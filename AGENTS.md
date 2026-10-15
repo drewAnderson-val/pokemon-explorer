@@ -11,6 +11,8 @@ The app lives at the repo root; `infra/AGENTS.md` adds rules for the deploy code
   (date, what, why, what was rejected). Reviewers will ask about the reasoning, not just the code.
 - **Say what's not done.** If a step is skipped or a check fails, report it with the actual output.
 - **Ship through PRs.** `main` deploys to production on every push (`.github/workflows/deploy.yml`).
+- **Merge `main` into your branch before opening a PR.** Parallel PRs often append to the same files;
+  `docs/decisions.md` merges with `merge=union` locally (`.gitattributes`), but GitHub's merge button ignores that.
 - **Before changing UI**, read `docs/FINNY-requirements.md` (what to build, data gotchas) and `docs/DESIGN.md`
   (visual direction). `docs/brief.md` is FINNY's original brief; don't edit it.
 

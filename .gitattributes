@@ -1,0 +1,4 @@
+# Append-only log: when two branches both add entries at the end, keep both instead
+# of stopping with a conflict. Applies to local merges; GitHub's merge button ignores
+# merge drivers, so merge main into your branch before opening a PR.
+docs/decisions.md merge=union
