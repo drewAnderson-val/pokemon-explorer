@@ -41,4 +41,12 @@ app.get('/api/pokemon', (req, res) => {
   })
 })
 
+app.get('/api/pokemon/random', (req, res) => {
+  const count = parseInt((req.query.count as string) || '1')
+  const picks = Array.from({ length: count }, () => {
+    return pokemonData[Math.floor(Math.random() * pokemonData.length)]
+  })
+  res.json({ data: picks })
+})
+
 export default app

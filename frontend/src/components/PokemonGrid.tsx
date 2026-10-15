@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react'
+
 import { Input } from './ui/input'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Pokemon = {
   attack: number
   defense: number
@@ -47,10 +48,28 @@ const getTypeColor = (type: string) => {
 }
 
 export default function PokemonGrid() {
+  const [search, setSearch] = useState('')
+  const [pokemon, setPokemon] = useState<Pokemon[]>([])
+
+  useEffect(() => {
+    fetch(`/api/pokemon?search=${search}`)
+      .then(res => res.json())
+      .then(body => setPokemon(body.data))
+  }, [search])
+
   return (
     <div>
-      <Input placeholder="Search" type="text" />
-      <div>Pokemon Grid</div>
+      <Input
+        onChange={e => setSearch(e.target.value)}
+        placeholder="Search"
+        type="text"
+        value={search}
+      />
+      <ul>
+        {pokemon.map(p => (
+          <li key={p.name}>{p.name}</li>
+        ))}
+      </ul>
     </div>
   )
 }
