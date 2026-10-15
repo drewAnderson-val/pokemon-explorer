@@ -10,6 +10,7 @@ FINNY frontend take-home: a searchable, infinitely scrolling Pokemon grid with e
 | [`infra/`](infra/) | Pulumi (TypeScript) program deploying to Google Cloud Run |
 | [`infra/bootstrap/`](infra/bootstrap/) | One-time Pulumi stack: state bucket, GitHub OIDC, deployer identity |
 | [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) | Lint + build → `pulumi preview` (PRs) / `pulumi up` + smoke test (`main`) |
+| [`.github/workflows/ai-review.yml`](.github/workflows/ai-review.yml) | AI review on every PR: bugs, security, repo rules ([`rules`](.github/review/rules.md)) |
 | [`docs/decisions.md`](docs/decisions.md) | Decision log |
 
 ## Deployment
