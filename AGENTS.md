@@ -18,7 +18,7 @@ FINNY frontend take-home. Read by Claude Code (via `CLAUDE.md`), Codex, Cursor a
 | --- | --- |
 | `frontend/` | React 19 + Vite 8 SPA and Express 5 API (`server/app.ts`), one container in prod |
 | `infra/` | Pulumi (TypeScript): app stack (CI-run) and `bootstrap/` stack (owner-run) |
-| `.github/review/` | AI reviewer rules (`rules.md`) and security-scan context (`security.md`) |
+| `.github/review/rules.md` | AI reviewer's custom rules; add a rule to teach it |
 | `docs/decisions.md` | Decision log |
 | `docs/ai-usage.md` | How AI tools were used on this project |
 

@@ -3,6 +3,15 @@
 Custom rules for the AI reviewer (`.github/workflows/ai-review.yml`), on top of every `AGENTS.md`. Each rule is
 scoped to paths. Flag a violation only when the PR introduces it.
 
+**Teaching the reviewer:** when it flags something that's intentional, or misses something it should catch, add or
+edit a rule here. That's its memory.
+
+## Context
+
+- Public repo; React SPA + Express 5 JSON API on Cloud Run, publicly reachable. Data is static fake records: there's
+  no auth, database or user data, so don't report missing auth on the read-only API. Do report input handling that
+  can crash the process, consume unbounded memory/CPU, or reflect input unsafely.
+
 ## Everywhere
 
 - **Public repo:** no interview correspondence, product take-home material, credentials, tokens, or absolute personal
