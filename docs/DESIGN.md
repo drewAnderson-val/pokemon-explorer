@@ -142,3 +142,8 @@ Changed from the spec after seeing it in the browser:
   Below 480px the decorative "SORT" word is hidden so NO. / STRONGEST / FASTEST fit on one row.
 - Removed the "▼ MORE" / "▲ LESS" corner tag from the card art: it cluttered every card. The ▶ cursor on hover and
   focus, plus `aria-expanded`, still signal that a card opens.
+- Battle screen (`/battle`): HP bars turn `hp-warn` yellow below 50% and `hp-low` red below 20%. Hits use stepped
+  `animate-hit` (shake + flash) and `animate-lunge-*`; a fainted creature also carries its end state as classes, so it
+  still disappears with reduced motion. The scene is square on phones, 4:3 from 480px and 16:9 from 640px.
+- Team bar under the explorer header (name, level, HP per member, REST, ▶ BATTLE). The battle menu is a 2×2
+  FIGHT / TEAM / CATCH / RUN grid; the player's info box adds a thin XP bar under HP.

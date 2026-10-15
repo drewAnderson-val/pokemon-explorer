@@ -11,5 +11,7 @@ globalThis.IntersectionObserver = MockIntersectionObserver
 
 afterEach(() => {
   cleanup()
+  // Server tests run in Node, which has no window storage.
+  if (typeof window !== 'undefined') window.localStorage.clear()
   resetIntersectionObservers()
 })
