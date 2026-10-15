@@ -3,27 +3,25 @@ name: Deploy
 on:
   push:
     branches: [main]
-    paths: ['frontend/**', 'infra/**', '.github/workflows/deploy.yml']
+    paths: ['frontend/**', 'infra/**', '.github/workflows/deploy.yml', '.github/scripts/**']
   pull_request:
-    paths: ['frontend/**', 'infra/**', '.github/workflows/deploy.yml']
+    types: [opened, synchronize, reopened, closed]
+    paths: ['frontend/**', 'infra/**', '.github/workflows/deploy.yml', '.github/scripts/**']
   workflow_dispatch:
-
-# Previews for a PR cancel each other; deploys queue and never cancel mid-apply.
-concurrency:
-  group: ${{ github.event_name == 'pull_request' && format('preview-{0}', github.ref) || 'deploy' }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
   id-token: write # Workload Identity Federation
-  pull-requests: write # Pulumi preview comment
+  pull-requests: write # Pulumi preview + preview-URL comments
 
 env:
   PULUMI_BACKEND_URL: ${{ vars.PULUMI_BACKEND_URL }}
   PULUMI_CONFIG_PASSPHRASE: '' # no secrets in stack config
+  PREVIEW_STACK: pr-${{ github.event.pull_request.number }}
 
 jobs:
   check:
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,9 +40,14 @@ jobs:
       - run: pnpm lint
       - run: pnpm build
 
+  # prod stack: `pulumi preview` on PRs (read-only), `pulumi up` on main.
   deploy:
     needs: check
     runs-on: ubuntu-latest
+    # Deploys queue and never cancel mid-apply; PR previews of prod are read-only.
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('prod-preview-{0}', github.ref) || 'prod-deploy' }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     outputs:
       url: ${{ steps.pulumi.outputs.url }}
     steps:
@@ -92,3 +95,81 @@ jobs:
         run: |
           curl -fsS "$URL/api/pokemon?search=fire&limit=50" \
             | jq -e '.data | length > 0 and all(.[]; (.types | index("Fire")) or (.name + .description | test("fire"; "i")))' >/dev/null
+
+  # Per-PR preview environment: its own Cloud Run service from the pr-<n> stack,
+  # linked from a PR comment that's updated in place, destroyed when the PR closes.
+  preview-env:
+    needs: check
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    concurrency:
+      group: preview-env-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: infra/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: infra/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: infra
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: docker/setup-buildx-action@v4
+      - uses: pulumi/actions@v7
+        id: pulumi
+        with:
+          command: up
+          stack-name: ${{ env.PREVIEW_STACK }}
+          upsert: true
+          work-dir: infra
+      - name: Health check
+        run: curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "${{ steps.pulumi.outputs.url }}/api/health"
+      - name: Post preview link
+        env:
+          GH_TOKEN: ${{ github.token }}
+          URL: ${{ steps.pulumi.outputs.url }}
+        run: |
+          body=$(printf '<!-- preview-env -->\n### Preview environment\n\n**%s**\n\nDeployed from %s. Destroyed when this PR closes.' \
+            "$URL" "${{ github.event.pull_request.head.sha }}")
+          .github/scripts/upsert-pr-comment.sh "$body"
+
+  preview-env-cleanup:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    concurrency:
+      group: preview-env-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: infra/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: infra/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: infra
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: pulumi/actions@v7
+        with:
+          command: destroy
+          stack-name: ${{ env.PREVIEW_STACK }}
+          upsert: true # PRs that never got a preview still close cleanly
+          remove: true
+          work-dir: infra
+      - name: Update preview comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/upsert-pr-comment.sh "$(printf '<!-- preview-env -->\n### Preview environment\n\nDestroyed (PR closed).')"

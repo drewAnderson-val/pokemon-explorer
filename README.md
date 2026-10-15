@@ -20,6 +20,7 @@ Everything is Pulumi (TypeScript), split into two stacks that share the `gs://fi
 | --- | --- | --- |
 | `infra/bootstrap` | once, locally, by a project owner | state bucket, Workload Identity Federation for this repo, `github-deployer` service account + its roles |
 | `infra` | every push to `main`, in GitHub Actions | Artifact Registry, Docker image, runtime service account, Cloud Run service, public access |
+| `infra` (`pr-<n>`) | every push to a PR; destroyed when it closes | its own image tag and Cloud Run service (reuses prod's registry + runtime account) |
 
 The split keeps IAM-admin rights out of CI: the deployer can ship the app but cannot change its own permissions.
 
@@ -30,6 +31,8 @@ The split keeps IAM-admin rights out of CI: the deployer can ship the app but ca
    and rolls out a Cloud Run revision pinned to the image digest. The revision only takes traffic once its HTTP startup
    probe on `/api/health` passes.
 3. `smoke-test` (`main` only): checks `/api/health`, the SPA shell, API pagination and search against the live URL.
+4. `preview-env` (PRs only): deploys the PR to its own Cloud Run service and posts the link as a PR comment, updated
+   on each push. `preview-env-cleanup` destroys it when the PR is merged or closed.
 
 **Local deploys** need Docker running and application-default credentials:
 

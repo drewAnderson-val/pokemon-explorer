@@ -4,3 +4,8 @@ runtime:
   name: nodejs
   options:
     packagemanager: pnpm
+config:
+  gcp:project:
+    value: finny-take-home
+  gcp:region:
+    value: us-central1
