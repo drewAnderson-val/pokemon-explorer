@@ -98,7 +98,6 @@
   --animate-bob: bob 2.4s ease-in-out infinite;
   --animate-drift: drift var(--drift-duration, 120s) linear infinite;
   --animate-marquee: marquee 40s linear infinite;
-  --animate-radar: radar-grow 360ms steps(4) both;
 
   @keyframes blink {
     50% {
@@ -127,11 +126,6 @@
     }
     to {
       transform: translateX(110vw);
-    }
-  }
-  @keyframes radar-grow {
-    from {
-      transform: scale(0);
     }
   }
   @keyframes marquee {

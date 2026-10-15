@@ -2,7 +2,6 @@ import { memo } from 'react'
 
 import type { Pokemon } from '@/lib/pokemon'
 
-import { typeStyle } from '@/lib/type-colors'
 import { cn } from '@/lib/utils'
 
 import { ArtPanel } from './ArtPanel'
@@ -10,7 +9,6 @@ import { DialogBox } from './DialogBox'
 import { HpBar } from './HpBar'
 import { MetaRow } from './MetaRow'
 import { StatList } from './StatList'
-import { StatRadar } from './StatRadar'
 import { TypeBadge } from './TypeBadge'
 
 type CreatureCardProps = {
@@ -34,7 +32,6 @@ export const CreatureCard = memo(function CreatureCard({
         'group relative flex flex-col gap-3 rounded-box frame-box bg-box p-3.5 has-[button:focus-visible]:focus-ring',
         expanded && 'xs:row-span-2'
       )}
-      style={typeStyle(pokemon.types[0] ?? 'Normal')}
     >
       <ArtPanel
         expanded={expanded}
@@ -74,7 +71,6 @@ export const CreatureCard = memo(function CreatureCard({
       >
         {expanded && (
           <>
-            <StatRadar pokemon={pokemon} />
             <StatList pokemon={pokemon} />
             <MetaRow
               generation={pokemon.generation}
