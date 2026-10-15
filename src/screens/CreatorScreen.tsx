@@ -1,20 +1,18 @@
 import { useMutation } from '@tanstack/react-query'
-import { type FormEvent, useId, useRef, useState } from 'react'
+import { type FormEvent, useId, useState } from 'react'
 
 import { CreationCard } from '@/components/CreationCard'
 import { DialogBox } from '@/components/DialogBox'
 import { TypeFilterChip } from '@/components/TypeFilterChip'
 import { Button } from '@/components/ui/button'
+import { useCreations } from '@/hooks/useCreations'
 import { createCreature } from '@/lib/api'
 import {
   MAX_CREATURE_TYPES,
   MAX_DESCRIPTION_LENGTH,
   MAX_NAME_LENGTH
 } from '@/lib/creature'
-import { type Pokemon, POKEMON_TYPES, type PokemonType } from '@/lib/pokemon'
-
-// Creations continue the catalog's numbering; they live only in this tab.
-const FIRST_CREATION_ID = 1001
+import { POKEMON_TYPES, type PokemonType } from '@/lib/pokemon'
 
 const field =
   'w-full min-w-0 border-b-2 border-ink bg-transparent py-1 text-body-lg outline-none placeholder:text-ink-muted focus-visible:focus-ring'
@@ -25,15 +23,11 @@ export function CreatorScreen() {
   const [name, setName] = useState('')
   const [types, setTypes] = useState<PokemonType[]>([])
   const [description, setDescription] = useState('')
-  const [creations, setCreations] = useState<Pokemon[]>([])
-  const nextId = useRef(FIRST_CREATION_ID)
+  const { add, creations, remove } = useCreations()
 
   const create = useMutation({
     mutationFn: createCreature,
-    onSuccess: ({ creature }) => {
-      const id = nextId.current++
-      setCreations(previous => [{ ...creature, id }, ...previous])
-    }
+    onSuccess: ({ creature }) => add(creature)
   })
 
   const toggleType = (type: PokemonType) =>
@@ -124,15 +118,9 @@ export function CreatorScreen() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <Button disabled={!canSubmit} type="submit">
-              {create.isPending ? 'Drawing…' : 'Create'}
-            </Button>
-            <p className="text-caption text-ink-muted">
-              Drawn by Google&apos;s Gemini. Up to 5 an hour; nothing is saved,
-              so download the ones you like.
-            </p>
-          </div>
+          <Button className="self-start" disabled={!canSubmit} type="submit">
+            {create.isPending ? 'Drawing…' : 'Create'}
+          </Button>
           {create.isError && (
             <p className="text-body-lg font-bold text-danger" role="alert">
               {create.error.message}
@@ -141,7 +129,17 @@ export function CreatorScreen() {
         </DialogBox>
       </form>
 
-      <section aria-label="Your creations">
+      <section
+        aria-labelledby="custom-cards"
+        className="flex flex-col gap-4"
+        hidden={creations.length === 0 && !create.isPending}
+      >
+        <h2 className="text-heading font-bold uppercase" id="custom-cards">
+          Custom cards
+          <span className="ml-2 align-middle text-caption font-normal text-ink-muted normal-case">
+            Saved in this browser
+          </span>
+        </h2>
         <ul
           aria-busy={create.isPending}
           className="grid grid-cols-1 items-start gap-5 xs:grid-cols-2 lg:grid-cols-3"
@@ -156,7 +154,11 @@ export function CreatorScreen() {
             </li>
           )}
           {creations.map(creature => (
-            <CreationCard creature={creature} key={creature.id} />
+            <CreationCard
+              creature={creature}
+              key={creature.id}
+              onDelete={id => void remove(id)}
+            />
           ))}
         </ul>
       </section>

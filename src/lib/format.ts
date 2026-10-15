@@ -8,6 +8,8 @@ export const formatWeight = (kg: number) => `${kg.toFixed(1)} kg`
 // ~4000px wide. Ask for a card-sized image instead. LoremFlickr returns HTTP 500s,
 // so its links become Picsum images seeded by their lock: stable per creature.
 export function cardImageUrl(src: string) {
+  // Custom cards carry their image inline; base64 can end in "/12/34".
+  if (src.startsWith('data:')) return src
   try {
     const url = new URL(src)
     const lock = url.searchParams.get('lock')

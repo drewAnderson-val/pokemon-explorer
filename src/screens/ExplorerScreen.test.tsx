@@ -1,7 +1,8 @@
 import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 
+import { clearCreations, saveCreation } from '@/lib/creation-store'
 import { apiResponse, searchParamOf, stubFetch } from '@/test/fake-api'
 import { setIntersecting } from '@/test/intersection-observer'
 import { renderWithClient } from '@/test/render'
@@ -23,7 +24,36 @@ async function renderLoaded() {
   return { user, ...view }
 }
 
+afterEach(() => clearCreations())
+
 describe('ExplorerScreen', () => {
+  it('shows custom cards from the Creature Lab under a Custom filter', async () => {
+    stubFetch()
+    await saveCreation({
+      attack: 80,
+      defense: 70,
+      description: 'A sleepy fox',
+      generation: 10,
+      height: 0.6,
+      hp: 55,
+      id: 1001,
+      imageUrl: 'data:image/jpeg;base64,AAAA',
+      name: 'Embercub',
+      specialAttack: 90,
+      specialDefense: 60,
+      speed: 100,
+      types: ['Fire'],
+      weight: 9.5
+    })
+    const { user } = await renderLoaded()
+    await user.click(await screen.findByRole('button', { name: 'Custom (1)' }))
+    expect(cardNames()).toEqual(['Embercub'])
+    expect(screen.getByText('1 result')).toBeInTheDocument()
+
+    await user.type(searchInput(), 'zzz')
+    await waitFor(() => expect(cardNames()).toEqual([]))
+  })
+
   it('shows skeletons, then the first page and the catalog count', async () => {
     stubFetch()
     const { container } = renderWithClient(<ExplorerScreen />)

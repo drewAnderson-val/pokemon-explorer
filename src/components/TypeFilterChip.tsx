@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils'
 
 type TypeFilterChipProps = {
   disabled?: boolean
+  // Text for a chip with no type; defaults to "All".
+  label?: string
   onPress: () => void
   pressed: boolean
   type: null | PokemonType
@@ -12,6 +14,7 @@ type TypeFilterChipProps = {
 
 export function TypeFilterChip({
   disabled = false,
+  label = 'All',
   onPress,
   pressed,
   type
@@ -34,7 +37,7 @@ export function TypeFilterChip({
           className="size-2.5 border-2 border-ink bg-(--type)"
         />
       )}
-      {type ?? 'All'}
+      {type ?? label}
     </button>
   )
 }

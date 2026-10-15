@@ -215,7 +215,7 @@
 - **Spend caps in memory:** 5 per client IP per hour and 100 per day overall, per instance. With prod's 3 max instances
   the worst case is ~300 images (~$10) a day. Rejected for now: a shared counter in Firestore/Redis; the counters reset
   on restart, which is acceptable for a demo. `trust proxy` is 1 so `req.ip` is the caller behind Cloud Run's front end.
-- **Nothing is stored.** Creations live in the page's state with a download button. Rejected: saving to GCS with a
+- **Nothing is stored on the server** (superseded below: cards are now kept in the browser). Rejected: saving to GCS with a
   shared gallery, which would show strangers' generations to anyone visiting (moderation risk) and add a bucket,
   URLs and a listing endpoint for a feature that doesn't need to persist.
 
@@ -231,3 +231,17 @@
   since billing links are an owner's call, not deploy config. Rejected: running Vertex in a second project under the
   credits account, which would need cross-project IAM that neither stack could manage.
 - **Verified live:** `gemini-3.1-flash-lite-image` on the `global` endpoint returns a 1024×1024 JPEG in ~3.5s.
+
+## 2026-10-15: Custom cards are saved in the browser
+
+- **What:** creations are kept in IndexedDB (`src/lib/creation-store.ts`) and listed under "Custom cards" on `/create`
+  and behind a "Custom (n)" chip in the explorer, numbered from No.1001. Each card can be downloaded or deleted. The
+  explorer filters them with the API's own `queryPokemon`, so search and sort behave the same as for the catalog.
+- **Why browser-only:** no sign-in and no new infrastructure, and nobody sees strangers' generations. IndexedDB, not
+  localStorage, because each image is ~200 KB against localStorage's ~5 MB. If the browser refuses storage (e.g.
+  private mode) the card still shows for that visit.
+- **Rejected: tying cards to the client's IP.** It needs the same server storage as a shared gallery, and IPs are
+  unreliable as identity: they change (mobile networks, IPv6 privacy addresses) and are shared (an office NAT would
+  show colleagues each other's cards). The per-IP rate limit is fine because a limit only needs to be approximate.
+- **Copy:** dropped "Up to 5 an hour; nothing is saved…" under the button (the 429 message explains the limit when it
+  matters); each image carries a "Drawn by Gemini" tag instead.

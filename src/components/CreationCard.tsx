@@ -8,10 +8,17 @@ import { HpBar } from './HpBar'
 import { MetaRow } from './MetaRow'
 import { StatList } from './StatList'
 import { TypeBadge } from './TypeBadge'
+import { Button } from './ui/button'
 
 // A creature from the lab: always expanded, and unlike the catalog's
 // placeholder photos the image really is the creature, so it gets alt text.
-export function CreationCard({ creature }: { creature: Pokemon }) {
+export function CreationCard({
+  creature,
+  onDelete
+}: {
+  creature: Pokemon
+  onDelete: (id: number) => void
+}) {
   // Vertex returns JPEG today; take the extension from the data URL anyway.
   const extension = /^data:image\/(\w+)/.exec(creature.imageUrl)?.[1] ?? 'png'
   const fileName = `${creature.name.replace(/[^\w-]+/g, '-').toLowerCase()}.${extension === 'jpeg' ? 'jpg' : extension}`
@@ -28,6 +35,9 @@ export function CreationCard({ creature }: { creature: Pokemon }) {
         />
         <span className="absolute top-1.5 left-1.5 rounded-tag bg-box/90 px-1.5 text-caption">
           {formatNumber(creature.id)}
+        </span>
+        <span className="absolute right-1.5 bottom-1.5 rounded-tag bg-box/90 px-1.5 text-caption">
+          Drawn by Gemini
         </span>
       </div>
       <h2 className="text-card-title font-bold uppercase">{creature.name}</h2>
@@ -46,13 +56,22 @@ export function CreationCard({ creature }: { creature: Pokemon }) {
       <DialogBox tone="dark">
         <p className="text-body">{creature.description}</p>
       </DialogBox>
-      <a
-        className="inline-flex h-11 items-center justify-center rounded-tag frame-tag bg-box px-4 text-label font-bold uppercase hover:bg-inset focus-visible:focus-ring"
-        download={fileName}
-        href={creature.imageUrl}
-      >
-        Download image
-      </a>
+      <div className="grid grid-cols-2 gap-2">
+        <a
+          className="inline-flex h-11 items-center justify-center rounded-tag frame-tag bg-box px-4 text-label font-bold uppercase hover:bg-inset focus-visible:focus-ring"
+          download={fileName}
+          href={creature.imageUrl}
+        >
+          Download
+        </a>
+        <Button
+          aria-label={`Delete ${creature.name}`}
+          onClick={() => onDelete(creature.id)}
+          variant="secondary"
+        >
+          Delete
+        </Button>
+      </div>
     </li>
   )
 }

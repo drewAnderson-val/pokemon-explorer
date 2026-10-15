@@ -1,9 +1,10 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 
 import type { CreatedCreature } from '@/lib/creature'
 
+import { clearCreations, loadCreations } from '@/lib/creation-store'
 import { stubFetch } from '@/test/fake-api'
 import { renderWithClient } from '@/test/render'
 
@@ -26,6 +27,17 @@ const creature: CreatedCreature = {
   weight: 9.5
 }
 
+afterEach(() => clearCreations())
+
+async function createEmbercub() {
+  const user = userEvent.setup()
+  await user.type(screen.getByLabelText('Name'), 'Embercub')
+  await user.click(screen.getByRole('button', { name: 'Fire' }))
+  await user.type(screen.getByLabelText(/Description/), 'A sleepy fox')
+  await user.click(screen.getByRole('button', { name: 'Create' }))
+  return user
+}
+
 describe('CreatorScreen', () => {
   it('sends the form and shows the creation with alt text and a download', async () => {
     const user = userEvent.setup()
@@ -46,7 +58,7 @@ describe('CreatorScreen', () => {
     ).toHaveAttribute('src', creature.imageUrl)
     expect(within(card).getByText('No.1001')).toBeInTheDocument()
     expect(
-      within(card).getByRole('link', { name: 'Download image' })
+      within(card).getByRole('link', { name: 'Download' })
     ).toHaveAttribute('download', 'embercub.jpg')
 
     const init = fetchMock.mock.calls[0]?.[1]
@@ -56,6 +68,26 @@ describe('CreatorScreen', () => {
       name: 'Embercub',
       types: ['Fire']
     })
+  })
+
+  it('saves custom cards in the browser and deletes them', async () => {
+    stubFetch(() => Response.json({ creature }))
+    const first = renderWithClient(<CreatorScreen />)
+    const user = await createEmbercub()
+    await screen.findByRole('heading', { name: /Custom cards/ })
+    await waitFor(async () =>
+      expect((await loadCreations()).map(c => c.id)).toEqual([1001])
+    )
+    first.unmount()
+
+    // A fresh page load reads them back from IndexedDB.
+    renderWithClient(<CreatorScreen />)
+    const card = await screen.findByRole('listitem')
+    await user.click(
+      within(card).getByRole('button', { name: 'Delete Embercub' })
+    )
+    expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
+    await waitFor(async () => expect(await loadCreations()).toEqual([]))
   })
 
   it('allows at most two types', async () => {
