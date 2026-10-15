@@ -24,7 +24,7 @@ FINNY frontend take-home. Read by Claude Code (via `CLAUDE.md`), Codex, Cursor a
 ## Verify before you say it works
 
 ```bash
-cd frontend && pnpm install && pnpm lint && pnpm build   # lint, typecheck, client + server bundles
+cd frontend && pnpm install && pnpm lint && pnpm test && pnpm build   # lint, tests, typecheck, client + server bundles
 pnpm start                                               # prod server on :3000
 curl -fsS localhost:3000/api/health && curl -fsS 'localhost:3000/api/pokemon?limit=1'
 cd ../infra && pnpm install && pnpm types                # Pulumi typecheck

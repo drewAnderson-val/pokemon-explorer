@@ -17,7 +17,8 @@ app.get('/api/health', (_req, res) => {
 
 app.use(express.static(distDir))
 app.get('/{*splat}', (_req, res) => {
-  res.sendFile(path.join(distDir, 'index.html'))
+  // `root` keeps send's dotfile check off the absolute path (e.g. a checkout under ~/.something).
+  res.sendFile('index.html', { root: distDir })
 })
 
 const port = Number(process.env.PORT) || 3000

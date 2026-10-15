@@ -115,3 +115,26 @@ type.", "That's every creature on file!", "PRESS START".
 
 Readable contrast, real buttons and labels, visible focus, comfortable tap
 sizes on phones.
+
+## Implemented as
+
+The detailed spec is `docs/specs/2026-10-15-battle-box-handoff.md`. Tokens live in `src/globals.css`; type colors
+in `src/lib/type-colors.ts`.
+
+Tailwind already uses some of the spec's token names, so they map like this:
+
+| Spec token | Tailwind usage | Why |
+| --- | --- | --- |
+| `color-field`, `color-box`, `color-inset`, `color-ink`, `color-ink-muted`, `color-track`, `color-accent`, `color-focus`, `color-danger` | `bg-field`, `bg-box`, `bg-inset`, `text-ink`, `text-ink-muted`, `bg-track`, `bg-accent`, `focus-ring`, `text-danger` | Aliases of the shadcn variables, so both names work |
+| `font-display` … `font-caption` | `text-display` … `text-caption` | `font-*` is the font-family namespace |
+| `font-pixel` | `font-pixel` | |
+| `border-box`, `border-inset`, `border-tag` | `frame-box`, `frame-inset`, `frame-tag` | `border-box` would collide with `border-{color}` for `--color-box` |
+| `radius-box`, `radius-inset`, `radius-tag` | `rounded-box`, `rounded-inset`, `rounded-tag` | |
+| `shadow-press` | `shadow-press` | |
+
+Changed from the spec after seeing it in the browser:
+
+- ▼ prompts are ink on white boxes; accent yellow on white is about 1.5:1.
+- Error copy is bold: `color-danger` on white is 4.2:1, which passes only as large (bold) text.
+- Sort menu: never shrinks on desktop; below 480px it goes full width and hides the decorative "SORT" word so
+  NO. / STRONGEST / FASTEST fit on one row.

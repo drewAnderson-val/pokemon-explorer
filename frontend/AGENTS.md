@@ -20,3 +20,5 @@ Before changing UI, read `FINNY-requirements.md` (what to build, data gotchas, o
 - Lint is strict (`eslint . --quiet`): `no-console` allows only `debug`, `warn` and `error`; imports are sorted by
   `perfectionist`. Prettier: no semicolons, single quotes, no trailing commas.
 - `@/` aliases `src/`. UI primitives come from shadcn/ui in `src/components/ui/`.
+- Tests: Vitest + Testing Library (`pnpm test`). UI tests use `src/test/fake-api.ts`, which runs the real
+  `server/query.ts` over the fixture data, so expected counts come from `src/data/pokemon.json`.

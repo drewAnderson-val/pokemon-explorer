@@ -38,6 +38,7 @@ jobs:
           cache-dependency-path: frontend/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
+      - run: pnpm test
       - run: pnpm build
 
   # prod stack: `pulumi preview` on PRs (read-only), `pulumi up` on main.

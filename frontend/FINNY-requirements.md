@@ -29,17 +29,21 @@ middleware in dev, pnpm.
 
 ## Current state
 
-- **Done:** the API (`server/app.ts`) and the data (`src/data/pokemon.json`).
-- **Not done:** all of the UI. `src/components/PokemonGrid.tsx` is a stub: an unwired search
-  input and a placeholder label. It already has the `Pokemon` type and a type-to-color map
-  (`getTypeColor`).
+- **Done:** the API (`server/app.ts`, query logic in `server/query.ts`), the data
+  (`src/data/pokemon.json`) and the UI: an explorer at `/explore` (search, type filter, sort,
+  infinite scroll, expandable cards) and a landing page at `/`, in the "Battle Box" style
+  (`docs/specs/2026-10-15-battle-box-handoff.md`). Tested with Vitest + Testing Library.
 
 ## API
 
-`GET /api/pokemon?page=1&limit=20&search=fire`
+`GET /api/pokemon?page=1&limit=20&search=fire&type=Fire&sort=total`
 
-- `page` defaults to 1, `limit` to 20.
+- `page` defaults to 1, `limit` to 20 (max 100).
 - `search` is a case-insensitive substring match on name, any type, or description.
+- `type` (added) filters to one exact type, case-insensitive. ANDs with `search`.
+- `sort` (added): `id` (default), `total` (all six stats, descending) or `speed` (descending);
+  ties break by `id`.
+- Invalid params return `400 { error }`.
 - Response: `{ data: Pokemon[], pagination: { page, limit, total, totalPages, hasNext, hasPrev } }`.
   Use `hasNext` to decide whether to fetch the next page.
 
@@ -72,21 +76,10 @@ weight, generation (1–9), description, imageUrl, isLegendary?` (52 are legenda
   3266×1298. They load slowly, don't match the creature and sometimes fail. Use a fixed aspect
   ratio, `loading="lazy"`, and a fallback.
 - **Height and weight aren't rounded** (`11.570127…`). Format them for display.
-- **The API doesn't validate input.** `page=0`, `page=abc` and very large `limit` values give
-  nonsense results.
 - **The README's `pnpm server` script and `server/index.ts` were missing from the starter.**
   Both have since been added for Cloud Run (see `docs/decisions.md`).
-- **No tests yet.**
+- **API input is validated** in `server/query.ts`: bad `page`, `limit`, `sort` or `type` return 400.
 
 ## Open decisions
 
-Not settled yet. Record each in `docs/decisions.md` once decided.
-
-- How to fetch data: TanStack Query `useInfiniteQuery` (proposed) or a hand-rolled hook.
-- What triggers the next page: an IntersectionObserver sentinel (proposed) or a scroll
-  listener.
-- How cards expand: in place within the grid (as the design shows) or in a dialog/sheet.
-- Search behaviour: debounce delay, keeping the term in the URL, and ignoring stale responses
-  that arrive after newer ones.
-- Whether to virtualize the grid. Probably not needed for 1,000 lazy-loaded cards.
-- How much to test: Vitest for the API, React Testing Library for the grid.
+Settled. See `docs/decisions.md` (2026-10-15: Battle Box UI).

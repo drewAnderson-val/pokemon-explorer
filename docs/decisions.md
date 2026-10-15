@@ -81,3 +81,41 @@
   `product/` notes. No git hooks for it; run `graphify update .` after code changes.
 - **`docs/ai-usage.md`** documents how AI was used, for the interview walkthrough.
 - **Not added:** hooks that block commands (overkill for a one-person repo), custom skills/subagents.
+
+## 2026-10-15: Battle Box UI: data, scroll, cards, routing
+
+- **API gains `type` and `sort`, plus validation.** The spec's type chips and NO./STRONGEST/FASTEST sort need
+  them. Doing either client-side over loaded pages would sort only what's been scrolled past and miscount results.
+  `server/query.ts` holds pure `parsePokemonQuery` / `queryPokemon`; bad `page`/`limit`/`sort`/`type` now return
+  400 instead of nonsense pages. `type` matches exactly (case-insensitive); free-text `search` keeps its original
+  substring semantics.
+- **TanStack Query `useInfiniteQuery`** over a hand-rolled hook. The key includes search/type/sort, so a new search
+  starts at page 1 and the superseded request is aborted through its `AbortSignal` (no stale results).
+  `fetchNextPage` retries just the failed page and keeps loaded cards. Window-focus refetch is off: the data is
+  static, and an infinite query refetches every loaded page.
+- **IntersectionObserver sentinel** (600px root margin) over a scroll listener. The observer is recreated after each
+  loaded page, so a tall screen that the first page doesn't fill keeps loading instead of stalling. It's keyed on
+  the page count, not just "not currently fetching": a fast response can start and finish within one render, so that
+  flag never visibly flips (a test caught this).
+- **Cards expand in place** (2 grid rows, `grid-auto-flow: dense`), as in the design, rather than in a dialog. The
+  name is the real `<button aria-expanded aria-controls>` and its `::after` stretches over the card. Making the
+  whole card a `<button>` would put the stats and description into its accessible name, and block content in a
+  button is invalid HTML.
+- **No router.** Two screens chosen by `location.pathname` (`/explore` vs everything else) with plain links between
+  them. Prod already serves `index.html` for every path.
+- **Not done (deliberately):** search/filter state in the URL, list virtualization (1,000 lazy-image cards render
+  fine), dark theme (spec is light-only).
+- **Spec adjustments:** ▼ prompts are ink on white boxes (accent yellow is ~1.5:1 there); error copy is bold so
+  #E04038 on white passes as large text (it's 4.2:1); below 480px the decorative "SORT" word is hidden and the sort
+  box goes full width so its three options fit on one row; the spec's `font-*` sizes are `text-*` utilities and its
+  `border-*` tokens are `frame-*` utilities (Tailwind namespaces, see `frontend/DESIGN.md`).
+- **Hex color tokens, not OKLCH.** Kept the spec's hex values verbatim so tokens can be checked against it 1:1.
+- **Fonts self-hosted** with `@fontsource/pixelify-sans` rather than Google Fonts: no third-party request and no
+  layout shift from a late stylesheet.
+- **Testing:** Vitest + Testing Library + jsdom. The fetch stub runs the real query code over the fixture data, so
+  UI tests exercise real filtering and paging without a server.
+- **Dependency versions respect pnpm 11's `minimumReleaseAge`.** vitest 5.0.5, jsdom 30.1.3 and react-query 5.104.3
+  were published the same day, and `pnpm add` silently wrote `minimumReleaseAgeExclude` entries to bypass the
+  check. Pinned the previous releases (5.0.4, 30.1.2, 5.104.2) instead, so the supply-chain guard stays intact.
+- **SPA fallback uses `sendFile('index.html', { root })`.** With an absolute path, `send` rejects any path containing
+  a dot-directory, so `/explore` 404'd when the repo is checked out under e.g. `~/.something` (prod's `/app` was fine).
