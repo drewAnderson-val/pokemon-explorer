@@ -81,3 +81,26 @@
   `product/` notes. No git hooks for it; run `graphify update .` after code changes.
 - **`docs/ai-usage.md`** documents how AI was used, for the interview walkthrough.
 - **Not added:** hooks that block commands (overkill for a one-person repo), custom skills/subagents.
+
+## 2026-10-15: Greptile-style AI review built on Claude
+
+- **What:** `.github/workflows/ai-review.yml`, two jobs per PR:
+  - `review` (`anthropics/claude-code-action`): loads every `AGENTS.md` and `.github/review/rules.md`, reads beyond
+    the diff (callers, callees, `git blame`), and checks bugs, security, infra and repo rules. Every finding is
+    verified with a concrete failure scenario; anything below 80 confidence is dropped. It posts inline comments with
+    suggested fixes, plus one summary comment updated in place (summary, Mermaid diagram, 1–5 confidence, findings
+    table).
+  - `security` (`anthropics/claude-code-security-review`, pinned to a commit): Anthropic's scanner with
+    false-positive filtering, given repo context in `.github/review/security.md`.
+- **Why not Greptile itself:** a paid third-party app with its own index. This uses the Claude API credits we have,
+  keeps rules in the repo next to the code, and is reviewable like any other workflow.
+- **Why not only the official `code-review` plugin:** it checks `CLAUDE.md` compliance and obvious bugs, but has no
+  security pass and no PR summary or confidence score.
+- **Why not Anthropic's managed Code Review:** Team/Enterprise plans only.
+- **Why not Vertex AI:** no documented guarantee that GCP credits cover Claude, reported quota blocks on new projects,
+  and more setup. The Claude API key is the simplest path.
+- **Not Greptile-equivalent:** no persistent codebase index (it reads the checkout each run) and no learning from 👍/👎
+  reactions.
+- **Guardrails:** the reviewer can only read code and post comments on this PR (`--allowedTools`); PR content is
+  treated as data. Runs skip drafts and fork PRs (no secrets for forks), and skip cleanly when the key is missing.
+  Concurrency cancels superseded reviews, which is safe because reviews are read-only.
