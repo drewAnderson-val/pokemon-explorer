@@ -14,12 +14,12 @@ type SortMenuProps = { onChange: (value: SortKey) => void; value: SortKey }
 
 export function SortMenu({ onChange, value }: SortMenuProps) {
   return (
-    <DialogBox className="self-start py-1 sm:py-1">
-      <fieldset className="flex flex-wrap items-center gap-x-4">
+    <DialogBox className="w-full shrink-0 self-start py-1 xs:w-auto sm:py-1">
+      <fieldset className="flex flex-wrap items-center gap-x-3 whitespace-nowrap xs:gap-x-4">
         <legend className="sr-only">Sort by</legend>
         <span
           aria-hidden
-          className="text-label font-bold text-ink-muted uppercase"
+          className="hidden text-label font-bold text-ink-muted uppercase xs:inline"
         >
           Sort
         </span>

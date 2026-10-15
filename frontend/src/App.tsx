@@ -1,9 +1,5 @@
-import PokemonGrid from '@/components/PokemonGrid'
+import { ExplorerScreen } from '@/screens/ExplorerScreen'
 
 export default function App() {
-  return (
-    <main>
-      <PokemonGrid />
-    </main>
-  )
+  return <ExplorerScreen />
 }
