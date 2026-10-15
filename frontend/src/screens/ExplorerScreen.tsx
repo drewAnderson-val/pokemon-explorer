@@ -26,9 +26,14 @@ export function ExplorerScreen() {
   )
 
   const searchRef = useRef<HTMLInputElement>(null)
+  const gridRef = useRef<HTMLUListElement>(null)
   useSlashToFocus(searchRef)
 
-  const search = useDebouncedValue(searchInput.trim(), SEARCH_DEBOUNCE_MS)
+  const trimmedSearch = searchInput.trim()
+  const debouncedSearch = useDebouncedValue(trimmedSearch, SEARCH_DEBOUNCE_MS)
+  // Clearing (Escape, Clear filters) applies at once; only typing is debounced.
+  // Otherwise "Clear filters" briefly queries the old search without its type.
+  const search = trimmedSearch === '' ? '' : debouncedSearch
   const catalogTotal = useCatalogTotal()
   const query = usePokemonPages({ search, sort, type })
   const { fetchNextPage, hasNextPage, isError, isFetchingNextPage, isPending } =
@@ -56,13 +61,28 @@ export function ExplorerScreen() {
     })
   }, [])
 
+  // The status box's button unmounts after these actions, so move focus
+  // somewhere sensible instead of letting it drop to <body>.
   const clearFilters = () => {
     setSearchInput('')
     setType(null)
+    searchRef.current?.focus()
   }
 
-  // A failed next page keeps the loaded cards; retry just that page.
-  const retry = () => void (query.data ? fetchNextPage() : query.refetch())
+  // A failed next page keeps the loaded cards; retry just that page. Focus the
+  // last loaded card so the next Tab lands on the new ones.
+  const retry = () => {
+    if (!query.data) {
+      searchRef.current?.focus()
+      void query.refetch()
+      return
+    }
+    const cards = gridRef.current?.querySelectorAll<HTMLButtonElement>(
+      'button[aria-expanded]'
+    )
+    cards?.[cards.length - 1]?.focus()
+    void fetchNextPage()
+  }
 
   let status: null | StatusKind = null
   if (isError) status = 'error'
@@ -127,6 +147,7 @@ export function ExplorerScreen() {
       <ul
         aria-label="Creatures"
         className="grid grid-flow-dense grid-cols-1 items-start gap-5 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5"
+        ref={gridRef}
       >
         {pokemon.map(p => (
           <CreatureCard

@@ -185,6 +185,13 @@
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
+/* On the landing sky the blue ring is ~1.25:1, so links there get a white ring
+   (~4.8:1 on sky-top) with an ink edge that also shows on light boxes. */
+@utility focus-ring-sky {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--color-ink);
+}
 @utility title-outline {
   text-shadow:
     -4px -4px 0 var(--color-title-outline),

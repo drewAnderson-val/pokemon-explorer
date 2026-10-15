@@ -22,6 +22,15 @@ describe('LandingScreen', () => {
     ).toBeInTheDocument()
   })
 
+  // The default blue ring is ~1.25:1 on the sky; links there need the white one.
+  it('uses the sky-safe focus ring on every link over the sky', () => {
+    stubFetch()
+    renderWithClient(<LandingScreen />)
+    for (const link of screen.getAllByRole('link')) {
+      expect(link.className).toContain('focus-visible:focus-ring-sky')
+    }
+  })
+
   it('tabs logo → Browse → Types → About → play, skipping scenery', () => {
     stubFetch()
     renderWithClient(<LandingScreen />)

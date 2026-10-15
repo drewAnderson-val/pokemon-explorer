@@ -4,7 +4,7 @@ export function PlayButton({ href }: { href: string }) {
       {/* Bob on the link, scale on the inner circle, so the transforms don't fight. */}
       <a
         aria-label="Start exploring"
-        className="group animate-bob rounded-full focus-visible:focus-ring"
+        className="group animate-bob rounded-full focus-visible:focus-ring-sky"
         href={href}
       >
         <span className="flex size-[132px] items-center justify-center rounded-full border-[6px] border-ink bg-accent shadow-press transition-transform duration-120 ease-[steps(2)] group-hover:scale-106 group-active:scale-96">

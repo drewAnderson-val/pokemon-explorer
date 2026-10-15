@@ -17,7 +17,7 @@ export function LandingScreen() {
       >
         <a
           aria-label="Pokemon Explorer home"
-          className="flex items-center gap-2 text-label font-bold uppercase sky-shadow focus-visible:focus-ring"
+          className="flex items-center gap-2 text-label font-bold uppercase sky-shadow focus-visible:focus-ring-sky"
           href="/"
         >
           <span
@@ -28,17 +28,17 @@ export function LandingScreen() {
         </a>
         <ul className="flex flex-wrap gap-x-5 gap-y-2 text-label font-bold uppercase sky-shadow">
           <li>
-            <a className="focus-visible:focus-ring" href="/explore">
+            <a className="focus-visible:focus-ring-sky" href="/explore">
               Browse
             </a>
           </li>
           <li>
-            <a className="focus-visible:focus-ring" href="/explore#types">
+            <a className="focus-visible:focus-ring-sky" href="/explore#types">
               Types
             </a>
           </li>
           <li>
-            <a className="focus-visible:focus-ring" href="#about">
+            <a className="focus-visible:focus-ring-sky" href="#about">
               About
             </a>
           </li>

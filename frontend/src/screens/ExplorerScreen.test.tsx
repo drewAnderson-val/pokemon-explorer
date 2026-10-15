@@ -172,6 +172,42 @@ describe('ExplorerScreen', () => {
     expect(screen.getByText('71 results')).toBeInTheDocument()
   })
 
+  it('clears filters straight to the full list and refocuses search', async () => {
+    const fetchMock = stubFetch()
+    const { user } = await renderLoaded()
+    await user.click(screen.getByRole('button', { name: 'Water' }))
+    await user.type(searchInput(), 'zzzz')
+    await user.click(
+      await screen.findByRole('button', { name: 'Clear filters' })
+    )
+    expect(searchInput()).toHaveFocus()
+    await waitFor(() => expect(cardNames()).toHaveLength(20))
+    const staleCombo = fetchMock.mock.calls.filter(
+      call =>
+        searchParamOf(call, 'search') === 'zzzz' &&
+        searchParamOf(call, 'type') === null
+    )
+    expect(staleCombo).toEqual([])
+  })
+
+  it('keeps keyboard focus near the list after retrying a page', async () => {
+    let failNext = true
+    stubFetch(url => {
+      if (url.searchParams.get('page') === '2' && failNext) {
+        failNext = false
+        return new Response('boom', { status: 500 })
+      }
+      return apiResponse(url)
+    })
+    const { user } = await renderLoaded()
+    act(() => setIntersecting(true))
+    await screen.findByRole('alert')
+    act(() => setIntersecting(false))
+    await user.click(screen.getByRole('button', { name: 'Try again' }))
+    const lastLoaded = within(grid()).getAllByRole('button')[19]
+    expect(lastLoaded).toHaveFocus()
+  })
+
   it('focuses search with /', async () => {
     stubFetch()
     const { user } = await renderLoaded()
