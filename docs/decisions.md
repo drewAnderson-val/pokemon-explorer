@@ -182,3 +182,12 @@
   SQL adds an always-on cost (~$10–30/month), a connector, secrets and migrations; Firestore scales to zero but has no
   substring search. If backend depth is wanted later, Cloud SQL Postgres + Drizzle, managed by Pulumi and seeded from
   the JSON, as a separate PR.
+
+## 2026-10-15: Union merges for the decision log
+
+- **Why:** PRs worked on in parallel (one worktree each) all append to the end of `docs/decisions.md`, so any two
+  open at once conflicted there (#6 vs #7).
+- **What:** `.gitattributes` sets `docs/decisions.md merge=union`, so a local merge keeps both sides' new entries.
+  GitHub's merge button ignores merge drivers, so `AGENTS.md` now says to merge `main` into a branch before opening
+  a PR, which is where the union driver applies.
+- **Rejected:** one file per decision (no conflicts at all, but turns a readable log into a folder of fragments).
