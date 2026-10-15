@@ -17,6 +17,19 @@ const TREES = [
   { bottom: 95, left: '88%', scale: 0.9 }
 ]
 
+export function Cloud() {
+  return (
+    <svg
+      className="w-full"
+      fill="white"
+      shapeRendering="crispEdges"
+      viewBox="0 0 16 6"
+    >
+      <path d="M4 0h5v1h2v1h3v1h2v3H0V3h1V2h3z" />
+    </svg>
+  )
+}
+
 // Decorative only: hidden from assistive tech.
 export function LandingScene() {
   return (
@@ -82,19 +95,6 @@ export function LandingScene() {
         </div>
       </div>
     </div>
-  )
-}
-
-function Cloud() {
-  return (
-    <svg
-      className="w-full"
-      fill="white"
-      shapeRendering="crispEdges"
-      viewBox="0 0 16 6"
-    >
-      <path d="M4 0h5v1h2v1h3v1h2v3H0V3h1V2h3z" />
-    </svg>
   )
 }
 

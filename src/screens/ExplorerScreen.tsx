@@ -5,13 +5,21 @@ import { DialogBox } from '@/components/DialogBox'
 import { SearchField } from '@/components/SearchField'
 import { SortMenu } from '@/components/SortMenu'
 import { StatusBox, type StatusKind } from '@/components/StatusBox'
+import { TeamBar } from '@/components/team/TeamBar'
 import { TypeFilterChip } from '@/components/TypeFilterChip'
 import { useCreations } from '@/hooks/useCreations'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import { useLoadMoreSentinel } from '@/hooks/useLoadMoreSentinel'
 import { useCatalogTotal, usePokemonPages } from '@/hooks/usePokemonPages'
 import { useSlashToFocus } from '@/hooks/useSlashToFocus'
-import { POKEMON_TYPES, type PokemonType, type SortKey } from '@/lib/pokemon'
+import { useTeam } from '@/hooks/useTeam'
+import {
+  type Pokemon,
+  POKEMON_TYPES,
+  type PokemonType,
+  type SortKey
+} from '@/lib/pokemon'
+import { addMember, isTeamFull, makeUid, newMember } from '@/lib/team/team'
 import { cn } from '@/lib/utils'
 
 import { queryPokemon } from '../../server/query'
@@ -29,6 +37,18 @@ export function ExplorerScreen() {
   const [expandedIds, setExpandedIds] = useState<ReadonlySet<number>>(
     () => new Set()
   )
+
+  const [team, setTeam] = useTeam()
+  const [teamNotice, setTeamNotice] = useState('')
+  const addToTeam = useCallback(
+    (creature: Pokemon) => {
+      setTeam(current => addMember(current, newMember(creature, makeUid())))
+      setTeamNotice(`${creature.name} joined your team!`)
+    },
+    [setTeam]
+  )
+  const teamFull = isTeamFull(team)
+  const onTeam = new Set(team.map(member => member.creatureId))
 
   const searchRef = useRef<HTMLInputElement>(null)
   const gridRef = useRef<HTMLUListElement>(null)
@@ -138,6 +158,11 @@ export function ExplorerScreen() {
         />
       </header>
 
+      <TeamBar onNotice={setTeamNotice} />
+      <p aria-live="polite" className="sr-only">
+        {teamNotice}
+      </p>
+
       <div className="flex flex-col gap-3">
         <fieldset className="min-w-0" id="types">
           <legend className="sr-only">Filter by type</legend>
@@ -196,8 +221,11 @@ export function ExplorerScreen() {
           <CreatureCard
             expanded={expandedIds.has(p.id)}
             key={p.id}
+            onAddToTeam={addToTeam}
+            onTeam={onTeam.has(p.id)}
             onToggle={toggle}
             pokemon={p}
+            teamFull={teamFull}
           />
         ))}
         {Array.from({ length: skeletons }, (_, index) => (

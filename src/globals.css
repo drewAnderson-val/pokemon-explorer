@@ -61,6 +61,8 @@
 
   --color-rule: #8a8a8a;
   --color-hp-good: #48c050;
+  --color-hp-warn: #f8d030;
+  --color-hp-low: #e04038;
   --color-sky-top: #1b74da;
   --color-sky-2: #3c98ec;
   --color-sky-3: #7cc3f4;
@@ -102,6 +104,21 @@
   --animate-from-older: from-older 220ms ease-out both;
   --animate-from-newer: from-newer 220ms ease-out both;
   --animate-wobble: wobble 1.4s ease-in-out infinite;
+  /* Battle hits: stepped (step-end holds each keyframe), not smooth. */
+  --animate-hit: shake 480ms step-end, flash 480ms step-end;
+  --animate-lunge-player: lunge-player 360ms step-end;
+  --animate-lunge-enemy: lunge-enemy 360ms step-end;
+  --animate-faint: faint 480ms steps(4) both;
+  --animate-float-up: float-up 900ms steps(6) both;
+  --animate-crit-flash: crit-flash 300ms step-end both;
+  --animate-scene-shake: scene-shake 360ms step-end;
+  --animate-sparkle: sparkle 600ms steps(4) both;
+  --animate-orb-drop: orb-drop 360ms steps(4) both;
+  --animate-orb-wobble: orb-wobble 480ms step-end;
+  --animate-orb-pop: orb-pop 360ms steps(3) both;
+  --animate-gold-flash: gold-flash 720ms step-end;
+  --animate-ribbon-drop: ribbon-drop 480ms steps(4) both;
+  --animate-timing-sweep: timing-sweep 600ms linear infinite alternate;
 
   @keyframes blink {
     50% {
@@ -173,6 +190,144 @@
     }
     50% {
       transform: translateY(-6px) rotate(1.2deg);
+    }
+  }
+  @keyframes shake {
+    20% {
+      translate: -6px 0;
+    }
+    40% {
+      translate: 6px 0;
+    }
+    60% {
+      translate: -4px 0;
+    }
+    80% {
+      translate: 4px 0;
+    }
+  }
+  @keyframes flash {
+    0%,
+    40%,
+    80% {
+      opacity: 0.25;
+    }
+  }
+  @keyframes lunge-player {
+    33% {
+      translate: 10px -6px;
+    }
+    66% {
+      translate: 20px -12px;
+    }
+  }
+  @keyframes lunge-enemy {
+    33% {
+      translate: -10px 6px;
+    }
+    66% {
+      translate: -20px 12px;
+    }
+  }
+  @keyframes float-up {
+    from {
+      opacity: 1;
+      translate: 0 0;
+    }
+    70% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      translate: 0 -36px;
+    }
+  }
+  @keyframes crit-flash {
+    0%,
+    66% {
+      opacity: 0.85;
+    }
+    33%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes scene-shake {
+    25% {
+      translate: -6px 3px;
+    }
+    50% {
+      translate: 6px -3px;
+    }
+    75% {
+      translate: -3px 0;
+    }
+  }
+  @keyframes sparkle {
+    from {
+      opacity: 1;
+      scale: 0.4;
+    }
+    to {
+      opacity: 0;
+      scale: 1.4;
+    }
+  }
+  @keyframes orb-drop {
+    from {
+      translate: 0 -120%;
+    }
+  }
+  @keyframes orb-wobble {
+    25% {
+      rotate: -18deg;
+    }
+    50% {
+      rotate: 14deg;
+    }
+    75% {
+      rotate: -6deg;
+    }
+  }
+  @keyframes orb-pop {
+    to {
+      opacity: 0;
+      scale: 1.6;
+    }
+  }
+  @keyframes gold-flash {
+    0%,
+    50% {
+      background-color: var(--color-accent);
+    }
+    25%,
+    75% {
+      background-color: var(--color-box);
+    }
+  }
+  @keyframes ribbon-drop {
+    from {
+      translate: 0 -150%;
+    }
+  }
+  @keyframes timing-sweep {
+    from {
+      left: 0;
+    }
+    to {
+      left: calc(100% - 8px);
+    }
+  }
+  /* The element also carries the end state as classes, so with reduced
+     motion (no animation) a fainted creature still disappears. */
+  @keyframes faint {
+    from {
+      opacity: 1;
+      translate: 0 0;
+    }
+    to {
+      opacity: 0;
+      translate: 0 24px;
     }
   }
 }
