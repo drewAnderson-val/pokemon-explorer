@@ -1,5 +1,6 @@
 import {
   isPokemonType,
+  MAX_SEARCH_LENGTH,
   PAGE_SIZE,
   type Pokemon,
   type PokemonPage,
@@ -45,6 +46,9 @@ export function parsePokemonQuery(raw: Record<string, unknown>): ParseResult {
   const rawSearch = raw.search ?? ''
   if (typeof rawSearch !== 'string') {
     return fail('search must be a single string')
+  }
+  if (rawSearch.length > MAX_SEARCH_LENGTH) {
+    return fail(`search must be at most ${MAX_SEARCH_LENGTH} characters`)
   }
   const search = rawSearch.trim()
 

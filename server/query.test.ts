@@ -32,9 +32,14 @@ describe('parsePokemonQuery', () => {
     ['limit', '101'],
     ['sort', 'name'],
     ['type', 'Plasma'],
+    ['search', 'a'.repeat(101)],
     ['search', ['a', 'b']]
   ])('rejects %s=%s', (key, value) => {
     expect(parsePokemonQuery({ [key]: value }).ok).toBe(false)
+  })
+
+  it('accepts a search at the length cap', () => {
+    expect(parse({ search: 'a'.repeat(100) }).search).toHaveLength(100)
   })
 
   it('canonicalizes type case and trims search', () => {

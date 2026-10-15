@@ -37,9 +37,11 @@ describe('cardImageUrl', () => {
     ).toBe('https://picsum.photos/seed/abc/400/400')
   })
 
-  it('requests a card-sized loremflickr image and keeps the lock', () => {
+  // LoremFlickr is unreliable (HTTP 500s), so its links move to Picsum, seeded by
+  // the lock so each creature keeps the same image on every load.
+  it('swaps loremflickr for a picsum image seeded by the lock', () => {
     expect(cardImageUrl('https://loremflickr.com/3266/1298?lock=27188')).toBe(
-      'https://loremflickr.com/640/320?lock=27188'
+      'https://picsum.photos/seed/lock-27188/640/320'
     )
   })
 
