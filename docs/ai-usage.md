@@ -29,4 +29,5 @@
 
 - Repo instructions (`AGENTS.md`) record the traps an agent can't infer from code, plus the decision-log rule.
 - Every change goes through a PR: lint, typecheck and build, then `pulumi preview`. Deploys to `main` run a smoke test.
-- _AI code review on PRs, if added._
+- AI review on every PR (`.github/workflows/ai-review.yml`): a Claude agent with a codebase graph, checking for bugs,
+  security issues and repo rules. Findings are suggestions; merging is a human decision.

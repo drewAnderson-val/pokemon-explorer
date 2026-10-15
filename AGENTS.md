@@ -21,6 +21,7 @@ The app lives at the repo root; `infra/AGENTS.md` adds rules for the deploy code
 | `src/` | React 19 + Vite 8 SPA (`@/` aliases `src/`; shadcn/ui primitives in `src/components/ui/`) |
 | `server/` | Express 5 API (`app.ts`) and prod entry (`index.ts`); one container in prod |
 | `infra/` | Pulumi (TypeScript): app stack (CI-run) and `bootstrap/` stack (owner-run). Own `package.json` |
+| `.github/review/rules.md` | AI reviewer's custom rules; add a rule to teach it |
 | `docs/` | Decision log, requirements, design notes, specs and plans, `ai-usage.md` |
 
 ## Traps that aren't obvious from the code
