@@ -1,0 +1,3 @@
+allowBuilds:
+  "@pulumi/docker-build": true
+  protobufjs: false

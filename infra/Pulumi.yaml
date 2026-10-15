@@ -1,0 +1,6 @@
+name: pokemon-explorer
+description: Cloud Run deployment for the FINNY Pokemon Explorer take-home
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm

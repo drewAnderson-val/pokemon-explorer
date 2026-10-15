@@ -1,0 +1,3 @@
+config:
+  gcp:project: finny-take-home
+  gcp:region: us-central1

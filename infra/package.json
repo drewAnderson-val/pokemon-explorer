@@ -1,0 +1,21 @@
+{
+  "name": "finny-infra",
+  "private": true,
+  "type": "commonjs",
+  "main": "index.ts",
+  "scripts": {
+    "preview": "pulumi preview --stack prod",
+    "up": "pulumi up --stack prod",
+    "types": "tsc --noEmit"
+  },
+  "packageManager": "pnpm@11.2.1",
+  "dependencies": {
+    "@pulumi/docker-build": "0.0.22",
+    "@pulumi/gcp": "10.1.1",
+    "@pulumi/pulumi": "3.268.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "6.0.3"
+  }
+}
