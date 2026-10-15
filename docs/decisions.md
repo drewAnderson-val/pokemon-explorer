@@ -81,3 +81,33 @@
   `product/` notes. No git hooks for it; run `graphify update .` after code changes.
 - **`docs/ai-usage.md`** documents how AI was used, for the interview walkthrough.
 - **Not added:** hooks that block commands (overkill for a one-person repo), custom skills/subagents.
+
+## 2026-10-15: Our own Greptile-style AI review, built on Claude
+
+- **What:** `.github/workflows/ai-review.yml`, one job per PR. It builds a codebase graph with graphify (AST only, no
+  LLM, a few seconds). A Claude agent (`anthropics/claude-code-action`, Opus 5.5) then loads every `AGENTS.md` plus
+  `.github/review/rules.md` and investigates the change: graph lookups for dependents, full files, `git blame`. It
+  checks bugs, security, infra and repo rules, and verifies each finding with a concrete failure scenario (anything
+  below 80 confidence is dropped). It posts inline comments with suggested fixes, plus one summary comment updated in
+  place (summary, Mermaid diagram, 1–5 merge confidence, findings table).
+- **Why build it instead of using Greptile:** Greptile is itself a Claude Agent SDK agent with codebase-context,
+  similar-function and git-history tools (Anthropic customer story). The same recipe here is about 100 lines of YAML.
+  Rules live in the repo, code isn't sent to another vendor, and it costs API tokens instead of a seat.
+- **What Greptile still does better:** a persistent index with semantic similar-function search, learning from 👍/👎
+  reactions, prompt caching (~90% hit rate), and evals behind its prompts. Our stand-in for learning is a written one:
+  edit `.github/review/rules.md`.
+- **Alternatives considered:**
+  - The official `code-review` plugin: compliance + obvious bugs only, with no summary and no graph.
+  - Anthropic's `claude-code-security-review`: dropped to keep one job; the reviewer covers security with repo
+    context.
+  - Open-source PR-Agent (Qodo) and Kodus: general-purpose, but more to configure than this.
+  - Anthropic's managed Code Review: Team/Enterprise only.
+  - Vertex AI: GCP credits aren't documented to cover Claude.
+- **Auth: Workload Identity Federation, not an API key.** The workflow's GitHub OIDC token is exchanged for a
+  short-lived Claude API token. The Console federation rule matches only this repo's `pull_request` runs, pinned by
+  subject plus the numeric owner and repo IDs, so a renamed or re-registered account can't match. No secret is
+  stored. It's the same pattern as the GCP deploys. The rule, organization and workspace IDs are identifiers, so they
+  live in repo variables.
+- **Guardrails:** the reviewer can only read code, query the graph and comment on this PR (`--allowedTools`). PR
+  content is treated as data. Runs skip drafts and fork PRs, skip cleanly without the key, and cancel superseded runs
+  (safe because reviews are read-only).
