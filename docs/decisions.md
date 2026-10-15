@@ -44,3 +44,40 @@
   a two-phase deploy. Overkill for a demo.
 - **Actions bumped to Node 24 majors** (checkout v7, setup-node v7, pnpm/action-setup v6, auth v3, setup-buildx v4,
   pulumi/actions v7); release notes checked, no breaking changes affect this workflow.
+
+## 2026-10-15: Health route is `/api/health`, not `/healthz`
+
+- Cloud Run [reserves URL paths ending in `z`](https://docs.cloud.google.com/run/docs/known-issues): public requests
+  to `/healthz` get Google's own 404 before reaching the container. The startup probe talks to the container directly,
+  so it passed, and the post-deploy smoke test caught it on the first `main` deploy.
+
+## 2026-10-15: Per-PR preview environments as Pulumi stacks
+
+- **What:** every PR gets a `pr-<n>` stack of the app program: its own Cloud Run service
+  (`pokemon-explorer-pr-<n>`, max 1 instance, scales to zero), linked from a PR comment that's updated in place,
+  destroyed with `pulumi destroy --remove` when the PR closes. Same pattern as Pulumi's managed "review stacks", run
+  from GitHub Actions instead of Pulumi Cloud.
+- **Rejected: tagged no-traffic revisions on the prod service.** gcloud would mutate a service Pulumi owns, and the
+  next `pulumi up` would drop the tags.
+- **Shared resources:** `prod` owns the registry and runtime service account; previews reuse them. Shared stack config
+  moved to `Pulumi.yaml` so CI can create `pr-<n>` stacks with no committed config.
+- **Registry cleanup now always keeps tagged images** (`latest`, `pr-*`). Before, "keep 5 most recent + delete after 7
+  days" meant a busy PR could push prod's running image out of the registry.
+- **No GitHub "View deployment" button yet:** GitHub environments need a public repo on the Free plan. Add
+  `environment: { name: preview, url: ... }` to `preview-env` once the repo is public.
+- **Fork PRs get no preview** (no OIDC token or secrets for forks).
+
+## 2026-10-15: Agent instructions in `AGENTS.md`; personal tooling stays local
+
+- **`AGENTS.md` is canonical** (root, `frontend/`, `infra/`); each folder's `CLAUDE.md` is just `@AGENTS.md`. AGENTS.md
+  is the cross-tool convention, so reviewers using Codex or Cursor get the same instructions. Claude Code ignores
+  `AGENTS.md` when a `CLAUDE.md` exists, hence the one-line imports.
+- **Scoped, not global.** Frontend traps load only when an agent works in `frontend/`, infra rules only in `infra/`.
+  Previously `FINNY-requirements.md` was imported into every session. Files stay short and list only what an agent
+  can't infer from the code (Claude Code docs: under 200 lines; longer files reduce adherence).
+- **graphify is personal tooling.** Its hooks moved to gitignored `.claude/settings.local.json` and its instructions to
+  gitignored `CLAUDE.local.md`. The hooks hard-coded an absolute path on one machine, which would error for
+  anyone else who cloned the repo. `graphify-out/` is gitignored: it's generated, and it would index the private
+  `product/` notes. No git hooks for it; run `graphify update .` after code changes.
+- **`docs/ai-usage.md`** documents how AI was used, for the interview walkthrough.
+- **Not added:** hooks that block commands (overkill for a one-person repo), custom skills/subagents.

@@ -10,8 +10,8 @@ const distDir = path.resolve(
   '../dist'
 )
 
-// Cloud Run startup probe; must not depend on the SPA build.
-app.get('/healthz', (_req, res) => {
+// Startup probe + smoke test. Not /healthz: Cloud Run reserves paths ending in z.
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' })
 })
 
