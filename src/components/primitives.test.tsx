@@ -60,6 +60,7 @@ describe('SearchField', () => {
     render(<Harness />)
     const input = screen.getByLabelText('What will you look for?')
     expect(input).toHaveAttribute('placeholder', 'Name, type, or description')
+    expect(input).toHaveAttribute('maxLength', '100')
     await userEvent.type(input, 'fire')
     expect(input).toHaveValue('fire')
     await userEvent.keyboard('{Escape}')

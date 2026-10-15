@@ -1,5 +1,7 @@
 import { type Ref, useId } from 'react'
 
+import { MAX_SEARCH_LENGTH } from '@/lib/pokemon'
+
 import { DialogBox } from './DialogBox'
 
 type SearchFieldProps = {
@@ -23,6 +25,7 @@ export function SearchField({ onChange, ref, value }: SearchFieldProps) {
           autoComplete="off"
           className="w-full min-w-0 border-b-2 border-ink bg-transparent py-1 text-body-lg outline-none placeholder:text-ink-muted focus-visible:focus-ring"
           id={id}
+          maxLength={MAX_SEARCH_LENGTH}
           onChange={event => onChange(event.target.value)}
           onKeyDown={event => {
             if (event.key === 'Escape' && value !== '') {
