@@ -1,1 +1,3 @@
 node_modules
+# Ephemeral per-PR preview stacks (created in CI)
+Pulumi.pr-*.yaml

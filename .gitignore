@@ -1,3 +1,8 @@
 # Private interview notes, never published
 product/
 .DS_Store
+
+# Personal AI-agent config (see AGENTS.md)
+CLAUDE.local.md
+.claude/settings.local.json
+graphify-out/
