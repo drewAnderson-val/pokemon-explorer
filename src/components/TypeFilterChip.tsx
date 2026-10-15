@@ -4,12 +4,14 @@ import { typeStyle } from '@/lib/type-colors'
 import { cn } from '@/lib/utils'
 
 type TypeFilterChipProps = {
+  disabled?: boolean
   onPress: () => void
   pressed: boolean
   type: null | PokemonType
 }
 
 export function TypeFilterChip({
+  disabled = false,
   onPress,
   pressed,
   type
@@ -18,9 +20,10 @@ export function TypeFilterChip({
     <button
       aria-pressed={pressed}
       className={cn(
-        'inline-flex h-11 shrink-0 items-center gap-2 rounded-tag frame-tag px-3 text-label font-bold uppercase focus-visible:focus-ring xs:h-10 xs:w-full',
-        pressed ? 'bg-ink text-white' : 'bg-box hover:bg-inset'
+        'inline-flex h-11 shrink-0 items-center gap-2 rounded-tag frame-tag px-3 text-label font-bold uppercase focus-visible:focus-ring disabled:opacity-50 xs:h-10 xs:w-full',
+        pressed ? 'bg-ink text-white' : 'bg-box enabled:hover:bg-inset'
       )}
+      disabled={disabled}
       onClick={onPress}
       style={type ? typeStyle(type) : undefined}
       type="button"

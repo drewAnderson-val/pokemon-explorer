@@ -14,6 +14,7 @@ const region = gcpConfig.require('region')
 const githubRepo = config.require('githubRepo')
 
 const apis = [
+  'aiplatform.googleapis.com',
   'artifactregistry.googleapis.com',
   'iam.googleapis.com',
   'iamcredentials.googleapis.com',
@@ -63,6 +64,19 @@ for (const role of [
     role
   })
 }
+
+// The creature lab calls Nano Banana on Vertex AI as the Cloud Run runtime
+// account (created by the app stack). Granted here because project IAM is
+// owner-only; the deployer can't grant roles.
+new gcp.projects.IAMMember(
+  'runtime-aiplatform-user',
+  {
+    member: `serviceAccount:pokemon-explorer-run@${project}.iam.gserviceaccount.com`,
+    project,
+    role: 'roles/aiplatform.user'
+  },
+  { dependsOn: apis }
+)
 
 new gcp.storage.BucketIAMMember('deployer-state', {
   bucket: stateBucket.name,

@@ -31,7 +31,7 @@ describe('LandingScreen', () => {
     }
   })
 
-  it('tabs logo → Browse → Types → About → play, skipping scenery', () => {
+  it('tabs logo → Browse → Types → Create → About → play, skipping scenery', () => {
     stubFetch()
     renderWithClient(<LandingScreen />)
     expect(
@@ -42,6 +42,7 @@ describe('LandingScreen', () => {
       'Pokemon Explorer home',
       'Browse',
       'Types',
+      'Create',
       'About',
       'Start exploring'
     ])

@@ -1,3 +1,5 @@
+import type { CreatureRequest, CreatureResponse } from './creature'
+
 import {
   PAGE_SIZE,
   type PokemonPage,
@@ -15,6 +17,26 @@ type FetchArgs = PokemonFilters & {
   limit?: number
   page: number
   signal?: AbortSignal
+}
+
+// Errors carry the API's message, which is written for people to read.
+export async function createCreature(
+  request: CreatureRequest
+): Promise<CreatureResponse> {
+  const response = await fetch('/api/creatures', {
+    body: JSON.stringify(request),
+    headers: { 'content-type': 'application/json' },
+    method: 'POST'
+  })
+  const body = (await response.json().catch(() => null)) as
+    | CreatureResponse
+    | null
+    | { error?: string }
+  if (!response.ok || !body || !('creature' in body)) {
+    const message = body && 'error' in body ? body.error : undefined
+    throw new Error(message ?? `Creature request failed (${response.status})`)
+  }
+  return body
 }
 
 export async function fetchPokemonPage({

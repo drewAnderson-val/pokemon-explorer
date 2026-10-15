@@ -87,6 +87,8 @@ const service = new gcp.cloudrunv2.Service(
     template: {
       containers: [
         {
+          // Vertex AI project for the creature lab's image generation.
+          envs: [{ name: 'GOOGLE_CLOUD_PROJECT', value: project }],
           image: pulumi.interpolate`${imageName}@${image.digest}`,
           resources: { cpuIdle: true, limits: { cpu: '1', memory: '512Mi' } },
           // A revision only receives traffic once /api/health answers; ~20s budget.

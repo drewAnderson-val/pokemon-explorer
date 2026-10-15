@@ -197,3 +197,24 @@
   SQL adds an always-on cost (~$10–30/month), a connector, secrets and migrations; Firestore scales to zero but has no
   substring search. If backend depth is wanted later, Cloud SQL Postgres + Drizzle, managed by Pulumi and seeded from
   the JSON, as a separate PR.
+
+## 2026-10-15: Creature Lab: generated creatures with Nano Banana on Vertex AI
+
+- **What:** a `/create` page where you name a creature, pick 1–2 types and optionally describe it; `POST /api/creatures`
+  draws it with Gemini's image model (Nano Banana) and returns a card with rolled stats. A deliberate extra beyond the
+  brief, to show the API and GCP side.
+- **Vertex AI as the runtime service account, no API key.** Cloud Run already runs as `pokemon-explorer-run`, so the
+  bootstrap stack grants it `roles/aiplatform.user` and enables the API. Rejected: a Gemini API key in Secret Manager
+  (a secret to rotate and leak when identity auth already exists) and calling Gemini from the browser (exposes the key).
+  The IAM grant lives in bootstrap because the CI deployer can't grant project roles, by design.
+- **Model `gemini-3.1-flash-lite-image` (Nano Banana 2 Lite), `global` endpoint**, overridable with `IMAGE_MODEL`.
+  Cheapest image model (~$0.03 per 1K image); the newer image models aren't served from regional endpoints.
+- **The server writes the prompt.** User text only fills quoted name/type/concept fields (newlines and quotes
+  stripped), so every image keeps the card style and the input can't replace the instructions. Safety-filter blocks
+  return 422 with a friendly message.
+- **Spend caps in memory:** 5 per client IP per hour and 100 per day overall, per instance. With prod's 3 max instances
+  the worst case is ~300 images (~$10) a day. Rejected for now: a shared counter in Firestore/Redis; the counters reset
+  on restart, which is acceptable for a demo. `trust proxy` is 1 so `req.ip` is the caller behind Cloud Run's front end.
+- **Nothing is stored.** Creations live in the page's state with a download button. Rejected: saving to GCS with a
+  shared gallery, which would show strangers' generations to anyone visiting (moderation risk) and add a bucket,
+  URLs and a listing endpoint for a feature that doesn't need to persist.

@@ -38,6 +38,11 @@ export function LandingScreen() {
             </a>
           </li>
           <li>
+            <a className="focus-visible:focus-ring-sky" href="/create">
+              Create
+            </a>
+          </li>
+          <li>
             <a className="focus-visible:focus-ring-sky" href="#about">
               About
             </a>

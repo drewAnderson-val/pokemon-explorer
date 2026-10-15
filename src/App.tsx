@@ -1,11 +1,11 @@
+import { CreatorScreen } from '@/screens/CreatorScreen'
 import { ExplorerScreen } from '@/screens/ExplorerScreen'
 import { LandingScreen } from '@/screens/LandingScreen'
 
-// Two screens and plain links between them: a router would be overkill.
+// Three screens and plain links between them: a router would be overkill.
 export default function App() {
-  return window.location.pathname.startsWith('/explore') ? (
-    <ExplorerScreen />
-  ) : (
-    <LandingScreen />
-  )
+  const path = window.location.pathname
+  if (path.startsWith('/explore')) return <ExplorerScreen />
+  if (path.startsWith('/create')) return <CreatorScreen />
+  return <LandingScreen />
 }
