@@ -98,6 +98,7 @@
   --animate-bob: bob 2.4s ease-in-out infinite;
   --animate-drift: drift var(--drift-duration, 120s) linear infinite;
   --animate-marquee: marquee 40s linear infinite;
+  --animate-deal: deal 360ms steps(6) both;
 
   @keyframes blink {
     50% {
@@ -131,6 +132,13 @@
   @keyframes marquee {
     to {
       transform: translateX(-50%);
+    }
+  }
+  /* A card dealt onto the top of the Creature Lab deck. */
+  @keyframes deal {
+    from {
+      opacity: 0;
+      transform: translate(24%, -40px) rotate(8deg);
     }
   }
 }

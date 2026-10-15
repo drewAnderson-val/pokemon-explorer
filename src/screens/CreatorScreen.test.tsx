@@ -4,7 +4,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import type { CreatedCreature } from '@/lib/creature'
 
-import { clearCreations, loadCreations } from '@/lib/creation-store'
+import {
+  clearCreations,
+  loadCreations,
+  saveCreation
+} from '@/lib/creation-store'
 import { stubFetch } from '@/test/fake-api'
 import { renderWithClient } from '@/test/render'
 
@@ -88,6 +92,26 @@ describe('CreatorScreen', () => {
     )
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
     await waitFor(async () => expect(await loadCreations()).toEqual([]))
+  })
+
+  it('shows one card at a time, newest on top, and deals new ones on top', async () => {
+    await saveCreation({ ...creature, id: 1001, name: 'Oldie' })
+    await saveCreation({ ...creature, id: 1002, name: 'Newer' })
+    stubFetch(() => Response.json({ creature }))
+    renderWithClient(<CreatorScreen />)
+
+    const card = () => screen.getByRole('listitem')
+    expect(await screen.findByText('1 of 2')).toBeInTheDocument()
+    expect(within(card()).getByText('Newer')).toBeInTheDocument()
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Older card' }))
+    expect(within(card()).getByText('Oldie')).toBeInTheDocument()
+    expect(screen.getByText('2 of 2')).toBeInTheDocument()
+
+    await createEmbercub()
+    expect(await screen.findByText('1 of 3')).toBeInTheDocument()
+    expect(within(card()).getByText('Embercub')).toBeInTheDocument()
   })
 
   it('allows at most two types', async () => {

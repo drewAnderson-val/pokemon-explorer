@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { type FormEvent, useId, useState } from 'react'
 
-import { CreationCard } from '@/components/CreationCard'
+import { CardDeck } from '@/components/CardDeck'
 import { DialogBox } from '@/components/DialogBox'
 import { TypeFilterChip } from '@/components/TypeFilterChip'
 import { Button } from '@/components/ui/button'
@@ -147,27 +147,13 @@ export function CreatorScreen() {
               </p>
             </DialogBox>
           )}
-          <ul
-            aria-busy={create.isPending}
-            className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-1"
-          >
-            {create.isPending && (
-              <li
-                aria-label="Drawing your creature"
-                className="flex flex-col gap-3 rounded-box frame-box bg-box p-3.5"
-              >
-                <span className="block aspect-square animate-pulse-soft rounded-inset bg-inset" />
-                <span className="block h-6 w-2/3 animate-pulse-soft rounded-tag bg-inset" />
-              </li>
-            )}
-            {creations.map(creature => (
-              <CreationCard
-                creature={creature}
-                key={creature.id}
-                onDelete={id => void remove(id)}
-              />
-            ))}
-          </ul>
+          {(creations.length > 0 || create.isPending) && (
+            <CardDeck
+              cards={creations}
+              drawing={create.isPending}
+              onDelete={id => void remove(id)}
+            />
+          )}
         </section>
       </div>
     </main>

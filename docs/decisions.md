@@ -261,3 +261,7 @@
 - **Layout fits one laptop screen (~940px tall):** form in a fixed 440px left column (3 type chips per row, ≈690px
   tall), cards on the right; each card goes image-left/details-right once it is ≥36rem wide (a container query on the
   card, so it also works in narrow columns), ≈425px tall.
+- **Custom cards are a deck, not a list.** The lab shows one card at a time, newest on top, with up to two card
+  edges peeking out underneath and "1 of n" arrows to flip back. A new creation replaces what's shown (the drawing
+  placeholder takes the top spot, then the card is dealt on with a short stepped animation, off under
+  reduced motion) instead of pushing a growing list down the page. The explorer's "Custom" chip still lists them all.

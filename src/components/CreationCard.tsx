@@ -2,6 +2,7 @@ import type { Pokemon } from '@/lib/pokemon'
 
 import { formatNumber } from '@/lib/format'
 import { typeStyle } from '@/lib/type-colors'
+import { cn } from '@/lib/utils'
 
 import { DialogBox } from './DialogBox'
 import { HpBar } from './HpBar'
@@ -13,9 +14,11 @@ import { Button } from './ui/button'
 // A creature from the lab: always expanded, and unlike the catalog's
 // placeholder photos the image really is the creature, so it gets alt text.
 export function CreationCard({
+  className,
   creature,
   onDelete
 }: {
+  className?: string
   creature: Pokemon
   onDelete: (id: number) => void
 }) {
@@ -26,7 +29,9 @@ export function CreationCard({
     // Side by side once the card is ≥ 36rem wide (container query, not the
     // viewport): a ~320px image beside ~400px of details keeps the whole card
     // under ~430px tall, so it fits next to the form on a laptop screen.
-    <li className="@container rounded-box frame-box bg-box p-3.5">
+    <li
+      className={cn('@container rounded-box frame-box bg-box p-3.5', className)}
+    >
       <div className="grid gap-3 @xl:grid-cols-2 @xl:gap-4">
         <div
           className="relative aspect-square overflow-hidden rounded-inset frame-inset bg-inset"
