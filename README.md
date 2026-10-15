@@ -28,8 +28,8 @@ The split keeps IAM-admin rights out of CI: the deployer can ship the app but ca
 1. `check`: install, lint, typecheck + production build.
 2. `deploy`: `pulumi preview` on PRs (posted as a PR comment), `pulumi up` on `main`. Pulumi builds the image, pushes it,
    and rolls out a Cloud Run revision pinned to the image digest. The revision only takes traffic once its HTTP startup
-   probe on `/healthz` passes.
-3. `smoke-test` (`main` only): checks `/healthz`, the SPA shell, API pagination and search against the live URL.
+   probe on `/api/health` passes.
+3. `smoke-test` (`main` only): checks `/api/health`, the SPA shell, API pagination and search against the live URL.
 
 **Local deploys** need Docker running and application-default credentials:
 

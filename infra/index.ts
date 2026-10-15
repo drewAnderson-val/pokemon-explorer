@@ -63,10 +63,10 @@ const service = new gcp.cloudrunv2.Service('service', {
       {
         image: pulumi.interpolate`${imageName}@${image.digest}`,
         resources: { cpuIdle: true, limits: { cpu: '1', memory: '512Mi' } },
-        // A revision only receives traffic once /healthz answers; ~20s budget.
+        // A revision only receives traffic once /api/health answers; ~20s budget.
         startupProbe: {
           failureThreshold: 10,
-          httpGet: { path: '/healthz' },
+          httpGet: { path: '/api/health' },
           periodSeconds: 2,
           timeoutSeconds: 1
         }

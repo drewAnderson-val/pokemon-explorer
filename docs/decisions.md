@@ -44,3 +44,9 @@
   a two-phase deploy. Overkill for a demo.
 - **Actions bumped to Node 24 majors** (checkout v7, setup-node v7, pnpm/action-setup v6, auth v3, setup-buildx v4,
   pulumi/actions v7); release notes checked, no breaking changes affect this workflow.
+
+## 2026-10-15: Health route is `/api/health`, not `/healthz`
+
+- Cloud Run [reserves URL paths ending in `z`](https://docs.cloud.google.com/run/docs/known-issues): public requests
+  to `/healthz` get Google's own 404 before reaching the container. The startup probe talks to the container directly,
+  so it passed, and the post-deploy smoke test caught it on the first `main` deploy.

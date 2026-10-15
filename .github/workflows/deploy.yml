@@ -81,7 +81,7 @@ jobs:
       URL: ${{ needs.deploy.outputs.url }}
     steps:
       - name: Health check
-        run: curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$URL/healthz"
+        run: curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$URL/api/health"
       - name: SPA shell is served
         run: curl -fsS "$URL/" | grep -q '<div id="root">'
       - name: API returns paginated data
