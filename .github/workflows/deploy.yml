@@ -65,5 +65,6 @@ jobs:
         with:
           command: ${{ github.event_name == 'pull_request' && 'preview' || 'up' }}
           stack-name: prod
+          upsert: true
           work-dir: infra
           comment-on-pr: true
