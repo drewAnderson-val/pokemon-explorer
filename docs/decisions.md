@@ -112,6 +112,21 @@
   content is treated as data. Runs skip drafts and fork PRs, skip cleanly without the key, and cancel superseded runs
   (safe because reviews are read-only).
 
+## 2026-10-15: Claude API federation rule matches GitHub's ID-based subject
+
+- GitHub sends this repo's OIDC `sub` in the newer immutable-ID format:
+  `repo:drewAnderson-val@261082712/pokemon-explorer@1420820881:pull_request`. A rule using the classic
+  `repo:owner/repo:pull_request` never matches: token exchange returns 401 and Authentication events show
+  `match_subject_prefix`. The rule now uses the ID-based subject, which is also rename-proof.
+- **Debugging tip:** `claude-code-action` hides API errors by default, so a failed exchange only shows up as
+  `is_error: true` with zero usage. To see the real error, run `claude -p` with `ANTHROPIC_IDENTITY_TOKEN_FILE` set
+  from a temporary workflow job.
+- **The review can't run on a PR that changes `ai-review.yml`:** the action requires the workflow file to match
+  `main`, so a PR can't rewrite its own reviewer. Workflow changes take effect after merge.
+- **Verified** on a throwaway PR (#8) with seeded bugs. It caught all three: unbounded `count` (critical), React
+  keys by `name` (high), and search race/encoding/error handling (medium). It also found a real issue on `main`:
+  `limit=0` gives `totalPages = Infinity`. ~50 s, $0.20 per review on Opus 5.5.
+
 ## 2026-10-15: Battle Box UI: data, scroll, cards, routing
 
 - **API gains `type` and `sort`, plus validation.** The spec's type chips and NO./STRONGEST/FASTEST sort need
