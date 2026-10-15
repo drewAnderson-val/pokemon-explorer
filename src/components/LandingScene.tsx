@@ -1,22 +1,17 @@
 import type { CSSProperties } from 'react'
 
-import { POKEMON_TYPES } from '@/lib/pokemon'
-
-import { TypeBadge } from './TypeBadge'
+import { cn } from '@/lib/utils'
 
 const CLOUDS = [
-  { delay: '-20s', duration: '110s', top: '12%', width: 140 },
-  { delay: '-70s', duration: '150s', top: '22%', width: 96 },
-  { delay: '-5s', duration: '90s', top: '34%', width: 120 },
-  { delay: '-100s', duration: '130s', top: '8%', width: 72 }
+  { delay: '0s', duration: '40s', top: 70 },
+  { delay: '-15s', duration: '52s', top: 170 },
+  { delay: '-30s', duration: '46s', top: 110 }
 ]
 
-const TREES = [
-  { bottom: 150, left: '8%', scale: 1 },
-  { bottom: 110, left: '78%', scale: 1.25 },
-  { bottom: 95, left: '88%', scale: 0.9 }
-]
+// Pixel art: keep edges hard when the GIFs are scaled up.
+const sprite = 'absolute [image-rendering:pixelated]'
 
+// The battle scene's sky still uses this cloud.
 export function Cloud() {
   return (
     <svg
@@ -30,83 +25,85 @@ export function Cloud() {
   )
 }
 
-// Decorative only: hidden from assistive tech.
+// The title screen's sky, hills and creatures. Decorative only: hidden from
+// assistive tech, and the sparkles and side creatures drop out on phones.
 export function LandingScene() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[linear-gradient(180deg,var(--color-sky-top)_0%,#5fa8ec_55%,var(--color-sky-horizon)_100%)]"
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,var(--color-sky-top)_0%,var(--color-sky-2)_38%,var(--color-sky-3)_68%,var(--color-sky-horizon)_100%)]" />
       {CLOUDS.map(cloud => (
         <div
-          className="absolute left-0 animate-drift"
+          className="title-cloud animate-drift"
           key={cloud.top}
           style={
             {
               '--drift-duration': cloud.duration,
               animationDelay: cloud.delay,
-              top: cloud.top,
-              width: cloud.width
+              top: cloud.top
             } as CSSProperties
           }
-        >
-          <Cloud />
-        </div>
+        />
       ))}
-      <svg
-        className="absolute inset-x-0 bottom-0 h-[360px] w-full"
-        preserveAspectRatio="none"
-        viewBox="0 0 1440 360"
-      >
-        <path
-          className="fill-hill-far"
-          d="M0 170C240 90 420 120 640 150S1080 80 1440 140V360H0Z"
-        />
-        <path
-          className="fill-hill-1"
-          d="M0 220C200 160 380 180 560 215S980 150 1440 210V360H0Z"
-        />
-        <path
-          className="fill-hill-2"
-          d="M0 270C260 220 520 250 760 280S1180 230 1440 260V360H0Z"
-        />
-        <path
-          className="fill-hill-3"
-          d="M0 315C320 285 640 300 900 320S1260 295 1440 310V360H0Z"
-        />
-      </svg>
-      {TREES.map(tree => (
-        <div
-          className="absolute"
-          key={tree.left}
-          style={{ bottom: tree.bottom, left: tree.left, scale: tree.scale }}
-        >
-          <Tree />
-        </div>
-      ))}
-      <div className="absolute inset-x-0 bottom-16 overflow-hidden">
-        <div className="flex w-max animate-marquee gap-3">
-          {[...POKEMON_TYPES, ...POKEMON_TYPES].map((type, index) => (
-            // The list is duplicated for a seamless loop, so names repeat.
-            // eslint-disable-next-line @eslint-react/no-array-index-key
-            <TypeBadge key={`${type}-${index}`} type={type} />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Tree() {
-  return (
-    <svg className="w-12" shapeRendering="crispEdges" viewBox="0 0 12 16">
-      <path
-        className="fill-hill-3 stroke-ink"
-        d="M4 0h4v2h2v3h2v5h-2v2H2v-2H0V5h2V2h2z"
-        strokeWidth="0.6"
+      <img
+        alt=""
+        className={cn(
+          sprite,
+          'top-[200px] left-0 size-[84px] animate-fly-left'
+        )}
+        src="/landing/bat.gif"
       />
-      <path className="fill-ink" d="M5 12h2v4H5z" />
-    </svg>
+      <img
+        alt=""
+        className={cn(
+          sprite,
+          'top-[60px] left-[16%] size-[42px] animate-twinkle max-sm:hidden'
+        )}
+        src="/landing/sparkle.gif"
+      />
+      <img
+        alt=""
+        className={cn(
+          sprite,
+          'top-[120px] right-[14%] size-[54px] animate-twinkle [animation-delay:500ms] max-sm:hidden'
+        )}
+        src="/landing/sparkle.gif"
+      />
+      <div className="title-hill -left-[10%] h-[230px] w-[70%] bg-hill-1" />
+      <div className="title-hill -right-[12%] h-[190px] w-[66%] bg-hill-2" />
+      <div className="title-hill left-[20%] h-[110px] w-[60%] bg-hill-3" />
+      <img
+        alt=""
+        className={cn(
+          sprite,
+          'bottom-[150px] left-[7%] size-[120px] max-sm:hidden'
+        )}
+        src="/landing/sprout.gif"
+      />
+      <img
+        alt=""
+        className={cn(
+          sprite,
+          'right-[8%] bottom-[120px] size-[120px] max-sm:hidden'
+        )}
+        src="/landing/flame.gif"
+      />
+      <img
+        alt=""
+        className={cn(sprite, 'bottom-[40px] left-1/2 -ml-[55px] size-[110px]')}
+        src="/landing/droplet.gif"
+      />
+      <img
+        alt=""
+        className={cn(sprite, '-bottom-2 left-[30%] size-24')}
+        src="/landing/grass.gif"
+      />
+      <img
+        alt=""
+        className={cn(sprite, 'right-[28%] -bottom-2 size-24')}
+        src="/landing/grass.gif"
+      />
+    </div>
   )
 }

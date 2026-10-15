@@ -369,3 +369,16 @@ no separate plan document).
   create): ids are reused after a delete, and the battle caches creatures by id with `staleTime: Infinity`.
 - **Rejected: copying custom creatures into the team's saved data.** The team deliberately stores only progress
   (id, level, XP, HP) and looks creatures up; keeping that shape means one lookup rule, not two kinds of member.
+
+## 2026-10-15: Landing page is a game title screen
+
+- **What:** the landing page follows the "Retro Pocket Landing" design: sky with drifting clouds, a bat sprite
+  flying across, sparkles, three hills with creature sprites, a dropping EXPLORER wordmark, a three-item title menu
+  with a blinking ▶ cursor (first item until you point at another) and "Press start". Sprites are the design's own
+  pixel GIFs, in `public/landing/`.
+- **Menu:** Start exploring → `/explore`, Battle → `/battle`, Creature Lab → `/create`. The design's third item was
+  "Options", which has no page in the app; the lab took its slot.
+- **Dropped from the old landing:** the top nav, "1000 creatures on file", the About dialog box, the round play
+  button and the type-badge marquee: the menu now does the navigating.
+- **Deviation:** the footer sits on a navy pill. White 13px text straight on the hills (as drawn) is ~3:1, under
+  WCAG's 4.5:1. Hill colors use the app's existing hill tokens rather than the design's near-identical greens.
