@@ -44,3 +44,18 @@
   a two-phase deploy. Overkill for a demo.
 - **Actions bumped to Node 24 majors** (checkout v7, setup-node v7, pnpm/action-setup v6, auth v3, setup-buildx v4,
   pulumi/actions v7); release notes checked, no breaking changes affect this workflow.
+
+## 2026-10-15: Agent instructions in `AGENTS.md`; personal tooling stays local
+
+- **`AGENTS.md` is canonical** (root, `frontend/`, `infra/`); each folder's `CLAUDE.md` is just `@AGENTS.md`. AGENTS.md
+  is the cross-tool convention, so reviewers using Codex or Cursor get the same instructions. Claude Code ignores
+  `AGENTS.md` when a `CLAUDE.md` exists, hence the one-line imports.
+- **Scoped, not global.** Frontend traps load only when an agent works in `frontend/`, infra rules only in `infra/`.
+  Previously `FINNY-requirements.md` was imported into every session. Files stay short and list only what an agent
+  can't infer from the code (Claude Code docs: under 200 lines; longer files reduce adherence).
+- **graphify is personal tooling.** Its hooks moved to gitignored `.claude/settings.local.json` and its instructions to
+  gitignored `CLAUDE.local.md`. The hooks hard-coded an absolute path on one machine, which would error for
+  anyone else who cloned the repo. `graphify-out/` is gitignored: it's generated, and it would index the private
+  `product/` notes. No git hooks for it; run `graphify update .` after code changes.
+- **`docs/ai-usage.md`** documents how AI was used, for the interview walkthrough.
+- **Not added:** hooks that block commands (overkill for a one-person repo), custom skills/subagents.
