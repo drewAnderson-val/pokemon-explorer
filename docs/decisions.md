@@ -22,3 +22,9 @@
 - **State:** self-managed GCS backend (`gs://finny-take-home-pulumi-state`, versioned) instead of Pulumi Cloud, so
   there's no extra account. Stack config holds no secrets, so the passphrase is empty.
 - **Rollout:** Cloud Run is pinned to the image digest, so unchanged code produces no new revision.
+
+## 2026-10-15: Public-ready repo is `pokemon-explorer`, separate from the private original
+
+- `drewAnderson-val/pokemon-explorer` (private until submission) holds frontend, infra, CI and docs only, on a fresh
+  root commit. The original `finny-take-home` repo (with the product prompt and interviewer notes) stays private and
+  untouched; `product/` is gitignored here.
