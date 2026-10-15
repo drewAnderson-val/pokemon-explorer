@@ -98,7 +98,10 @@
   --animate-bob: bob 2.4s ease-in-out infinite;
   --animate-drift: drift var(--drift-duration, 120s) linear infinite;
   --animate-marquee: marquee 40s linear infinite;
-  --animate-deal: deal 360ms steps(6) both;
+  --animate-flip-in: flip-in 760ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-from-older: from-older 220ms ease-out both;
+  --animate-from-newer: from-newer 220ms ease-out both;
+  --animate-wobble: wobble 1.4s ease-in-out infinite;
 
   @keyframes blink {
     50% {
@@ -134,11 +137,42 @@
       transform: translateX(-50%);
     }
   }
-  /* A card dealt onto the top of the Creature Lab deck. */
-  @keyframes deal {
+  /* Creature Lab deck. A new card starts face down (its back is a rotated
+     face), lifts, turns over with a small overshoot, then settles. */
+  @keyframes flip-in {
+    0% {
+      transform: translateY(0) rotateY(180deg);
+    }
+    25% {
+      transform: translateY(-16px) rotateY(180deg) scale(1.03);
+    }
+    75% {
+      transform: translateY(-16px) rotateY(-10deg) scale(1.03);
+    }
+    100% {
+      transform: none;
+    }
+  }
+  @keyframes from-older {
     from {
       opacity: 0;
-      transform: translate(24%, -40px) rotate(8deg);
+      transform: translateX(40px) rotate(2deg);
+    }
+  }
+  @keyframes from-newer {
+    from {
+      opacity: 0;
+      transform: translateX(-40px) rotate(-2deg);
+    }
+  }
+  /* The face-down card while the lab draws: a nervous little shuffle. */
+  @keyframes wobble {
+    0%,
+    100% {
+      transform: rotate(-1.2deg);
+    }
+    50% {
+      transform: translateY(-6px) rotate(1.2deg);
     }
   }
 }

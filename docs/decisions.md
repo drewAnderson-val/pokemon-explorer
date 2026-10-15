@@ -262,6 +262,12 @@
   tall), cards on the right; each card goes image-left/details-right once it is ≥36rem wide (a container query on the
   card, so it also works in narrow columns), ≈425px tall.
 - **Custom cards are a deck, not a list.** The lab shows one card at a time, newest on top, with up to two card
-  edges peeking out underneath and "1 of n" arrows to flip back. A new creation replaces what's shown (the drawing
-  placeholder takes the top spot, then the card is dealt on with a short stepped animation, off under
-  reduced motion) instead of pushing a growing list down the page. The explorer's "Custom" chip still lists them all.
+  edges peeking out underneath and "1 of n" arrows to flip back. A new creation replaces what's shown instead of
+  pushing a growing list down the page. The explorer's "Custom" chip still lists them all.
+- **Reveal is a card flip.** While the lab draws, a face-down card back (striped, "?") wobbles on top of the deck;
+  when the image arrives the new card lifts, turns over in 3D (`rotateY`, the back is a second face with
+  `backface-visibility: hidden`) and settles, 760ms. It plays once, only for a card made this visit, not on page
+  load or when flipping back to it. Arrows slide cards in from the direction of travel. Smooth easing here rather
+  than the app's usual `steps()`: a stepped 3D turn reads as a glitch. All of it is off under reduced motion.
+  `add` returns the new id synchronously (the IndexedDB write finishes in the background) so the card mounts
+  face-down in the same render instead of flashing face-up first.

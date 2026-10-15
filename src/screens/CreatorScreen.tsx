@@ -24,10 +24,12 @@ export function CreatorScreen() {
   const [types, setTypes] = useState<PokemonType[]>([])
   const [description, setDescription] = useState('')
   const { add, creations, remove } = useCreations()
+  // The card made this visit, so the deck reveals it with a flip.
+  const [dealtId, setDealtId] = useState<number>()
 
   const create = useMutation({
     mutationFn: createCreature,
-    onSuccess: ({ creature }) => add(creature)
+    onSuccess: ({ creature }) => setDealtId(add(creature))
   })
 
   const toggleType = (type: PokemonType) =>
@@ -150,7 +152,9 @@ export function CreatorScreen() {
           {(creations.length > 0 || create.isPending) && (
             <CardDeck
               cards={creations}
+              dealtId={dealtId}
               drawing={create.isPending}
+              onDealt={() => setDealtId(undefined)}
               onDelete={id => void remove(id)}
             />
           )}

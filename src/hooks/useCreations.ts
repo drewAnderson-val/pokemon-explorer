@@ -25,17 +25,18 @@ export function useCreations() {
     staleTime: Infinity
   })
 
+  // Returns the new card's id at once (the UI animates it in the same render);
+  // the IndexedDB write finishes in the background.
   const add = useCallback(
-    async (creature: CreatedCreature) => {
+    (creature: CreatedCreature) => {
       const existing = client.getQueryData<Pokemon[]>(CREATIONS_KEY) ?? []
       const id = Math.max(FIRST_CREATION_ID - 1, ...existing.map(c => c.id)) + 1
       const saved = { ...creature, id }
       client.setQueryData<Pokemon[]>(CREATIONS_KEY, [saved, ...existing])
-      try {
-        await saveCreation(saved)
-      } catch (error) {
+      saveCreation(saved).catch((error: unknown) =>
         console.warn('Could not save the custom card', error)
-      }
+      )
+      return id
     },
     [client]
   )

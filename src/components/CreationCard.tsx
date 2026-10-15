@@ -29,7 +29,7 @@ export function CreationCard({
     // Side by side once the card is ≥ 36rem wide (container query, not the
     // viewport): a ~320px image beside ~400px of details keeps the whole card
     // under ~430px tall, so it fits next to the form on a laptop screen.
-    <li
+    <article
       className={cn('@container rounded-box frame-box bg-box p-3.5', className)}
     >
       <div className="grid gap-3 @xl:grid-cols-2 @xl:gap-4">
@@ -83,6 +83,6 @@ export function CreationCard({
           </div>
         </div>
       </div>
-    </li>
+    </article>
   )
 }

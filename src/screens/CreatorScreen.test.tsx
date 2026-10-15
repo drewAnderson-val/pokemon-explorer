@@ -56,7 +56,7 @@ describe('CreatorScreen', () => {
     await user.type(screen.getByLabelText(/Description/), 'A sleepy fox')
     await user.click(create)
 
-    const card = await screen.findByRole('listitem')
+    const card = await screen.findByRole('article')
     expect(
       within(card).getByRole('img', { name: 'Generated artwork of Embercub' })
     ).toHaveAttribute('src', creature.imageUrl)
@@ -86,11 +86,11 @@ describe('CreatorScreen', () => {
 
     // A fresh page load reads them back from IndexedDB.
     renderWithClient(<CreatorScreen />)
-    const card = await screen.findByRole('listitem')
+    const card = await screen.findByRole('article')
     await user.click(
       within(card).getByRole('button', { name: 'Delete Embercub' })
     )
-    expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
+    expect(screen.queryByRole('article')).not.toBeInTheDocument()
     await waitFor(async () => expect(await loadCreations()).toEqual([]))
   })
 
@@ -100,7 +100,7 @@ describe('CreatorScreen', () => {
     stubFetch(() => Response.json({ creature }))
     renderWithClient(<CreatorScreen />)
 
-    const card = () => screen.getByRole('listitem')
+    const card = () => screen.getByRole('article')
     expect(await screen.findByText('1 of 2')).toBeInTheDocument()
     expect(within(card()).getByText('Newer')).toBeInTheDocument()
 

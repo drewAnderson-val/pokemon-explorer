@@ -2,22 +2,36 @@ import { useState } from 'react'
 
 import type { Pokemon } from '@/lib/pokemon'
 
+import { cn } from '@/lib/utils'
+
+import { CardBack } from './CardBack'
 import { CreationCard } from './CreationCard'
 import { Button } from './ui/button'
 
 type CardDeckProps = {
   cards: Pokemon[]
+  // The card just made in this visit: it's revealed with a flip, once.
+  dealtId?: number
   drawing: boolean
+  onDealt: () => void
   onDelete: (id: number) => void
 }
 
 // Up to this many card edges peek out from under the top card.
 const MAX_PEEKS = 2
 
-// One card at a time, newest on top: a new creation is dealt onto the deck
-// instead of pushing a list down the page. Arrows flip through older cards.
-export function CardDeck({ cards, drawing, onDelete }: CardDeckProps) {
+// One card at a time, newest on top. While the lab draws, a face-down card
+// shuffles on top of the deck; when the image arrives it turns over.
+// Arrows flip through older cards, sliding in from the side you're heading.
+export function CardDeck({
+  cards,
+  dealtId,
+  drawing,
+  onDealt,
+  onDelete
+}: CardDeckProps) {
   const [index, setIndex] = useState(0)
+  const [direction, setDirection] = useState<'newer' | 'older'>()
   const [seenTopId, setSeenTopId] = useState(cards[0]?.id)
 
   // A new card arrived: jump back to the top so it's the one you see.
@@ -25,19 +39,26 @@ export function CardDeck({ cards, drawing, onDelete }: CardDeckProps) {
   if (topId !== seenTopId) {
     setSeenTopId(topId)
     setIndex(0)
+    setDirection(undefined)
   }
   const current = Math.min(index, Math.max(cards.length - 1, 0))
   const card = cards[current]
-  // While drawing, every saved card is under the placeholder.
+  // While drawing, every saved card is under the face-down one.
   const below = drawing ? cards.length : cards.length - current - 1
   const peeks = Math.min(below, MAX_PEEKS)
+  const flipping = !drawing && card !== undefined && card.id === dealtId
+
+  const go = (to: number, towards: 'newer' | 'older') => {
+    setDirection(towards)
+    setIndex(to)
+  }
 
   return (
     <div className="flex flex-col gap-4">
       {/* isolate: the backs' negative z-index stays inside the deck. */}
       <div className="relative isolate pr-3 pb-3">
         {Array.from({ length: peeks }, (_, i) => (
-          // Decorative card backs, each nudged further down and right.
+          // Decorative card edges, each nudged further down and right.
           <span
             aria-hidden
             className="absolute inset-0 right-3 bottom-3 rounded-box frame-box bg-box"
@@ -48,29 +69,48 @@ export function CardDeck({ cards, drawing, onDelete }: CardDeckProps) {
             }}
           />
         ))}
-        <ul aria-busy={drawing} aria-label="Custom cards">
+        <div
+          aria-busy={drawing}
+          aria-label="Custom cards"
+          className="[perspective:1400px]"
+          role="group"
+        >
           {drawing ? (
-            <li
-              aria-label="Drawing your creature"
-              className="@container rounded-box frame-box bg-box p-3.5"
-            >
-              <div className="grid gap-3 @xl:grid-cols-2 @xl:gap-4">
-                <span className="block aspect-square animate-pulse-soft rounded-inset bg-inset" />
-                <span className="block h-6 w-2/3 animate-pulse-soft rounded-tag bg-inset" />
-              </div>
-            </li>
+            <>
+              <CardBack className="animate-wobble" />
+              <p className="sr-only" role="status">
+                Drawing your creature…
+              </p>
+            </>
           ) : (
             card && (
-              <CreationCard
-                className={current === 0 ? 'animate-deal' : undefined}
-                creature={card}
-                // Remount per card so the deal plays for each new top card.
+              <div
+                className={cn(
+                  'relative [transform-style:preserve-3d]',
+                  flipping && 'animate-flip-in',
+                  !flipping && direction === 'older' && 'animate-from-older',
+                  !flipping && direction === 'newer' && 'animate-from-newer'
+                )}
+                // Remount per card so each one plays its own entrance.
                 key={card.id}
-                onDelete={onDelete}
-              />
+                onAnimationEnd={event => {
+                  // animationend bubbles; only the flip itself counts.
+                  if (flipping && event.target === event.currentTarget)
+                    onDealt()
+                }}
+              >
+                <CreationCard
+                  className="[backface-visibility:hidden]"
+                  creature={card}
+                  onDelete={onDelete}
+                />
+                {flipping && (
+                  <CardBack className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]" />
+                )}
+              </div>
             )
           )}
-        </ul>
+        </div>
       </div>
 
       {cards.length > 1 && !drawing && (
@@ -78,7 +118,7 @@ export function CardDeck({ cards, drawing, onDelete }: CardDeckProps) {
           <Button
             aria-label="Newer card"
             disabled={current === 0}
-            onClick={() => setIndex(current - 1)}
+            onClick={() => go(current - 1, 'newer')}
             variant="secondary"
           >
             ◀
@@ -89,7 +129,7 @@ export function CardDeck({ cards, drawing, onDelete }: CardDeckProps) {
           <Button
             aria-label="Older card"
             disabled={current === cards.length - 1}
-            onClick={() => setIndex(current + 1)}
+            onClick={() => go(current + 1, 'older')}
             variant="secondary"
           >
             ▶
