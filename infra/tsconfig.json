@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "files": ["index.ts"]
+  "files": ["index.ts", "bootstrap/index.ts"]
 }

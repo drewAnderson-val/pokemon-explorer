@@ -1,0 +1,5 @@
+config:
+  gcp:project: finny-take-home
+  gcp:region: us-central1
+  pokemon-explorer-bootstrap:githubRepo: drewAnderson-val/pokemon-explorer
+encryptionsalt: v1:Q8nCHInWvJU=:v1:KvNbrrU+0CiP5ZGA:bzHXZnAffMQTsy4g0Qy1QM2qbu5yCg==

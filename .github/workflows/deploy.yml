@@ -8,9 +8,10 @@ on:
     paths: ['frontend/**', 'infra/**', '.github/workflows/deploy.yml']
   workflow_dispatch:
 
+# Previews for a PR cancel each other; deploys queue and never cancel mid-apply.
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('preview-{0}', github.ref) || 'deploy' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -28,11 +29,11 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
           package_json_file: frontend/package.json
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
@@ -44,27 +45,50 @@ jobs:
   deploy:
     needs: check
     runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.pulumi.outputs.url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
           package_json_file: infra/package.json
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
           cache-dependency-path: infra/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
         working-directory: infra
-      - uses: google-github-actions/auth@v2
+      - uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
-      - uses: docker/setup-buildx-action@v3
-      - uses: pulumi/actions@v6
+      - uses: docker/setup-buildx-action@v4
+      - uses: pulumi/actions@v7
+        id: pulumi
         with:
           command: ${{ github.event_name == 'pull_request' && 'preview' || 'up' }}
           stack-name: prod
           upsert: true
           work-dir: infra
           comment-on-pr: true
+
+  smoke-test:
+    needs: deploy
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      URL: ${{ needs.deploy.outputs.url }}
+    steps:
+      - name: Health check
+        run: curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$URL/healthz"
+      - name: SPA shell is served
+        run: curl -fsS "$URL/" | grep -q '<div id="root">'
+      - name: API returns paginated data
+        run: |
+          body=$(curl -fsS "$URL/api/pokemon?page=1&limit=5")
+          echo "$body" | jq -e '(.data | length) == 5 and .pagination.total > 0' >/dev/null
+      - name: Search filters results
+        run: |
+          curl -fsS "$URL/api/pokemon?search=fire&limit=50" \
+            | jq -e '.data | length > 0 and all(.[]; (.types | index("Fire")) or (.name + .description | test("fire"; "i")))' >/dev/null

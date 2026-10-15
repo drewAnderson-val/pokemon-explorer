@@ -10,6 +10,11 @@ const distDir = path.resolve(
   '../dist'
 )
 
+// Cloud Run startup probe; must not depend on the SPA build.
+app.get('/healthz', (_req, res) => {
+  res.json({ status: 'ok' })
+})
+
 app.use(express.static(distDir))
 app.get('/{*splat}', (_req, res) => {
   res.sendFile(path.join(distDir, 'index.html'))
