@@ -136,5 +136,7 @@ Changed from the spec after seeing it in the browser:
 
 - ▼ prompts are ink on white boxes; accent yellow on white is about 1.5:1.
 - Error copy is bold: `color-danger` on white is 4.2:1, which passes only as large (bold) text.
-- Sort menu: never shrinks on desktop; below 480px it goes full width and hides the decorative "SORT" word so
-  NO. / STRONGEST / FASTEST fit on one row.
+- Type chips sit in an equal-width grid (480px+) so rows line up in columns instead of wrapping raggedly; phones
+  keep the spec's single swipeable row.
+- Sort is a plain text row under the chips, not a boxed DialogBox: two boxed panels made the toolbar look heavy.
+  Below 480px the decorative "SORT" word is hidden so NO. / STRONGEST / FASTEST fit on one row.

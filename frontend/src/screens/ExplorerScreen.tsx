@@ -113,10 +113,11 @@ export function ExplorerScreen() {
         />
       </header>
 
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-3">
         <fieldset className="min-w-0" id="types">
           <legend className="sr-only">Filter by type</legend>
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 xs:mx-0 xs:flex-wrap xs:overflow-visible xs:px-0">
+          {/* Phones: one swipeable row (spec). 480px+: equal-width cells so rows line up. */}
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-2 xs:mx-0 xs:grid xs:grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] xs:overflow-visible xs:px-0 xs:py-0">
             <TypeFilterChip
               onPress={() => setType(null)}
               pressed={type === null}

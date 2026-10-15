@@ -18,7 +18,7 @@ export function TypeFilterChip({
     <button
       aria-pressed={pressed}
       className={cn(
-        'inline-flex h-11 shrink-0 items-center gap-2 rounded-tag frame-tag px-3 text-label font-bold uppercase focus-visible:focus-ring xs:h-10',
+        'inline-flex h-11 shrink-0 items-center gap-2 rounded-tag frame-tag px-3 text-label font-bold uppercase focus-visible:focus-ring xs:h-10 xs:w-full',
         pressed ? 'bg-ink text-white' : 'bg-box hover:bg-inset'
       )}
       onClick={onPress}
