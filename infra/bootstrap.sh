@@ -9,7 +9,7 @@ set -euo pipefail
 
 PROJECT=finny-take-home
 REGION=us-central1
-GITHUB_REPO=drewAnderson-val/finny-take-home
+GITHUB_REPO=drewAnderson-val/pokemon-explorer
 STATE_BUCKET="${PROJECT}-pulumi-state"
 DEPLOYER=github-deployer
 POOL=github
