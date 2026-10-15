@@ -121,3 +121,29 @@ jobs:
             - **Confidence: N/5** that it's safe to merge, with one sentence why (5 = no issues found, 1 = will break).
             - **Findings:** a table (severity, file:line, title), or "No issues found" if none survived verification.
             - **Investigated:** the dependents and context you checked beyond the diff.
+
+  # TEMPORARY (test PR only, never merged): reproduce the federation exchange with the error visible.
+  federation-debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+      ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+      ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+    steps:
+      - name: Fetch GitHub OIDC token (masked)
+        run: |
+          token=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.anthropic.com" | jq -r .value)
+          echo "::add-mask::$token"
+          mkdir -p "$RUNNER_TEMP/wif" && printf '%s' "$token" > "$RUNNER_TEMP/wif/identity-token"
+          echo "ANTHROPIC_IDENTITY_TOKEN_FILE=$RUNNER_TEMP/wif/identity-token" >> "$GITHUB_ENV"
+          # Non-secret claims only, to compare with the federation rule
+          echo "$token" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null \
+            | jq '{sub, aud, repository, repository_id, repository_owner, repository_owner_id, event_name, ref}' || true
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: Exchange + one call (opus-5-5)
+        run: claude -p "Reply with OK" --model claude-opus-5-5 --output-format json 2>&1 | head -c 4000 || true
