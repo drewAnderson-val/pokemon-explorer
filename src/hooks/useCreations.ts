@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
-import type { CreatedCreature } from '@/lib/creature'
 import type { Pokemon } from '@/lib/pokemon'
 
 import {
@@ -9,11 +8,12 @@ import {
   loadCreations,
   saveCreation
 } from '@/lib/creation-store'
+import { type CreatedCreature, FIRST_CREATION_ID } from '@/lib/creature'
+
+import { updateTeam } from './useTeam'
+import { creatureQuery } from './useTeamCreatures'
 
 const CREATIONS_KEY = ['creations']
-
-// Custom cards continue the catalog's numbering.
-const FIRST_CREATION_ID = 1001
 
 // The query cache is the source of truth for the UI, so a card still shows for
 // this visit if the browser refuses to store it (e.g. private mode).
@@ -33,6 +33,8 @@ export function useCreations() {
       const id = Math.max(FIRST_CREATION_ID - 1, ...existing.map(c => c.id)) + 1
       const saved = { ...creature, id }
       client.setQueryData<Pokemon[]>(CREATIONS_KEY, [saved, ...existing])
+      // Ids are reused after a delete; the battle caches creatures by id forever.
+      client.setQueryData(creatureQuery(id).queryKey, saved)
       saveCreation(saved).catch((error: unknown) =>
         console.warn('Could not save the custom card', error)
       )
@@ -46,6 +48,9 @@ export function useCreations() {
       client.setQueryData<Pokemon[]>(CREATIONS_KEY, previous =>
         previous?.filter(c => c.id !== id)
       )
+      client.removeQueries({ queryKey: creatureQuery(id).queryKey })
+      // A deleted card leaves the team too, so battles never meet a ghost.
+      updateTeam(team => team.filter(member => member.creatureId !== id))
       try {
         await deleteCreation(id)
       } catch (error) {

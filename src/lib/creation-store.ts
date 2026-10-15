@@ -15,6 +15,10 @@ export function deleteCreation(id: number) {
   return run('readwrite', store => store.delete(id))
 }
 
+export function getCreation(id: number) {
+  return run<Pokemon | undefined>('readonly', store => store.get(id))
+}
+
 // Newest first.
 export async function loadCreations() {
   const all = await run<Pokemon[]>('readonly', store => store.getAll())

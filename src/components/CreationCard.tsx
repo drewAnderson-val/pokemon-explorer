@@ -1,6 +1,14 @@
 import type { Pokemon } from '@/lib/pokemon'
 
+import { useTeam } from '@/hooks/useTeam'
 import { formatNumber } from '@/lib/format'
+import {
+  addMember,
+  hasCreature,
+  isTeamFull,
+  makeUid,
+  newMember
+} from '@/lib/team/team'
 import { typeStyle } from '@/lib/type-colors'
 import { cn } from '@/lib/utils'
 
@@ -9,7 +17,7 @@ import { HpBar } from './HpBar'
 import { MetaRow } from './MetaRow'
 import { StatList } from './StatList'
 import { TypeBadge } from './TypeBadge'
-import { Button } from './ui/button'
+import { Button, buttonClass } from './ui/button'
 
 // A creature from the lab: always expanded, and unlike the catalog's
 // placeholder photos the image really is the creature, so it gets alt text.
@@ -22,6 +30,9 @@ export function CreationCard({
   creature: Pokemon
   onDelete: (id: number) => void
 }) {
+  const [team, updateTeam] = useTeam()
+  const onTeam = hasCreature(team, creature.id)
+  const teamFull = isTeamFull(team)
   // Vertex returns JPEG today; take the extension from the data URL anyway.
   const extension = /^data:image\/(\w+)/.exec(creature.imageUrl)?.[1] ?? 'png'
   const fileName = `${creature.name.replace(/[^\w-]+/g, '-').toLowerCase()}.${extension === 'jpeg' ? 'jpg' : extension}`
@@ -66,8 +77,35 @@ export function CreationCard({
             <p className="text-body">{creature.description}</p>
           </DialogBox>
           <div className="grid grid-cols-2 gap-2">
+            {/* Same actions as a catalog card: custom ids resolve from this
+                browser's store wherever the battle looks a creature up. */}
             <a
-              className="inline-flex h-11 items-center justify-center rounded-tag frame-tag bg-box px-4 text-label font-bold uppercase hover:bg-inset focus-visible:focus-ring"
+              aria-label={`Battle with ${creature.name}`}
+              className={buttonClass()}
+              href={`/battle?id=${creature.id}`}
+            >
+              ▶ Battle
+            </a>
+            <Button
+              aria-label={
+                onTeam
+                  ? 'On your team'
+                  : teamFull
+                    ? 'Team full'
+                    : `Add ${creature.name} to team`
+              }
+              disabled={onTeam || teamFull}
+              onClick={() =>
+                updateTeam(current =>
+                  addMember(current, newMember(creature, makeUid()))
+                )
+              }
+              variant="secondary"
+            >
+              {onTeam ? 'On your team' : teamFull ? 'Team full' : '+ Team'}
+            </Button>
+            <a
+              className={buttonClass('secondary')}
               download={fileName}
               href={creature.imageUrl}
             >

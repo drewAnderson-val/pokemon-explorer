@@ -1,9 +1,10 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SETTINGS_STORAGE_KEY } from '@/hooks/useSettings'
 import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
+import { clearCreations, saveCreation } from '@/lib/creation-store'
 import { parseTeam, serializeTeam, type TeamMember } from '@/lib/team/team'
 import { stubFetch } from '@/test/fake-api'
 import { renderWithClient } from '@/test/render'
@@ -68,7 +69,36 @@ async function readUntil(text: RegExp | string) {
   )
 }
 
+afterEach(() => clearCreations())
+
 describe('BattleScreen', () => {
+  it('battles with a custom card from the Creature Lab', async () => {
+    await saveCreation({
+      attack: 80,
+      defense: 70,
+      description: 'A sleepy fox',
+      generation: 10,
+      height: 0.6,
+      hp: 55,
+      id: 1001,
+      imageUrl: 'data:image/jpeg;base64,AAAA',
+      name: 'Embercub',
+      specialAttack: 90,
+      specialDefense: 60,
+      speed: 100,
+      types: ['Fire'],
+      weight: 9.5
+    })
+    stubFetch()
+    renderWithClient(<BattleScreen playerId={1001} rng={alwaysZero} />)
+    // Custom ids aren't in the catalog, so the wild pick skips nothing: #1.
+    await expectMessage('A wild Geovanni appeared!')
+    expect(savedTeam()).toEqual([expect.objectContaining({ creatureId: 1001 })])
+    expect(
+      screen.getByRole('region', { name: 'Your creature' })
+    ).toHaveTextContent('Embercub')
+  })
+
   it('starts a team from the picked creature when the team is empty', async () => {
     await open(1)
     expect(savedTeam()).toEqual([

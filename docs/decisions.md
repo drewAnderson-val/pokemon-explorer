@@ -357,3 +357,15 @@ no separate plan document).
   GitHub's merge button ignores merge drivers, so `AGENTS.md` now says to merge `main` into a branch before opening
   a PR, which is where the union driver applies.
 - **Rejected:** one file per decision (no conflicts at all, but turns a readable log into a folder of fragments).
+
+## 2026-10-15: Custom cards can battle
+
+- **What:** Creature Lab cards have the catalog card's actions (▶ Battle, + Team) and fight like any creature.
+  `creatureQuery` (the one place the battle, team bar and `/battle?id=N` starter look a creature up) resolves ids
+  ≥ 1001 from the browser's IndexedDB store instead of `GET /api/pokemon`; a deleted card is a `CreatureNotFoundError`,
+  the same "missing" path a vanished catalog id takes. Wild opponents stay catalog-only (`fetchRandomPokemon` already
+  ignores ids above the catalog total).
+- **Deleting a custom card also removes it from the team**, and its by-id query cache entry is dropped (and primed on
+  create): ids are reused after a delete, and the battle caches creatures by id with `staleTime: Infinity`.
+- **Rejected: copying custom creatures into the team's saved data.** The team deliberately stores only progress
+  (id, level, XP, HP) and looks creatures up; keeping that shape means one lookup rule, not two kinds of member.
