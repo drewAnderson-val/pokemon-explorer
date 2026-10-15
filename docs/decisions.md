@@ -103,6 +103,11 @@
   - Open-source PR-Agent (Qodo) and Kodus: general-purpose, but more to configure than this.
   - Anthropic's managed Code Review: Team/Enterprise only.
   - Vertex AI: GCP credits aren't documented to cover Claude.
+- **Auth: Workload Identity Federation, not an API key.** The workflow's GitHub OIDC token is exchanged for a
+  short-lived Claude API token. The Console federation rule matches only this repo's `pull_request` runs, pinned by
+  subject plus the numeric owner and repo IDs, so a renamed or re-registered account can't match. No secret is
+  stored. It's the same pattern as the GCP deploys. The rule, organization and workspace IDs are identifiers, so they
+  live in repo variables.
 - **Guardrails:** the reviewer can only read code, query the graph and comment on this PR (`--allowedTools`). PR
   content is treated as data. Runs skip drafts and fork PRs, skip cleanly without the key, and cancel superseded runs
   (safe because reviews are read-only).

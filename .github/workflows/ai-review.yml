@@ -6,8 +6,12 @@ name: AI review
 # inline comments with suggested fixes, and keeps one summary comment up to date.
 #
 # Rules: every AGENTS.md + .github/review/rules.md (add a rule there to teach it).
-# Setup: ANTHROPIC_API_KEY secret + Claude GitHub App (https://github.com/apps/claude).
-# Without the key it skips cleanly.
+# Auth: Workload Identity Federation (no stored API key). The workflow's GitHub OIDC token
+# is exchanged for a short-lived Claude API token via a federation rule in the Claude
+# Console that matches only this repo's pull_request runs. IDs live in repo variables:
+# ANTHROPIC_FEDERATION_RULE_ID, ANTHROPIC_ORGANIZATION_ID, ANTHROPIC_WORKSPACE_ID (optional).
+# Comments are posted by the Claude GitHub App (https://github.com/apps/claude).
+# Until the variables are set it skips cleanly.
 
 on:
   pull_request:
@@ -28,28 +32,30 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-      id-token: write # Claude GitHub App token exchange
+      id-token: write # OIDC token for Claude API federation + Claude GitHub App
     env:
-      HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+      CONFIGURED: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID != '' && vars.ANTHROPIC_ORGANIZATION_ID != '' }}
     steps:
-      - if: env.HAS_KEY != 'true'
-        run: echo "::notice::ANTHROPIC_API_KEY secret not set; skipping AI review."
+      - if: env.CONFIGURED != 'true'
+        run: echo "::notice::Claude API federation variables not set; skipping AI review."
 
-      - if: env.HAS_KEY == 'true'
+      - if: env.CONFIGURED == 'true'
         uses: actions/checkout@v7
         with:
           fetch-depth: 0 # history for git blame / log context
 
       - name: Build codebase graph
-        if: env.HAS_KEY == 'true'
+        if: env.CONFIGURED == 'true'
         run: |
           pipx install graphifyy==0.9.91
           graphify update .
 
-      - if: env.HAS_KEY == 'true'
+      - if: env.CONFIGURED == 'true'
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          anthropic_workspace_id: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
           claude_args: |
             --model claude-opus-5-5
             --max-turns 60
