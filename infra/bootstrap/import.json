@@ -1,0 +1,80 @@
+{
+  "resources": [
+    {
+      "type": "gcp:projects/service:Service",
+      "name": "artifactregistry.googleapis.com",
+      "id": "finny-take-home/artifactregistry.googleapis.com"
+    },
+    {
+      "type": "gcp:projects/service:Service",
+      "name": "iam.googleapis.com",
+      "id": "finny-take-home/iam.googleapis.com"
+    },
+    {
+      "type": "gcp:projects/service:Service",
+      "name": "iamcredentials.googleapis.com",
+      "id": "finny-take-home/iamcredentials.googleapis.com"
+    },
+    {
+      "type": "gcp:projects/service:Service",
+      "name": "run.googleapis.com",
+      "id": "finny-take-home/run.googleapis.com"
+    },
+    {
+      "type": "gcp:projects/service:Service",
+      "name": "sts.googleapis.com",
+      "id": "finny-take-home/sts.googleapis.com"
+    },
+    {
+      "type": "gcp:storage/bucket:Bucket",
+      "name": "state",
+      "id": "finny-take-home-pulumi-state",
+      "protect": true
+    },
+    {
+      "type": "gcp:serviceaccount/account:Account",
+      "name": "deployer",
+      "id": "projects/finny-take-home/serviceAccounts/github-deployer@finny-take-home.iam.gserviceaccount.com"
+    },
+    {
+      "type": "gcp:projects/iAMMember:IAMMember",
+      "name": "deployer-artifactregistry.admin",
+      "id": "finny-take-home roles/artifactregistry.admin serviceAccount:github-deployer@finny-take-home.iam.gserviceaccount.com"
+    },
+    {
+      "type": "gcp:projects/iAMMember:IAMMember",
+      "name": "deployer-iam.serviceAccountAdmin",
+      "id": "finny-take-home roles/iam.serviceAccountAdmin serviceAccount:github-deployer@finny-take-home.iam.gserviceaccount.com"
+    },
+    {
+      "type": "gcp:projects/iAMMember:IAMMember",
+      "name": "deployer-iam.serviceAccountUser",
+      "id": "finny-take-home roles/iam.serviceAccountUser serviceAccount:github-deployer@finny-take-home.iam.gserviceaccount.com"
+    },
+    {
+      "type": "gcp:projects/iAMMember:IAMMember",
+      "name": "deployer-run.admin",
+      "id": "finny-take-home roles/run.admin serviceAccount:github-deployer@finny-take-home.iam.gserviceaccount.com"
+    },
+    {
+      "type": "gcp:storage/bucketIAMMember:BucketIAMMember",
+      "name": "deployer-state",
+      "id": "b/finny-take-home-pulumi-state roles/storage.objectAdmin serviceAccount:github-deployer@finny-take-home.iam.gserviceaccount.com"
+    },
+    {
+      "type": "gcp:iam/workloadIdentityPool:WorkloadIdentityPool",
+      "name": "github",
+      "id": "projects/605570978921/locations/global/workloadIdentityPools/github"
+    },
+    {
+      "type": "gcp:iam/workloadIdentityPoolProvider:WorkloadIdentityPoolProvider",
+      "name": "github-oidc",
+      "id": "projects/605570978921/locations/global/workloadIdentityPools/github/providers/github-oidc"
+    },
+    {
+      "type": "gcp:serviceaccount/iAMMember:IAMMember",
+      "name": "deployer-wif",
+      "id": "projects/finny-take-home/serviceAccounts/github-deployer@finny-take-home.iam.gserviceaccount.com roles/iam.workloadIdentityUser principalSet://iam.googleapis.com/projects/605570978921/locations/global/workloadIdentityPools/github/attribute.repository/drewAnderson-val/pokemon-explorer"
+    }
+  ]
+}

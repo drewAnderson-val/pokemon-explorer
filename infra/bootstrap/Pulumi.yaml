@@ -1,0 +1,7 @@
+name: pokemon-explorer-bootstrap
+description: One-time setup (state bucket, GitHub OIDC, deployer identity); run locally by a project owner
+main: index.ts
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm

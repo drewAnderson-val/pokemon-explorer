@@ -28,3 +28,19 @@
 - `drewAnderson-val/pokemon-explorer` (private until submission) holds frontend, infra, CI and docs only, on a fresh
   root commit. The original `finny-take-home` repo (with the product prompt and interviewer notes) stays private and
   untouched; `product/` is gitignored here.
+
+## 2026-10-15: Bootstrap as its own Pulumi stack; post-deploy smoke test
+
+- **Replaced `infra/bootstrap.sh` with `infra/bootstrap/`**, a second Pulumi stack run once by a project owner. Research:
+  a human-run bootstrap for state + CI identity is the standard pattern (OpenTofu/Terraform GCS guides do the same with
+  scripts); Pulumi's own recommendation (Pulumi Cloud + ESC + `pulumi/auth-actions`) needs a Pulumi Cloud account,
+  which is more than this MVP needs. Existing resources were adopted with `pulumi import` (zero diffs), so nothing was
+  recreated.
+- **The bootstrap stack's state lives in the bucket it manages.** The bucket is `protect`ed so neither stack can
+  delete it.
+- **Post-deploy checks:** HTTP startup probe on `/healthz` (a broken container never takes traffic) plus a `smoke-test`
+  job against the stack's `url` output, following Pulumi's GitHub Actions guide. Not doing tagged no-traffic
+  revisions + gradual traffic migration (Google's gold standard); Pulumi's traffic config is declarative, so it'd need
+  a two-phase deploy. Overkill for a demo.
+- **Actions bumped to Node 24 majors** (checkout v7, setup-node v7, pnpm/action-setup v6, auth v3, setup-buildx v4,
+  pulumi/actions v7); release notes checked, no breaking changes affect this workflow.
