@@ -57,6 +57,9 @@ export type SortKey = (typeof SORT_KEYS)[number]
 
 export const PAGE_SIZE = 20
 
+// Shared by the API (400 above it) and the search input (maxLength).
+export const MAX_SEARCH_LENGTH = 100
+
 export function isPokemonType(value: string): value is PokemonType {
   return (POKEMON_TYPES as readonly string[]).includes(value)
 }

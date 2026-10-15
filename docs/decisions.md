@@ -168,3 +168,17 @@
 - **Isolation:** the app's ESLint ignores `infra/**`, `.dockerignore` keeps `infra`, `docs` and markdown out of the
   image, and Pulumi's Docker build context is now the repo root (`..` from `infra/`). CI triggers on everything except
   `docs/**` and markdown.
+
+## 2026-10-15: Reliable images, capped search, no database
+
+- **LoremFlickr links become seeded Picsum images.** Half the fixture images point at LoremFlickr, which returned
+  HTTP 500s throughout development, so those cards always showed the letter fallback. `cardImageUrl` maps them to
+  `picsum.photos/seed/lock-<lock>/480/360`, so each creature keeps the same image on every load; Picsum links are
+  only resized. The data file is untouched.
+- **Search is capped at 100 characters** (`MAX_SEARCH_LENGTH`, shared by the API and the input's `maxLength`). Longer
+  searches return 400 instead of scanning all 1,000 records with an arbitrarily long string. Flagged by the AI reviewer.
+- **Rejected for now: a database in GCP.** The data's quirks (repeated names, random photos) come from what was
+  generated, not from storing it in a JSON file, so a database would serve the same records over the network. Cloud
+  SQL adds an always-on cost (~$10–30/month), a connector, secrets and migrations; Firestore scales to zero but has no
+  substring search. If backend depth is wanted later, Cloud SQL Postgres + Drizzle, managed by Pulumi and seeded from
+  the JSON, as a separate PR.

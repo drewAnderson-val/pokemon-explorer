@@ -86,7 +86,7 @@ describe('CreatureCard', () => {
     )
     const img = container.querySelector('img')!
     expect(img.getAttribute('src')).toBe(
-      'https://loremflickr.com/480/360?lock=1'
+      'https://picsum.photos/seed/lock-1/480/360'
     )
     fireEvent.error(img)
     expect(container.querySelector('img')).toBeNull()
