@@ -119,3 +119,16 @@
   check. Pinned the previous releases (5.0.4, 30.1.2, 5.104.2) instead, so the supply-chain guard stays intact.
 - **SPA fallback uses `sendFile('index.html', { root })`.** With an absolute path, `send` rejects any path containing
   a dot-directory, so `/explore` 404'd when the repo is checked out under e.g. `~/.something` (prod's `/app` was fine).
+
+## 2026-10-15: Stat radar on expanded cards
+
+- **What:** a hexagon radar of the six stats (HP at the top, clockwise ATK, DEF, SPD, SP.D, SP.A), drawn in SVG from
+  polar coordinates (`θᵢ = −π/2 + 2πi/6`, `r = value / 255 × R`) in `src/lib/radar.ts`, with unit tests for the
+  geometry.
+- **One fixed scale (255, the data's highest stat) for every card**, not a per-card max, so shapes compare across
+  creatures: a per-card max would make every creature look equally strong.
+- **Decorative (`aria-hidden`), no hover tooltips.** The StatList directly below carries the same numbers as text, so
+  it is the chart's accessible table view; the card is one stretched button, so the chart can't take hover anyway.
+- **Contrast:** fill is the type color at 60%, outlined in 2px ink so pale types (Ice, Steel) still clear 3:1 for
+  graphics. Labels use text tokens (`ink-muted`), never the type color.
+- **Rejected:** six horizontal bars (redundant with the stat list), and per-stat colors (one series, one identity).

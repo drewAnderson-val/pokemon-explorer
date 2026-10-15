@@ -70,6 +70,26 @@ describe('CreatureCard', () => {
     expect(screen.getByText('Sleeps in warm sand.')).toBeInTheDocument()
   })
 
+  it('draws a six-stat radar only when expanded, hidden from screen readers', () => {
+    renderCard(false)
+    expect(document.querySelector('[data-radar]')).toBeNull()
+  })
+
+  it('plots the radar from the six stats on a shared scale', () => {
+    renderCard(true)
+    const radar = document.querySelector('[data-radar]')!
+    expect(radar).toHaveAttribute('aria-hidden', 'true')
+    const shape = radar.querySelector('[data-radar-shape]')!
+    const vertices = shape.getAttribute('points')!.trim().split(' ')
+    expect(vertices).toHaveLength(6)
+    // HP 80 of 255 on an 80px radius, straight up from the centre.
+    expect(vertices[0]).toBe(`0.00,${(-(80 / 255) * 80).toFixed(2)}`)
+    // The fill reads --type, so the card itself must provide it.
+    expect(radar.closest('li')!.style.getPropertyValue('--type')).toBe(
+      '#f08030'
+    )
+  })
+
   it('swaps a failed image for the letter fallback', () => {
     const { container } = render(
       <ul>
