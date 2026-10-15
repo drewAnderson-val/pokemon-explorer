@@ -60,7 +60,7 @@ if (isProd) {
 const image = new dockerBuild.Image(
   'image',
   {
-    context: { location: '../frontend' },
+    context: { location: '..' },
     platforms: ['linux/amd64'],
     push: true,
     registries: [

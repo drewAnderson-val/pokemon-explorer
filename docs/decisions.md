@@ -125,3 +125,16 @@
 - Built a hexagon radar of the six stats (SVG from polar coordinates, one fixed 255 scale). In the browser it made
   every expanded card ~210px taller while repeating the numbers the stat list already shows. Removed it to keep
   the card simple; the dotted stat list stays the single view of the stats.
+
+## 2026-10-15: App at the repo root, infra as a subfolder
+
+- **What:** moved everything from `frontend/` to the repo root; `infra/` stays as a subfolder with its own
+  `package.json`. FINNY's original brief moved to `docs/brief.md`; `DESIGN.md` and `FINNY-requirements.md` to `docs/`;
+  the two `AGENTS.md` files merged into the root one.
+- **Why:** it's one app. Reviewers open the repo and see a standard Vite project (`pnpm install && pnpm dev`), and
+  `infra/` exists only to deploy it.
+- **Kept infra in this repo** rather than splitting it out: a separate repo would stop deploys until it exists, and
+  the Workload Identity trust (owner-run bootstrap stack) would need updating to allow the new repo.
+- **Isolation:** the app's ESLint ignores `infra/**`, `.dockerignore` keeps `infra`, `docs` and markdown out of the
+  image, and Pulumi's Docker build context is now the repo root (`..` from `infra/`). CI triggers on everything except
+  `docs/**` and markdown.

@@ -13,7 +13,9 @@ export default [
       'dist-server/**',
       'build/**',
       '*.min.js',
-      '*.d.ts'
+      '*.d.ts',
+      // Separate pnpm project with its own tsconfig; checked with `pnpm types` in infra/.
+      'infra/**'
     ]
   },
 

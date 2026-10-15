@@ -1,6 +1,6 @@
 # Pokemon Explorer: Design Notes ("Battle Box")
 
-A loose guide for styling `frontend/`, not a strict spec. Values below are
+A loose guide for styling the app, not a strict spec. Values below are
 starting points taken from the design canvas (artboards "D · Classic: Battle
 Box (RPG)" and "D · Landing page"). Change anything that doesn't feel right
 once it's in the browser; update this file when you do.

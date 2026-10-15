@@ -3,10 +3,10 @@ name: Deploy
 on:
   push:
     branches: [main]
-    paths: ['frontend/**', 'infra/**', '.github/workflows/deploy.yml', '.github/scripts/**']
+    paths-ignore: ['docs/**', '**/*.md']
   pull_request:
     types: [opened, synchronize, reopened, closed]
-    paths: ['frontend/**', 'infra/**', '.github/workflows/deploy.yml', '.github/scripts/**']
+    paths-ignore: ['docs/**', '**/*.md']
   workflow_dispatch:
 
 permissions:
@@ -23,19 +23,16 @@ jobs:
   check:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
         with:
-          package_json_file: frontend/package.json
+          package_json_file: package.json
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
-          cache-dependency-path: frontend/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm test
