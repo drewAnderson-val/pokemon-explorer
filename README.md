@@ -6,12 +6,21 @@ FINNY frontend take-home: a searchable, infinitely scrolling Pokemon grid with e
 
 | Path | What |
 | --- | --- |
-| [`frontend/`](frontend/) | React + Vite app and Express API ([assignment README](frontend/README.md)) |
+| [`src/`](src/), [`server/`](server/) | React + Vite app and Express API, at the repo root ([assignment brief](docs/brief.md)) |
 | [`infra/`](infra/) | Pulumi (TypeScript) program deploying to Google Cloud Run |
 | [`infra/bootstrap/`](infra/bootstrap/) | One-time Pulumi stack: state bucket, GitHub OIDC, deployer identity |
 | [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) | Lint + build → `pulumi preview` (PRs) / `pulumi up` + smoke test (`main`) |
 | [`.github/workflows/ai-review.yml`](.github/workflows/ai-review.yml) | AI review on every PR: bugs, security, repo rules ([`rules`](.github/review/rules.md)) |
 | [`docs/decisions.md`](docs/decisions.md) | Decision log |
+
+## Run it
+
+```bash
+pnpm install
+pnpm dev        # http://localhost:5173 (API served by the same Vite dev server)
+pnpm test       # Vitest + Testing Library
+pnpm lint && pnpm build && pnpm start   # production build on http://localhost:3000
+```
 
 ## Deployment
 
@@ -27,7 +36,7 @@ The split keeps IAM-admin rights out of CI: the deployer can ship the app but ca
 
 **Pipeline** ([`deploy.yml`](.github/workflows/deploy.yml)):
 
-1. `check`: install, lint, typecheck + production build.
+1. `check`: install, lint, tests, typecheck + production build.
 2. `deploy`: `pulumi preview` on PRs (posted as a PR comment), `pulumi up` on `main`. Pulumi builds the image, pushes it,
    and rolls out a Cloud Run revision pinned to the image digest. The revision only takes traffic once its HTTP startup
    probe on `/api/health` passes.

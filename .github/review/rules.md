@@ -19,7 +19,7 @@ edit a rule here. That's its memory.
 - **Decisions are logged:** a PR that picks between real alternatives (library, architecture, infra shape) should add
   an entry to `docs/decisions.md`. Severity: low.
 
-## `frontend/src/**`
+## `src/**`
 
 - List items and React keys use `id`, never `name` (names repeat). Severity: high.
 - Every fetch handles loading, error and empty states. Severity: medium.
@@ -30,14 +30,14 @@ edit a rule here. That's its memory.
 - No `dangerouslySetInnerHTML` with API data. Severity: critical.
 - Height and weight are formatted, never rendered as raw floats. Severity: low.
 
-## `frontend/server/**`
+## `server/**`
 
 - Query params are validated and bounded (`page >= 1`, `1 <= limit <= 100`, `search` length capped); invalid input
   returns 400, not nonsense. Severity: medium.
 - API routes live in `app.ts` (dev and prod); prod-only concerns in `index.ts`. Severity: low.
 - No route path ends in `z` (Cloud Run reserves them). Severity: high.
 
-## `frontend/src/data/pokemon.json`
+## `src/data/pokemon.json`
 
 - Must not be regenerated (the generator is unseeded). Any large diff here is a bug. Severity: high.
 
