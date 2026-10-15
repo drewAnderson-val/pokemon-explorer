@@ -12,7 +12,9 @@ import { TypeBadge } from './TypeBadge'
 // A creature from the lab: always expanded, and unlike the catalog's
 // placeholder photos the image really is the creature, so it gets alt text.
 export function CreationCard({ creature }: { creature: Pokemon }) {
-  const fileName = `${creature.name.replace(/[^\w-]+/g, '-').toLowerCase()}.png`
+  // Vertex returns JPEG today; take the extension from the data URL anyway.
+  const extension = /^data:image\/(\w+)/.exec(creature.imageUrl)?.[1] ?? 'png'
+  const fileName = `${creature.name.replace(/[^\w-]+/g, '-').toLowerCase()}.${extension === 'jpeg' ? 'jpg' : extension}`
   return (
     <li className="flex flex-col gap-3 rounded-box frame-box bg-box p-3.5">
       <div

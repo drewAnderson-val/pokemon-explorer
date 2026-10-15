@@ -218,3 +218,16 @@
 - **Nothing is stored.** Creations live in the page's state with a download button. Rejected: saving to GCS with a
   shared gallery, which would show strangers' generations to anyone visiting (moderation risk) and add a bucket,
   URLs and a listing endpoint for a feature that doesn't need to persist.
+
+## 2026-10-15: Bootstrap stack actually adopted; billing moved to a credits account
+
+- **The bootstrap stack had no state.** The entry above says its resources were adopted with `pulumi import`, but no
+  `pokemon-explorer-bootstrap` stack existed in the state bucket, so a `pulumi up` would have tried to recreate the
+  bucket, deployer and WIF pool. Ran `pulumi stack init prod` and `pulumi import --file import.json` against
+  `gs://finny-take-home-pulumi-state`: 15 resources adopted with zero diffs, then `pulumi up` created only the Creature
+  Lab's two additions (Vertex AI API, `roles/aiplatform.user` for the runtime account).
+- **Billing for `finny-take-home` moved to a separate billing account with free credits.** Linked by hand (`gcloud
+  billing projects link`) after granting that account `roles/billing.projectManager` on the project; not in Pulumi,
+  since billing links are an owner's call, not deploy config. Rejected: running Vertex in a second project under the
+  credits account, which would need cross-project IAM that neither stack could manage.
+- **Verified live:** `gemini-3.1-flash-lite-image` on the `global` endpoint returns a 1024×1024 JPEG in ~3.5s.

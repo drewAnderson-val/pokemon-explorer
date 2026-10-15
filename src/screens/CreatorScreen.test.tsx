@@ -16,7 +16,7 @@ const creature: CreatedCreature = {
   generation: 10,
   height: 0.6,
   hp: 55,
-  imageUrl: 'data:image/png;base64,AAAA',
+  imageUrl: 'data:image/jpeg;base64,AAAA',
   isLegendary: false,
   name: 'Embercub',
   specialAttack: 90,
@@ -47,7 +47,7 @@ describe('CreatorScreen', () => {
     expect(within(card).getByText('No.1001')).toBeInTheDocument()
     expect(
       within(card).getByRole('link', { name: 'Download image' })
-    ).toHaveAttribute('download', 'embercub.png')
+    ).toHaveAttribute('download', 'embercub.jpg')
 
     const init = fetchMock.mock.calls[0]?.[1]
     expect(init?.method).toBe('POST')
