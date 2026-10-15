@@ -4,7 +4,11 @@ import type { CreatureResponse } from '../src/lib/creature'
 import type { WindowLimiter } from './rate-limit'
 
 import { buildPrompt, parseCreatureRequest, rollCreature } from './create'
-import { ImageBlockedError, type ImageGenerator } from './image-generator'
+import {
+  ImageBlockedError,
+  ImageBusyError,
+  type ImageGenerator
+} from './image-generator'
 
 type CreaturesRouteOptions = {
   // null when the server has no GCP project configured.
@@ -60,6 +64,12 @@ export function creaturesRoute({
         }
         res.json(body)
       } catch (error) {
+        if (error instanceof ImageBusyError) {
+          res.set('Retry-After', '60').status(503).json({
+            error: 'The lab is busy right now. Try again in a minute.'
+          })
+          return
+        }
         if (error instanceof ImageBlockedError) {
           res.status(422).json({
             error: "That creature couldn't be drawn. Try a different idea."

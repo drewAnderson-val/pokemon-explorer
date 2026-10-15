@@ -6,7 +6,11 @@ import express from 'express'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { creaturesRoute } from './creatures-route'
-import { ImageBlockedError, type ImageGenerator } from './image-generator'
+import {
+  ImageBlockedError,
+  ImageBusyError,
+  type ImageGenerator
+} from './image-generator'
 import { createWindowLimiter } from './rate-limit'
 
 const VALID = {
@@ -112,6 +116,18 @@ describe('POST /api/creatures', () => {
       generator: () => Promise.reject(new ImageBlockedError('blocked'))
     })
     expect((await post(VALID)).status).toBe(422)
+  })
+
+  it('maps an exhausted Vertex quota to 503 with Retry-After', async () => {
+    const post = await start({
+      generator: () => Promise.reject(new ImageBusyError('quota'))
+    })
+    const res = await post(VALID)
+    expect(res.status).toBe(503)
+    expect(res.headers.get('retry-after')).toBe('60')
+    expect(await res.json()).toEqual({
+      error: 'The lab is busy right now. Try again in a minute.'
+    })
   })
 
   it('maps other generator failures to 502 and logs them', async () => {

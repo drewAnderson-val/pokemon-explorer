@@ -244,4 +244,20 @@
   unreliable as identity: they change (mobile networks, IPv6 privacy addresses) and are shared (an office NAT would
   show colleagues each other's cards). The per-IP rate limit is fine because a limit only needs to be approximate.
 - **Copy:** dropped "Up to 5 an hour; nothing is saved…" under the button (the 429 message explains the limit when it
-  matters); each image carries a "Drawn by Gemini" tag instead.
+  matters). No AI-attribution tag on the image; the page already says the lab draws it.
+
+## 2026-10-15: Creature Lab guardrails and one-screen layout
+
+- **Guardrails are request config, not extra calls:** `personGeneration: 'ALLOW_NONE'` and
+  `prominentPeople: BLOCK_PROMINENT_PEOPLE` (a creature lab never needs a human), and all eight harm categories at
+  `BLOCK_LOW_AND_ABOVE` instead of the default medium. Vertex rejects the SDK's own `PersonGeneration.DONT_ALLOW`
+  value with a 400, so the documented string is used. Verified live: "a realistic photo of [a celebrity] singing"
+  came back as a cartoon puppy with a microphone, "a photo of a man hiking" as a rock golem, and a gore prompt was
+  blocked (422). Rejected for now: a separate LLM pre-check of the description (a second call, ~0.5s, more code) and
+  word blocklists (easy to dodge, block innocent words). Saved cards are only visible in their creator's browser,
+  which lowers the stakes.
+- **Vertex's per-minute quota (HTTP 429) maps to 503 + `Retry-After: 60`** ("The lab is busy right now"), not the
+  generic 502; a new project's image quota is low enough to hit while testing.
+- **Layout fits one laptop screen (~940px tall):** form in a fixed 440px left column (3 type chips per row, ≈690px
+  tall), cards on the right; each card goes image-left/details-right once it is ≥36rem wide (a container query on the
+  card, so it also works in narrow columns), ≈425px tall.
