@@ -19,7 +19,7 @@ describe('App', () => {
     stubFetch()
     renderWithClient(<App />)
     expect(
-      screen.getByRole('link', { name: 'Start exploring' })
+      screen.getByRole('navigation', { name: 'Start' })
     ).toBeInTheDocument()
   })
 })

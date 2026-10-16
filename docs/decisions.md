@@ -407,3 +407,8 @@ no separate plan document).
 - **Sample cards** in the hero are decorative (`aria-hidden`) with letter art, as designed: the catalog's photos
   aren't the creatures, so real records wouldn't look like cards. Type tiles get an `aria-label` ("Fire, 71
   creatures") because the visible text reads as "Fire71".
+- **Trimmed to the hero (same day).** Kept the nav, wordmark, sample cards, scenery and stats strip; dropped the
+  feature cards, type tiles and "Ready, trainer?" section. The hero's search box became a three-option start menu:
+  Go into battle (`/battle`), Creature Lab (`/create`) and Load your roster (`/explore#team`, the explorer's team
+  panel, with the team's size shown live). With nothing linking in with `?search=`/`?type=` any more, the explorer's
+  URL filters and the summary's per-type counts were removed again; `/api/summary` returns `{ total, generations }`.

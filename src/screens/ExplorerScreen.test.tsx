@@ -8,7 +8,7 @@ import { apiResponse, searchParamOf, stubFetch } from '@/test/fake-api'
 import { setIntersecting } from '@/test/intersection-observer'
 import { renderWithClient } from '@/test/render'
 
-import { ExplorerScreen, initialFilters } from './ExplorerScreen'
+import { ExplorerScreen } from './ExplorerScreen'
 
 // Counts below come from the committed fixture data (src/data/pokemon.json).
 const grid = () => screen.getByRole('list', { name: 'Creatures' })
@@ -25,46 +25,9 @@ async function renderLoaded() {
   return { user, ...view }
 }
 
-afterEach(async () => {
-  window.history.pushState({}, '', '/')
-  await clearCreations()
-})
-
-describe('initialFilters', () => {
-  it('reads search and a case-insensitive type from the URL', () => {
-    expect(initialFilters('?type=fire&search=vel')).toEqual({
-      search: 'vel',
-      type: 'Fire'
-    })
-  })
-
-  it('ignores unknown types and caps long searches', () => {
-    expect(initialFilters(`?type=lava&search=${'x'.repeat(150)}`)).toEqual({
-      search: 'x'.repeat(100),
-      type: null
-    })
-  })
-})
+afterEach(() => clearCreations())
 
 describe('ExplorerScreen', () => {
-  it('opens filtered when the landing page links in with ?type=', async () => {
-    window.history.pushState({}, '', '/explore?type=Fire')
-    const fetchMock = stubFetch()
-    renderWithClient(<ExplorerScreen />)
-    expect(await screen.findByText('71 results')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Fire' })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
-    expect(
-      fetchMock.mock.calls.every(
-        call =>
-          searchParamOf(call, 'type') === 'Fire' ||
-          searchParamOf(call, 'limit') === '1'
-      )
-    ).toBe(true)
-  })
-
   it('shows custom cards from the Creature Lab under a Custom filter', async () => {
     stubFetch()
     await saveCreation({

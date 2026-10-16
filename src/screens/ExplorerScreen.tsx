@@ -14,7 +14,6 @@ import { useCatalogTotal, usePokemonPages } from '@/hooks/usePokemonPages'
 import { useSlashToFocus } from '@/hooks/useSlashToFocus'
 import { useTeam } from '@/hooks/useTeam'
 import {
-  MAX_SEARCH_LENGTH,
   type Pokemon,
   POKEMON_TYPES,
   type PokemonType,
@@ -30,9 +29,8 @@ const FIRST_PAGE_SKELETONS = 10
 const MORE_SKELETONS = 4
 
 export function ExplorerScreen() {
-  const [initial] = useState(() => initialFilters(window.location.search))
-  const [searchInput, setSearchInput] = useState(initial.search)
-  const [type, setType] = useState<null | PokemonType>(initial.type)
+  const [searchInput, setSearchInput] = useState('')
+  const [type, setType] = useState<null | PokemonType>(null)
   // "Custom" shows the cards made in the Creature Lab instead of the catalog.
   const [custom, setCustom] = useState(false)
   const [sort, setSort] = useState<SortKey>('id')
@@ -252,15 +250,4 @@ export function ExplorerScreen() {
       )}
     </main>
   )
-}
-
-// The landing page links in with `?search=` and `?type=`; read once on load.
-// Unknown types are ignored and a search is capped like the input's own.
-export function initialFilters(query: string) {
-  const params = new URLSearchParams(query)
-  const wanted = params.get('type')?.toLowerCase()
-  return {
-    search: (params.get('search') ?? '').slice(0, MAX_SEARCH_LENGTH),
-    type: POKEMON_TYPES.find(t => t.toLowerCase() === wanted) ?? null
-  }
 }
