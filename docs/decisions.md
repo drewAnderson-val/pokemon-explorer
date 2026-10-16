@@ -382,3 +382,14 @@ no separate plan document).
   button and the type-badge marquee: the menu now does the navigating.
 - **Deviation:** the footer sits on a navy pill. White 13px text straight on the hills (as drawn) is ~3:1, under
   WCAG's 4.5:1. Hill colors use the app's existing hill tokens rather than the design's near-identical greens.
+
+## 2026-10-15: "▶ Battle with X" always sends out X
+
+- **Bug:** `/battle?id=N` only used N to start an *empty* team. With anyone already on the team, ▶ Battle on a card
+  (catalog or custom) quietly sent out the existing lead instead. Found on the PR preview with a custom card.
+- **Fix:** `leadWith(team, creature)` puts X first (the battle sends out the first healthy member): moved up if it's
+  on the team, added at the front if there's room. The battle waits until X leads before finding a wild creature, so
+  it can't start with the old lead.
+- **Full team without X:** a message ("Your team is full, so X can't join") with "Battle with my team" or back to the
+  explorer. Rejected: silently replacing a member (loses their levels) or battling X as an unsaved guest (the battle
+  saves HP/XP back to team members by uid).

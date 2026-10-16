@@ -6,6 +6,7 @@ import { makeCreature, makeFighter } from '@/test/battle'
 import {
   addMember,
   hasCreature,
+  leadWith,
   memberHp,
   newMember,
   parseTeam,
@@ -47,6 +48,31 @@ describe('team model', () => {
     team = removeMember(team, 'm0')
     expect(team.map(m => m.uid)).not.toContain('m0')
     expect(restAll(team).every(m => m.hp === null)).toBe(true)
+  })
+
+  it('leads with the picked creature: moves it up, adds it, or leaves a full team', () => {
+    const pick = makeCreature({ id: 9 })
+    const team = [
+      member('a', { creatureId: 1 }),
+      member('b', { creatureId: 9 }),
+      member('c', { creatureId: 3 })
+    ]
+    expect(leadWith(team, pick, 'new').map(m => m.uid)).toEqual(['b', 'a', 'c'])
+    const leading = leadWith(team, pick, 'new')
+    expect(leadWith(leading, pick, 'x')).toBe(leading)
+
+    const other = [member('a', { creatureId: 1 })]
+    expect(
+      leadWith(other, pick, 'new').map(m => [m.uid, m.creatureId])
+    ).toEqual([
+      ['new', 9],
+      ['a', 1]
+    ])
+
+    const full = Array.from({ length: MAX_TEAM }, (_, i) =>
+      member(`m${i}`, { creatureId: i + 20 })
+    )
+    expect(leadWith(full, pick, 'new')).toBe(full)
   })
 
   it("won't add a creature that's already on the team", () => {

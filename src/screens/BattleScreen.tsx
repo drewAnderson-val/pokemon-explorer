@@ -12,15 +12,16 @@ import { useWildFighter } from '@/hooks/useWildFighter'
 import { createFighter, type Rng } from '@/lib/battle/engine'
 import { unlockAudio } from '@/lib/sound'
 import {
-  addMember,
+  hasCreature,
+  isTeamFull,
+  leadWith,
   makeUid,
-  newMember,
   restAll,
   saveBattle
 } from '@/lib/team/team'
 
 type BattleScreenProps = {
-  // From `?id=N` (the ▶ Battle link); used only to start an empty team.
+  // From `?id=N` (the ▶ Battle link): that creature leads this battle.
   playerId: null | number
   rng?: Rng
 }
@@ -63,23 +64,31 @@ function BattleLoader({
 }) {
   const [team, setTeam] = useTeam()
   const [round, setRound] = useState(0)
-  const starterId = team.length === 0 ? playerId : null
-  const starter = useQuery({
-    ...creatureQuery(starterId ?? 0),
-    enabled: starterId !== null
+  const [fullTeamOk, setFullTeamOk] = useState(false)
+  const pick = useQuery({
+    ...creatureQuery(playerId ?? 0),
+    enabled: playerId !== null
   })
 
-  // First visit from a card: that creature becomes the team. The updater
-  // re-checks emptiness, so a double effect can't add it twice.
+  // "▶ Battle with X": X leads, joining the team if there's room. leadWith
+  // is a no-op once X is in front, so a double effect can't add it twice.
   useEffect(() => {
-    if (!starter.data) return
-    const creature = starter.data
-    setTeam(current =>
-      current.length > 0
-        ? current
-        : addMember(current, newMember(creature, makeUid()))
-    )
-  }, [setTeam, starter.data])
+    if (!pick.data) return
+    const creature = pick.data
+    setTeam(current => leadWith(current, creature, makeUid()))
+  }, [setTeam, pick.data])
+
+  // A full team without X can't take it: say so rather than quietly battling
+  // with someone else. Otherwise wait until X is in front before starting.
+  const pickBlocked =
+    pick.data !== undefined &&
+    isTeamFull(team) &&
+    !hasCreature(team, pick.data.id)
+  const pickPending =
+    playerId !== null &&
+    !pick.isError &&
+    !pickBlocked &&
+    team[0]?.creatureId !== playerId
 
   const { creatures, isError, isPending, retry } = useTeamCreatures(team)
   // Members whose creature is no longer on file sit this one out.
@@ -95,7 +104,12 @@ function BattleLoader({
         ]
       : []
   })
-  const ready = team.length > 0 && !isPending && !isError
+  const ready =
+    team.length > 0 &&
+    !isPending &&
+    !isError &&
+    !pickPending &&
+    (!pickBlocked || fullTeamOk)
   const canFight = party.some(fighter => fighter.hp > 0)
   const wild = useWildFighter({
     enabled: ready && canFight,
@@ -120,8 +134,26 @@ function BattleLoader({
     )
   }
   if (team.length === 0) {
-    if (starterId !== null && !starter.isError) return <Searching />
+    if (playerId !== null && !pick.isError) return <Searching />
     return <NotFound />
+  }
+  if (pickBlocked && !fullTeamOk) {
+    return (
+      <DialogBox className="flex flex-col items-center gap-4 text-center">
+        <p className="text-body-lg">
+          Your team is full, so {pick.data?.name} can't join. Make room in the
+          explorer&apos;s team bar, or battle with your team.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Button onClick={() => setFullTeamOk(true)}>
+            Battle with my team
+          </Button>
+          <a className={buttonClass('secondary')} href="/explore">
+            Back to explorer
+          </a>
+        </div>
+      </DialogBox>
+    )
   }
   if (isError || wild.isError) {
     return (
