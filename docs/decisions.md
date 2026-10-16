@@ -412,3 +412,18 @@ no separate plan document).
   Go into battle (`/battle`), Creature Lab (`/create`) and Load your roster (`/explore#team`, the explorer's team
   panel, with the team's size shown live). With nothing linking in with `?search=`/`?type=` any more, the explorer's
   URL filters and the summary's per-type counts were removed again; `/api/summary` returns `{ total, generations }`.
+
+## 2026-10-15: The battle screen is a handheld console (desktop), with a four-green "Classic" screen
+
+- **What:** on md+ the battle sits inside a landscape handheld: D-pad and SELECT/START left, the screen in a bezel,
+  A/B right. On phones the shell disappears and the battle renders as before. A **Classic** toggle (next to Sound and
+  Timing, saved in settings, on by default) posterises the whole screen to the original four greens with an SVG
+  filter, so random catalog photos and Gemini art all read as one consistent "sprite" style; off shows full color.
+- **One set of controls:** the D-pad/A/B press the keys the keyboard would on whatever the battle has focused
+  (arrows; A clicks the focused control or sends Enter; B is Escape), so the battle logic has no second input path.
+  They keep focus in the battle (`pointerdown` default prevented) and stay out of the tab order and accessibility tree:
+  keyboard and screen-reader users already have the real controls.
+- **Landscape, not a portrait handheld:** the battle is wide (scene over a message box and a 2×2 menu); a portrait
+  device on a desktop would shrink it to fit. Unbranded ("Pocket Explorer"): the repo is public.
+- **Rejected for now:** pixelating the photos (needs canvas or a resize service per image; the 4-tone posterise
+  already sells the look) and working START/SELECT buttons (no battle action maps to them).

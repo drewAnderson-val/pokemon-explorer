@@ -149,6 +149,32 @@ describe('BattleScreen', () => {
     expect(screen.getByRole('button', { name: /Catch/ })).toHaveFocus()
   })
 
+  it('plays with the handheld D-pad and A/B like the keyboard', async () => {
+    await open(1)
+    const control = (key: string) =>
+      document.querySelector<HTMLButtonElement>(`[data-control="${key}"]`)!
+    await userEvent.click(control('ArrowRight'))
+    expect(screen.getByRole('button', { name: 'Team' })).toHaveFocus()
+    await userEvent.click(control('ArrowLeft'))
+    expect(screen.getByRole('button', { name: 'Fight' })).toHaveFocus()
+
+    await userEvent.click(control('A')) // FIGHT opens the move list
+    expect(screen.getByRole('group', { name: /move/i })).toBeInTheDocument()
+    await userEvent.click(control('B')) // back to the main menu
+    expect(screen.getByRole('button', { name: 'Fight' })).toHaveFocus()
+  })
+
+  it('switches the screen between classic greens and color', async () => {
+    await open(1)
+    const screenEl = () => document.querySelector('[data-classic]')
+    expect(screenEl()).not.toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: 'Classic' }))
+    expect(screenEl()).toBeNull()
+    expect(localStorage.getItem(SETTINGS_STORAGE_KEY)).toContain(
+      '"classic":false'
+    )
+  })
+
   it('saves HP after every turn', async () => {
     await open(1)
     await userEvent.keyboard('{Enter}{ArrowDown}{Enter}') // FIGHT, Quick Tackle

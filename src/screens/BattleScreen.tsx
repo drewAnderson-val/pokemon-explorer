@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
 import { BattleArena } from '@/components/battle/BattleArena'
+import { Handheld } from '@/components/battle/Handheld'
 import { DialogBox } from '@/components/DialogBox'
 import { Button, buttonClass } from '@/components/ui/button'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
@@ -30,8 +31,10 @@ export function BattleScreen({
   playerId,
   rng = Math.random
 }: BattleScreenProps) {
+  const [settings] = useSettings()
   return (
-    <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 pt-6 pb-16 xs:px-6 lg:pt-10">
+    // Wider from md up: the handheld adds a D-pad and A/B either side.
+    <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 pt-6 pb-16 xs:px-6 md:max-w-[1240px] lg:pt-10">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-heading font-bold uppercase">Battle</h1>
         <div className="flex flex-wrap items-center gap-3">
@@ -44,7 +47,9 @@ export function BattleScreen({
           </a>
         </div>
       </header>
-      <BattleLoader playerId={playerId} rng={rng} />
+      <Handheld classic={settings.classic}>
+        <BattleLoader playerId={playerId} rng={rng} />
+      </Handheld>
     </main>
   )
 }
@@ -256,6 +261,21 @@ function SettingsToggles() {
       >
         <span aria-hidden>⏱</span>
         Timing
+      </button>
+      <button
+        aria-pressed={settings.classic}
+        className={toggleClass(settings.classic)}
+        onClick={() =>
+          setSettings(current => ({ ...current, classic: !current.classic }))
+        }
+        title="The battle screen in four greens"
+        type="button"
+      >
+        <span
+          aria-hidden
+          className="size-3 border-2 border-current bg-[#8bac0f]"
+        />
+        Classic
       </button>
     </div>
   )

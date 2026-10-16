@@ -2,21 +2,27 @@ import { useSyncExternalStore } from 'react'
 
 import { createLocalStore } from '@/lib/localStore'
 
-export type Settings = { sound: boolean; timing: boolean }
+// classic: the battle screen in the original handheld's four greens.
+export type Settings = { classic: boolean; sound: boolean; timing: boolean }
 
 export const SETTINGS_STORAGE_KEY = 'pokemon-explorer:settings'
 
 // Sound starts off: pages that make noise unasked are a nuisance.
-const DEFAULTS: Settings = { sound: false, timing: true }
+const DEFAULTS: Settings = { classic: true, sound: false, timing: true }
 
+const flag = (value: unknown, fallback: boolean) =>
+  typeof value === 'boolean' ? value : fallback
+
+// Saves from before a setting existed keep their other choices.
 export function parseSettings(raw: null | string): Settings {
   try {
     const data: unknown = raw ? JSON.parse(raw) : null
     if (typeof data !== 'object' || data === null) return DEFAULTS
-    const { sound, timing } = data as Record<string, unknown>
+    const { classic, sound, timing } = data as Record<string, unknown>
     return {
-      sound: typeof sound === 'boolean' ? sound : DEFAULTS.sound,
-      timing: typeof timing === 'boolean' ? timing : DEFAULTS.timing
+      classic: flag(classic, DEFAULTS.classic),
+      sound: flag(sound, DEFAULTS.sound),
+      timing: flag(timing, DEFAULTS.timing)
     }
   } catch {
     return DEFAULTS
