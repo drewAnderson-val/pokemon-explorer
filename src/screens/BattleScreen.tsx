@@ -58,7 +58,7 @@ export function BattleScreen({
             onClick={() => void fullscreen.toggle()}
             type="button"
           >
-            Exit full screen
+            Exit full screen (Esc)
           </button>
         )}
         <Handheld classic={settings.classic}>

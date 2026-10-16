@@ -1,14 +1,9 @@
 import { type RefObject, useEffect, useState } from 'react'
 
-// Keyboard Lock (Chromium): lets the page keep Escape while full screen.
-type LockableNavigator = Navigator & {
-  keyboard?: { lock?: (keys: string[]) => Promise<void> }
-}
-
-// Full screen for one element. Escape is the battle's "back", so where the
-// browser allows it we keep Escape (hold it to leave full screen instead);
-// elsewhere Escape leaves full screen as usual. `supported` is false where
-// elements can't go full screen (e.g. iPhone Safari), so callers hide the button.
+// Full screen for one element. Escape leaves full screen as everywhere else
+// (keeping Escape for the game via Keyboard Lock meant *holding* it to leave,
+// which read as "exit doesn't work"). `supported` is false where elements
+// can't go full screen (e.g. iPhone Safari), so callers hide the button.
 export function useFullscreen(ref: RefObject<HTMLElement | null>) {
   const [active, setActive] = useState(false)
 
@@ -26,12 +21,8 @@ export function useFullscreen(ref: RefObject<HTMLElement | null>) {
   // page just stays as it is.
   const toggle = async () => {
     try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen()
-        return
-      }
-      await ref.current?.requestFullscreen()
-      await (navigator as LockableNavigator).keyboard?.lock?.(['Escape'])
+      if (document.fullscreenElement) await document.exitFullscreen()
+      else await ref.current?.requestFullscreen()
     } catch (error) {
       console.warn('Full screen was not available', error)
     }

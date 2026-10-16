@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -170,6 +170,30 @@ describe('BattleScreen', () => {
     expect(
       screen.queryByRole('button', { name: 'Full screen' })
     ).not.toBeInTheDocument()
+  })
+
+  it('leaves full screen from the Exit button', async () => {
+    await open(1)
+    const stage = document.querySelector('.battle-stage')!
+    // Simulate the browser entering full screen on the stage.
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      value: stage
+    })
+    const exit = vi.fn(() => Promise.resolve())
+    document.exitFullscreen = exit
+    act(() => {
+      document.dispatchEvent(new Event('fullscreenchange'))
+    })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Exit full screen (Esc)' })
+    )
+    expect(exit).toHaveBeenCalledOnce()
+
+    // @ts-expect-error jsdom has none of these; remove the stubs.
+    delete document.fullscreenElement
+    // @ts-expect-error likewise.
+    delete document.exitFullscreen
   })
 
   it('puts the battle stage full screen', async () => {

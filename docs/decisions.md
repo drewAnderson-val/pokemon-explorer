@@ -440,7 +440,8 @@ no separate plan document).
   whole bottom row (CSS `:has()`), so each entry fits on one line. No battle logic changed.
 - **Full screen:** a button (only where `document.fullscreenEnabled`, so not iPhone Safari) zooms in on the game:
   just the bezel and screen, as large as the display allows (the body, D-pad, buttons, logo and speaker hide; the
-  keyboard plays), centred on dark. Escape is the battle's "back", so where Keyboard Lock exists
-  (Chromium) the page keeps Escape and you hold it to leave; an "Exit full screen" button is always shown. A refused
-  request (no user gesture) leaves the page as it was. Not verified end to end from automation: Chrome refuses
-  full screen for synthetic clicks ("not granted"); covered by a unit test of the request.
+  keyboard plays), centred on dark. Esc leaves full screen, as everywhere else, and an "Exit full screen (Esc)"
+  button sits top-right. Tried and dropped: Keyboard Lock to keep Esc as the battle's "back" in full screen. Chrome
+  then needs Esc *held* to leave, which in use read as "exit doesn't work". A refused request (no user gesture)
+  leaves the page as it was. Not verifiable from automation: Chrome refuses full screen for synthetic clicks and
+  script ("not granted", "Permissions check failed"); entering and exiting are covered by unit tests.
