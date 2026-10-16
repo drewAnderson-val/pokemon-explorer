@@ -32,6 +32,7 @@ import { TimingBar } from './TimingBar'
 type BattleArenaProps = {
   enemy: Fighter
   onBattleAgain: () => void
+  onChangeTeam?: () => void
   // Called after every turn so HP, XP and catches survive a closed tab.
   onSave: (state: BattleState) => void
   party: Fighter[]
@@ -52,6 +53,7 @@ const caption = (text: string) => (
 export function BattleArena({
   enemy,
   onBattleAgain,
+  onChangeTeam,
   onSave,
   party,
   rng,
@@ -284,13 +286,22 @@ export function BattleArena({
             <Button onClick={onBattleAgain} ref={endRef}>
               Battle again
             </Button>
+            {onChangeTeam && (
+              <Button onClick={onChangeTeam} variant="secondary">
+                Change team
+              </Button>
+            )}
             <a className={buttonClass('secondary')} href="/explore">
               Back to explorer
             </a>
           </div>
         </DialogBox>
       ) : (
-        <div className="grid gap-3 sm:min-h-68 sm:grid-cols-2">
+        // The handheld reshapes it (globals.css).
+        <div
+          className="grid gap-3 sm:min-h-68 sm:grid-cols-2"
+          data-battle-console
+        >
           <DialogBox
             className="min-h-28 sm:min-h-32"
             showMore={canAdvance && typed.done}

@@ -425,6 +425,63 @@
   }
 }
 
+/* Inside the handheld's glass the battle has no frame of its own: the bezel is
+   the frame. Phones (no shell) keep it. */
+@media (width >= 48rem) {
+  /* The glass has a fixed shape (Handheld sets its height): the scene takes
+     whatever the text box and menu leave, so opening a longer menu squeezes
+     the scene instead of growing the console. */
+  .handheld-screen > div > [aria-label='Battle'],
+  .handheld-screen > div > [data-battle-message] {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+  .handheld-screen [data-battle-scene] {
+    flex: 1 1 0;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+  .handheld-screen [data-battle-console] {
+    flex: none;
+    min-height: 0;
+  }
+  /* Like the real games: picking a move or a team member takes the whole
+     bottom of the screen, so names and stats fit on one line. */
+  .handheld-screen
+    [data-battle-console]:has([aria-label='Moves'], [aria-label='Team']) {
+    grid-template-columns: 1fr;
+  }
+  .handheld-screen
+    [data-battle-console]:has([aria-label='Moves'], [aria-label='Team'])
+    > :first-child {
+    display: none;
+  }
+}
+
+/* Full screen zooms in on the game: just the bezel and screen, as large as the
+   display allows, centred on dark. The keyboard plays, so the D-pad, buttons,
+   logo and speaker step aside. The bezel is ~1.03× as tall as it is wide. */
+.battle-stage:fullscreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #1d1d1d;
+}
+.battle-stage:fullscreen .handheld-device {
+  width: min(calc((100svh - 32px) / 1.03), calc(100vw - 32px));
+}
+.battle-stage:fullscreen .handheld-body {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.battle-stage:fullscreen [data-shell-extra] {
+  display: none;
+}
+
 /* Spec: with reduced motion, every animation is off and state changes stay instant. */
 @media (prefers-reduced-motion: reduce) {
   *,

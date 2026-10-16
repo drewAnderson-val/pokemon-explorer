@@ -412,3 +412,44 @@ no separate plan document).
   Go into battle (`/battle`), Creature Lab (`/create`) and Load your roster (`/explore#team`, the explorer's team
   panel, with the team's size shown live). With nothing linking in with `?search=`/`?type=` any more, the explorer's
   URL filters and the summary's per-type counts were removed again; `/api/summary` returns `{ total, generations }`.
+
+## 2026-10-15: The battle screen is a handheld console (desktop), with a four-green "Classic" screen
+
+- **What:** on md+ the battle sits inside a portrait handheld modelled on the original: power strip, a dark bezel
+  with the magenta/navy stripes and battery LED, the italic logo, a cross D-pad in a round recess, slanted A/B,
+  angled SELECT/START and speaker slots, big rounded bottom-right corner. On phones the shell disappears and the
+  battle renders as before. A **Classic** toggle (next to Sound and
+  Timing, saved in settings, on by default) posterises the whole screen to the original four greens with an SVG
+  filter, so random catalog photos and Gemini art all read as one consistent "sprite" style; off shows full color.
+- **One set of controls:** the D-pad/A/B press the keys the keyboard would on whatever the battle has focused
+  (arrows; A clicks the focused control or sends Enter; B is Escape), so the battle logic has no second input path.
+  They keep focus in the battle (`pointerdown` default prevented) and stay out of the tab order and accessibility tree:
+  keyboard and screen-reader users already have the real controls.
+- **Portrait, sized from the window height:** a first landscape version read as a generic slab, not the console, and
+  ran past the bottom of the window. Now the device's width is `(100svh − 36px) / 1.74` (its measured height/width
+  ratio), clamped 440–600px, so the whole console fits; on lg the title and settings move beside it. The battle is
+  laid out at 520px and fitted to the glass with CSS `zoom` (scales layout, hit-testing and focus, unlike
+  `transform`). Inside the shell the scene goes 4:3 and the text box shrinks (`data-battle-scene`,
+  `data-battle-console` in globals.css), so the glass is near-square like the real 160×144 screen. Shell sizes use
+  `cqw` so the proportions hold at any width. Unbranded ("Pocket Explorer"): the repo is public.
+- **Rejected for now:** pixelating the photos (needs canvas or a resize service per image; the 4-tone posterise
+  already sells the look) and working START/SELECT buttons (no battle action maps to them).
+- **Fixed screen shape (follow-up):** opening FIGHT grew the battle (four moves with stats plus BACK), so the glass
+  stopped being square and the console ran off the window. The glass is now a fixed 520×540 (before zoom); the
+  scene flexes into what the text box and menu leave, and, like the real games, the Moves and Team menus take the
+  whole bottom row (CSS `:has()`), so each entry fits on one line. No battle logic changed.
+- **Full screen:** a button (only where `document.fullscreenEnabled`, so not iPhone Safari) zooms in on the game:
+  just the bezel and screen, as large as the display allows (the body, D-pad, buttons, logo and speaker hide; the
+  keyboard plays), centred on dark. Esc leaves full screen, as everywhere else, and an "Exit full screen (Esc)"
+  button sits top-right. Tried and dropped: Keyboard Lock to keep Esc as the battle's "back" in full screen. Chrome
+  then needs Esc *held* to leave, which in use read as "exit doesn't work". A refused request (no user gesture)
+  leaves the page as it was. Not verifiable from automation: Chrome refuses full screen for synthetic clicks and
+  script ("not granted", "Permissions check failed"); entering and exiting are covered by unit tests.
+- **Choosing the team on the console:** an empty team used to dead-end with "No creature to send out!" and a link
+  back to the explorer. The battle now opens a team picker on the handheld's screen: a tab bar on top (TEAM n/6 ·
+  ALL · CUSTOM · TYPE, ◀▶ to switch), a list (▲▼, A adds or removes, same team as the explorer's team bar) and
+  START, which the START pill now presses. It also opens from "Change team" at the end of a battle and on the
+  tired / team-full / not-on-file messages. Left out: text search (typing on a D-pad is clunky; the explorer keeps
+  it) and a BACK from the picker (the arena unmounts while picking, so back would just start a new battle, the same
+  as START). Pressing START also drops a pending `▶ Battle with X` pick, so a changed team can't wait forever for X
+  to lead. Messages and the picker now fill the glass like the battle, so the screen no longer jumps.

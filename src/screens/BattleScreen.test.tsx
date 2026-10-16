@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -149,6 +149,82 @@ describe('BattleScreen', () => {
     expect(screen.getByRole('button', { name: /Catch/ })).toHaveFocus()
   })
 
+  it('plays with the handheld D-pad and A/B like the keyboard', async () => {
+    await open(1)
+    const control = (key: string) =>
+      document.querySelector<HTMLButtonElement>(`[data-control="${key}"]`)!
+    await userEvent.click(control('ArrowRight'))
+    expect(screen.getByRole('button', { name: 'Team' })).toHaveFocus()
+    await userEvent.click(control('ArrowLeft'))
+    expect(screen.getByRole('button', { name: 'Fight' })).toHaveFocus()
+
+    await userEvent.click(control('A')) // FIGHT opens the move list
+    expect(screen.getByRole('group', { name: /move/i })).toBeInTheDocument()
+    await userEvent.click(control('B')) // back to the main menu
+    expect(screen.getByRole('button', { name: 'Fight' })).toHaveFocus()
+  })
+
+  it('offers full screen only where the browser supports it', async () => {
+    await open(1)
+    // jsdom has no Fullscreen API, like iPhone Safari: no button.
+    expect(
+      screen.queryByRole('button', { name: 'Full screen' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('leaves full screen from the Exit button', async () => {
+    await open(1)
+    const stage = document.querySelector('.battle-stage')!
+    // Simulate the browser entering full screen on the stage.
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      value: stage
+    })
+    const exit = vi.fn(() => Promise.resolve())
+    document.exitFullscreen = exit
+    act(() => {
+      document.dispatchEvent(new Event('fullscreenchange'))
+    })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Exit full screen (Esc)' })
+    )
+    expect(exit).toHaveBeenCalledOnce()
+
+    // @ts-expect-error jsdom has none of these; remove the stubs.
+    delete document.fullscreenElement
+    // @ts-expect-error likewise.
+    delete document.exitFullscreen
+  })
+
+  it('puts the battle stage full screen', async () => {
+    // jsdom has no Fullscreen API: add just enough of it for this test.
+    Object.defineProperty(document, 'fullscreenEnabled', {
+      configurable: true,
+      value: true
+    })
+    const request = vi.fn(() => Promise.resolve())
+    HTMLElement.prototype.requestFullscreen = request
+    await open(1)
+    await userEvent.click(screen.getByRole('button', { name: 'Full screen' }))
+    expect(request).toHaveBeenCalledOnce()
+    expect(request.mock.contexts[0]).toHaveClass('battle-stage')
+    // @ts-expect-error jsdom has no requestFullscreen; remove the stub.
+    delete HTMLElement.prototype.requestFullscreen
+    // @ts-expect-error likewise for fullscreenEnabled.
+    delete document.fullscreenEnabled
+  })
+
+  it('switches the screen between classic greens and color', async () => {
+    await open(1)
+    const screenEl = () => document.querySelector('[data-classic]')
+    expect(screenEl()).not.toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: 'Classic' }))
+    expect(screenEl()).toBeNull()
+    expect(localStorage.getItem(SETTINGS_STORAGE_KEY)).toContain(
+      '"classic":false'
+    )
+  })
+
   it('saves HP after every turn', async () => {
     await open(1)
     await userEvent.keyboard('{Enter}{ArrowDown}{Enter}') // FIGHT, Quick Tackle
@@ -283,20 +359,82 @@ describe('BattleScreen', () => {
     })
   })
 
-  it('explains an empty team', async () => {
-    stubFetch()
-    renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
-    expect(
-      await screen.findByText(/No creature to send out!/)
-    ).toBeInTheDocument()
-  })
+  describe('team picker', () => {
+    const tab = (name: RegExp | string) => screen.getByRole('tab', { name })
+    const row = (name: RegExp | string) => screen.findByRole('button', { name })
 
-  it('explains a creature that is not on file', async () => {
-    stubFetch()
-    renderWithClient(<BattleScreen playerId={5000} rng={alwaysZero} />)
-    expect(
-      await screen.findByText(/No creature to send out!/)
-    ).toBeInTheDocument()
+    it('starts an empty team on the ALL list, then battles from START', async () => {
+      stubFetch()
+      renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
+      expect(
+        await screen.findByRole('group', { name: 'Choose your team' })
+      ).toBeInTheDocument()
+      expect(tab('all')).toHaveAttribute('aria-selected', 'true')
+      const start = screen.getByRole('button', { name: 'Start' })
+      expect(start).toBeDisabled()
+
+      await userEvent.click(await row(/Geovanni/))
+      expect(savedTeam().map(m => m.creatureId)).toEqual([1])
+      expect(tab('Team 1/6')).toBeInTheDocument()
+
+      await userEvent.click(start)
+      await expectMessage('A wild Britney appeared!')
+    })
+
+    it('plays with the D-pad: ◀▶ lists, ▲▼ rows, A toggles, START', async () => {
+      stubFetch()
+      renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: /Geovanni/ })).toHaveFocus()
+      )
+      const control = (key: string) =>
+        document.querySelector<HTMLButtonElement>(`[data-control="${key}"]`)!
+      await userEvent.click(control('ArrowDown'))
+      expect(screen.getByRole('button', { name: /Britney/ })).toHaveFocus()
+      await userEvent.click(control('A'))
+      await userEvent.click(control('ArrowUp'))
+      await userEvent.click(control('A'))
+      expect(savedTeam().map(m => m.creatureId)).toEqual([2, 1])
+
+      // ◀ from ALL is TEAM, where A takes a member off.
+      await userEvent.click(control('ArrowLeft'))
+      expect(tab('Team 2/6')).toHaveAttribute('aria-selected', 'true')
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: /Britney/ })).toHaveFocus()
+      )
+      await userEvent.click(control('A'))
+      expect(savedTeam().map(m => m.creatureId)).toEqual([1])
+
+      await userEvent.click(control('Start'))
+      await expectMessage('A wild Britney appeared!')
+    })
+
+    it('shows the picker when a ▶ Battle creature is not on file', async () => {
+      stubFetch()
+      renderWithClient(<BattleScreen playerId={5000} rng={alwaysZero} />)
+      expect(
+        await screen.findByRole('group', { name: 'Choose your team' })
+      ).toBeInTheDocument()
+    })
+
+    it('changes the team after a battle', async () => {
+      await open(1)
+      await userEvent.click(screen.getByRole('button', { name: 'Run' }))
+      await readUntil('Got away safely!')
+      // Enter past the last message to the end screen.
+      while (!screen.queryByRole('button', { name: 'Change team' })) {
+        await userEvent.keyboard('{Enter}')
+      }
+      await userEvent.click(screen.getByRole('button', { name: 'Change team' }))
+      expect(tab('Team 1/6')).toHaveAttribute('aria-selected', 'true')
+      await userEvent.click(await row(/Geovanni/))
+      expect(savedTeam()).toEqual([])
+      await userEvent.click(tab('all'))
+      await userEvent.click(await row(/Hershel/))
+      await userEvent.click(screen.getByRole('button', { name: 'Start' }))
+      await expectMessage(/A wild .+ appeared!/)
+      expect(savedTeam().map(m => m.creatureId)).toEqual([3])
+    })
   })
 })
 

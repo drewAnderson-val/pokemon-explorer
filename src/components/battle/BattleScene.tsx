@@ -80,6 +80,8 @@ export function BattleScene({
         'relative aspect-square overflow-hidden rounded-inset frame-inset xs:aspect-[4/3] sm:aspect-[16/9]',
         crit && 'animate-scene-shake'
       )}
+      // The handheld reshapes it (globals.css).
+      data-battle-scene
     >
       <div
         aria-hidden
