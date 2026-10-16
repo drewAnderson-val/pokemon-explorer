@@ -33,11 +33,12 @@ export function BattleScreen({
 }: BattleScreenProps) {
   const [settings] = useSettings()
   return (
-    // Wider from md up: the handheld adds a D-pad and A/B either side.
-    <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 pt-6 pb-16 xs:px-6 md:max-w-[1240px] lg:pt-10">
-      <header className="flex flex-wrap items-center justify-between gap-3">
+    // lg: the title and settings sit beside the handheld, which is sized from
+    // the window height, so the whole console fits on screen.
+    <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 pt-6 pb-16 xs:px-6 md:max-w-[1240px] lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start lg:gap-8 lg:py-3">
+      <header className="flex flex-wrap items-center justify-between gap-3 lg:flex-col lg:items-start lg:pt-6">
         <h1 className="text-heading font-bold uppercase">Battle</h1>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <SettingsToggles />
           <a
             className="inline-flex h-11 items-center text-label font-bold uppercase focus-visible:focus-ring"

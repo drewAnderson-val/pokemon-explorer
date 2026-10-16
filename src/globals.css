@@ -425,6 +425,22 @@
   }
 }
 
+/* Inside the handheld's glass the battle has no frame of its own: the bezel is
+   the frame. Phones (no shell) keep it. */
+@media (width >= 48rem) {
+  .handheld-screen > div > [aria-label='Battle'] {
+    border: 0;
+    border-radius: 0;
+  }
+  /* Shaped like the real screen (160×144): a big scene over a short text box. */
+  .handheld-screen [data-battle-scene] {
+    aspect-ratio: 4 / 3;
+  }
+  .handheld-screen [data-battle-console] {
+    min-height: 0;
+  }
+}
+
 /* Spec: with reduced motion, every animation is off and state changes stay instant. */
 @media (prefers-reduced-motion: reduce) {
   *,

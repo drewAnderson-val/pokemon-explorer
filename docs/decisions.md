@@ -415,15 +415,22 @@ no separate plan document).
 
 ## 2026-10-15: The battle screen is a handheld console (desktop), with a four-green "Classic" screen
 
-- **What:** on md+ the battle sits inside a landscape handheld: D-pad and SELECT/START left, the screen in a bezel,
-  A/B right. On phones the shell disappears and the battle renders as before. A **Classic** toggle (next to Sound and
+- **What:** on md+ the battle sits inside a portrait handheld modelled on the original: power strip, a dark bezel
+  with the magenta/navy stripes and battery LED, the italic logo, a cross D-pad in a round recess, slanted A/B,
+  angled SELECT/START and speaker slots, big rounded bottom-right corner. On phones the shell disappears and the
+  battle renders as before. A **Classic** toggle (next to Sound and
   Timing, saved in settings, on by default) posterises the whole screen to the original four greens with an SVG
   filter, so random catalog photos and Gemini art all read as one consistent "sprite" style; off shows full color.
 - **One set of controls:** the D-pad/A/B press the keys the keyboard would on whatever the battle has focused
   (arrows; A clicks the focused control or sends Enter; B is Escape), so the battle logic has no second input path.
   They keep focus in the battle (`pointerdown` default prevented) and stay out of the tab order and accessibility tree:
   keyboard and screen-reader users already have the real controls.
-- **Landscape, not a portrait handheld:** the battle is wide (scene over a message box and a 2×2 menu); a portrait
-  device on a desktop would shrink it to fit. Unbranded ("Pocket Explorer"): the repo is public.
+- **Portrait, sized from the window height:** a first landscape version read as a generic slab, not the console, and
+  ran past the bottom of the window. Now the device's width is `(100svh − 36px) / 1.74` (its measured height/width
+  ratio), clamped 440–600px, so the whole console fits; on lg the title and settings move beside it. The battle is
+  laid out at 520px and fitted to the glass with CSS `zoom` (scales layout, hit-testing and focus, unlike
+  `transform`). Inside the shell the scene goes 4:3 and the text box shrinks (`data-battle-scene`,
+  `data-battle-console` in globals.css), so the glass is near-square like the real 160×144 screen. Shell sizes use
+  `cqw` so the proportions hold at any width. Unbranded ("Pocket Explorer"): the repo is public.
 - **Rejected for now:** pixelating the photos (needs canvas or a resize service per image; the 4-tone posterise
   already sells the look) and working START/SELECT buttons (no battle action maps to them).

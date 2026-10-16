@@ -290,7 +290,11 @@ export function BattleArena({
           </div>
         </DialogBox>
       ) : (
-        <div className="grid gap-3 sm:min-h-68 sm:grid-cols-2">
+        // The handheld reshapes it (globals.css).
+        <div
+          className="grid gap-3 sm:min-h-68 sm:grid-cols-2"
+          data-battle-console
+        >
           <DialogBox
             className="min-h-28 sm:min-h-32"
             showMore={canAdvance && typed.done}
