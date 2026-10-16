@@ -438,8 +438,9 @@ no separate plan document).
   stopped being square and the console ran off the window. The glass is now a fixed 520×540 (before zoom); the
   scene flexes into what the text box and menu leave, and, like the real games, the Moves and Team menus take the
   whole bottom row (CSS `:has()`), so each entry fits on one line. No battle logic changed.
-- **Full screen:** a button (only where `document.fullscreenEnabled`, so not iPhone Safari) puts the console
-  full screen on dark, sized to the display height. Escape is the battle's "back", so where Keyboard Lock exists
+- **Full screen:** a button (only where `document.fullscreenEnabled`, so not iPhone Safari) zooms in on the game:
+  just the bezel and screen, as large as the display allows (the body, D-pad, buttons, logo and speaker hide; the
+  keyboard plays), centred on dark. Escape is the battle's "back", so where Keyboard Lock exists
   (Chromium) the page keeps Escape and you hold it to leave; an "Exit full screen" button is always shown. A refused
   request (no user gesture) leaves the page as it was. Not verified end to end from automation: Chrome refuses
   full screen for synthetic clicks ("not granted"); covered by a unit test of the request.

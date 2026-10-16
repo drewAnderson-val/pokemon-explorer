@@ -46,12 +46,13 @@ export function Handheld({
   return (
     // Outer: the size (and the container the cqw units measure). Inner: the body.
     <div className="handheld-device md:@container md:mx-auto md:w-[clamp(440px,calc((100svh-36px)/1.74),600px)]">
-      <div className="md:relative md:rounded-[2.5cqw_2.5cqw_16cqw_2.5cqw] md:border-2 md:border-[#9d9892] md:bg-[#c9c5c0] md:px-[5cqw] md:pt-[2cqw] md:pb-[7cqw] md:shadow-[inset_-1.2cqw_-1.2cqw_0_#b0aba5,inset_0.8cqw_0.8cqw_0_#dedbd7]">
+      <div className="handheld-body md:relative md:rounded-[2.5cqw_2.5cqw_16cqw_2.5cqw] md:border-2 md:border-[#9d9892] md:bg-[#c9c5c0] md:px-[5cqw] md:pt-[2cqw] md:pb-[7cqw] md:shadow-[inset_-1.2cqw_-1.2cqw_0_#b0aba5,inset_0.8cqw_0.8cqw_0_#dedbd7]">
         <FourGreens />
 
         <div
           aria-hidden
           className="mb-[4cqw] flex items-center justify-between border-b-2 border-[#b0aba5] pb-[1.5cqw] text-[2cqw] font-bold tracking-[0.1em] text-[#8f8a84] max-md:hidden"
+          data-shell-extra
         >
           <span>◁ OFF · ON ▷</span>
           <span className="h-[1.2cqw] w-[12cqw] rounded-full bg-[#b0aba5]" />
@@ -83,6 +84,7 @@ export function Handheld({
         <p
           aria-hidden
           className="mt-[3cqw] text-[3.4cqw] font-bold text-[#2c3e8f] italic max-md:hidden"
+          data-shell-extra
         >
           Pocket{' '}
           <span className="text-[4.6cqw] tracking-[0.04em]">EXPLORER</span>
@@ -91,6 +93,7 @@ export function Handheld({
         <div
           aria-hidden
           className="mt-[7cqw] flex items-center justify-between max-md:hidden"
+          data-shell-extra
         >
           <DPad control={control} />
           <div className="mr-[2cqw] flex -rotate-[25deg] items-center gap-[4cqw] rounded-full bg-[#bab5b0] px-[2.5cqw] py-[2cqw] shadow-[inset_0.6cqw_0.6cqw_0_#a8a39d]">
@@ -102,6 +105,7 @@ export function Handheld({
         <div
           aria-hidden
           className="mt-[9cqw] flex justify-center gap-[7cqw] max-md:hidden"
+          data-shell-extra
         >
           <Pill label="Select" />
           <Pill label="Start" />
@@ -285,6 +289,7 @@ function Speaker() {
     <div
       aria-hidden
       className="absolute right-[7cqw] bottom-[6cqw] flex -rotate-[25deg] gap-[1.6cqw] max-md:hidden"
+      data-shell-extra
     >
       {Array.from({ length: 6 }, (_, slot) => (
         <span
