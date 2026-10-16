@@ -100,6 +100,10 @@
   --animate-bob: bob 2.4s ease-in-out infinite;
   --animate-drift: drift var(--drift-duration, 120s) linear infinite;
   --animate-marquee: marquee 40s linear infinite;
+  --animate-flip-in: flip-in 760ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-from-older: from-older 220ms ease-out both;
+  --animate-from-newer: from-newer 220ms ease-out both;
+  --animate-wobble: wobble 1.4s ease-in-out infinite;
   /* Battle hits: stepped (step-end holds each keyframe), not smooth. */
   --animate-hit: shake 480ms step-end, flash 480ms step-end;
   --animate-lunge-player: lunge-player 360ms step-end;
@@ -115,6 +119,65 @@
   --animate-gold-flash: gold-flash 720ms step-end;
   --animate-ribbon-drop: ribbon-drop 480ms steps(4) both;
   --animate-timing-sweep: timing-sweep 600ms linear infinite alternate;
+  /* Landing title screen. */
+  --animate-drop: drop 900ms steps(9) both;
+  --animate-fly-left: fly-left 12s steps(48) infinite;
+  --animate-pop: pop 400ms steps(4) both;
+  --animate-twinkle: twinkle 1.4s steps(2) infinite;
+
+  /* The wordmark falls in, overshoots and settles. */
+  @keyframes drop {
+    0% {
+      opacity: 0;
+      transform: translateY(-140%);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(6%);
+    }
+    80% {
+      transform: translateY(-3%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  /* A creature flaps across the sky, right to left, bobbing as it goes. */
+  @keyframes fly-left {
+    0% {
+      transform: translate(105vw, 0);
+    }
+    25% {
+      transform: translate(75vw, -24px);
+    }
+    50% {
+      transform: translate(45vw, 8px);
+    }
+    75% {
+      transform: translate(15vw, -18px);
+    }
+    100% {
+      transform: translate(-15vw, 0);
+    }
+  }
+  @keyframes pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    70% {
+      transform: scale(1.06);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes twinkle {
+    50% {
+      opacity: 0.3;
+    }
+  }
 
   @keyframes blink {
     50% {
@@ -148,6 +211,44 @@
   @keyframes marquee {
     to {
       transform: translateX(-50%);
+    }
+  }
+  /* Creature Lab deck. A new card starts face down (its back is a rotated
+     face), lifts, turns over with a small overshoot, then settles. */
+  @keyframes flip-in {
+    0% {
+      transform: translateY(0) rotateY(180deg);
+    }
+    25% {
+      transform: translateY(-16px) rotateY(180deg) scale(1.03);
+    }
+    75% {
+      transform: translateY(-16px) rotateY(-10deg) scale(1.03);
+    }
+    100% {
+      transform: none;
+    }
+  }
+  @keyframes from-older {
+    from {
+      opacity: 0;
+      transform: translateX(40px) rotate(2deg);
+    }
+  }
+  @keyframes from-newer {
+    from {
+      opacity: 0;
+      transform: translateX(-40px) rotate(-2deg);
+    }
+  }
+  /* The face-down card while the lab draws: a nervous little shuffle. */
+  @keyframes wobble {
+    0%,
+    100% {
+      transform: rotate(-1.2deg);
+    }
+    50% {
+      transform: translateY(-6px) rotate(1.2deg);
     }
   }
   @keyframes shake {
@@ -373,6 +474,85 @@
   }
   body {
     @apply bg-background font-pixel text-body text-foreground;
+  }
+}
+
+/* Landing title screen. Plain CSS: the menu cursor's "first item until you
+   point elsewhere" rule needs :not() selectors utilities can't express. */
+@layer components {
+  .title-cloud {
+    position: absolute;
+    left: 0;
+    width: 96px;
+    height: 22px;
+    border: 3px solid var(--color-title-outline);
+    border-radius: 4px;
+    background: #ffffff;
+  }
+  .title-cloud::before {
+    position: absolute;
+    top: -20px;
+    left: 18px;
+    width: 48px;
+    height: 20px;
+    border: 3px solid var(--color-title-outline);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background: #ffffff;
+    content: '';
+  }
+  .title-hill {
+    position: absolute;
+    bottom: 0;
+    border: 4px solid var(--color-ink);
+    border-bottom: none;
+    border-radius: 50% 50% 0 0;
+  }
+  /* A game menu: the ▶ cursor blinks on the first item until another is
+     pointed at or focused. */
+  .title-menu-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 6px 14px 6px 40px;
+    border-radius: 6px;
+    color: var(--color-ink);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .title-menu-item::before {
+    position: absolute;
+    left: 12px;
+    opacity: 0;
+    content: '▶';
+  }
+  .title-menu-item:hover,
+  .title-menu-item:focus-visible {
+    background: var(--color-inset);
+    outline: none;
+  }
+  .title-menu-item:focus-visible {
+    box-shadow: 0 0 0 3px var(--color-focus);
+  }
+  .title-menu-item:first-child,
+  .title-menu-item:first-child:hover,
+  .title-menu-item:first-child:focus-visible {
+    background: var(--color-accent);
+  }
+  .title-menu-item:hover::before,
+  .title-menu-item:focus-visible::before,
+  .title-menu-item:first-child::before {
+    opacity: 1;
+    animation: blink 0.7s steps(1) infinite;
+  }
+  .title-menu:hover .title-menu-item:first-child:not(:hover)::before,
+  .title-menu:focus-within
+    .title-menu-item:first-child:not(:focus-visible)::before {
+    opacity: 0;
+    animation: none;
   }
 }
 

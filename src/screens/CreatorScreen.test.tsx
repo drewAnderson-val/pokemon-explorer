@@ -1,0 +1,172 @@
+import { screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { afterEach, describe, expect, it } from 'vitest'
+
+import type { CreatedCreature } from '@/lib/creature'
+
+import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
+import {
+  clearCreations,
+  loadCreations,
+  saveCreation
+} from '@/lib/creation-store'
+import { parseTeam } from '@/lib/team/team'
+import { stubFetch } from '@/test/fake-api'
+import { renderWithClient } from '@/test/render'
+
+import { CreatorScreen } from './CreatorScreen'
+
+const creature: CreatedCreature = {
+  attack: 80,
+  defense: 70,
+  description: 'A sleepy fox',
+  generation: 10,
+  height: 0.6,
+  hp: 55,
+  imageUrl: 'data:image/jpeg;base64,AAAA',
+  isLegendary: false,
+  name: 'Embercub',
+  specialAttack: 90,
+  specialDefense: 60,
+  speed: 100,
+  types: ['Fire'],
+  weight: 9.5
+}
+
+afterEach(() => clearCreations())
+
+const teamIds = () =>
+  parseTeam(localStorage.getItem(TEAM_STORAGE_KEY)).map(m => m.creatureId)
+
+async function createEmbercub() {
+  const user = userEvent.setup()
+  await user.type(screen.getByLabelText('Name'), 'Embercub')
+  await user.click(screen.getByRole('button', { name: 'Fire' }))
+  await user.type(screen.getByLabelText(/Description/), 'A sleepy fox')
+  await user.click(screen.getByRole('button', { name: 'Create' }))
+  return user
+}
+
+describe('CreatorScreen', () => {
+  it('sends the form and shows the creation with alt text and a download', async () => {
+    const user = userEvent.setup()
+    const fetchMock = stubFetch(() => Response.json({ creature }))
+    renderWithClient(<CreatorScreen />)
+
+    const create = screen.getByRole('button', { name: 'Create' })
+    expect(create).toBeDisabled()
+
+    await user.type(screen.getByLabelText('Name'), 'Embercub')
+    await user.click(screen.getByRole('button', { name: 'Fire' }))
+    await user.type(screen.getByLabelText(/Description/), 'A sleepy fox')
+    await user.click(create)
+
+    const card = await screen.findByRole('article')
+    expect(
+      within(card).getByRole('img', { name: 'Generated artwork of Embercub' })
+    ).toHaveAttribute('src', creature.imageUrl)
+    expect(within(card).getByText('No.1001')).toBeInTheDocument()
+    expect(
+      within(card).getByRole('link', { name: 'Download' })
+    ).toHaveAttribute('download', 'embercub.jpg')
+
+    const init = fetchMock.mock.calls[0]?.[1]
+    expect(init?.method).toBe('POST')
+    expect(JSON.parse(String(init?.body))).toEqual({
+      description: 'A sleepy fox',
+      name: 'Embercub',
+      types: ['Fire']
+    })
+  })
+
+  it('saves custom cards in the browser and deletes them', async () => {
+    stubFetch(() => Response.json({ creature }))
+    const first = renderWithClient(<CreatorScreen />)
+    const user = await createEmbercub()
+    await screen.findByRole('heading', { name: /Custom cards/ })
+    await waitFor(async () =>
+      expect((await loadCreations()).map(c => c.id)).toEqual([1001])
+    )
+    first.unmount()
+
+    // A fresh page load reads them back from IndexedDB.
+    renderWithClient(<CreatorScreen />)
+    const card = await screen.findByRole('article')
+    await user.click(
+      within(card).getByRole('button', { name: 'Delete Embercub' })
+    )
+    expect(screen.queryByRole('article')).not.toBeInTheDocument()
+    await waitFor(async () => expect(await loadCreations()).toEqual([]))
+  })
+
+  it('shows one card at a time, newest on top, and deals new ones on top', async () => {
+    await saveCreation({ ...creature, id: 1001, name: 'Oldie' })
+    await saveCreation({ ...creature, id: 1002, name: 'Newer' })
+    stubFetch(() => Response.json({ creature }))
+    renderWithClient(<CreatorScreen />)
+
+    const card = () => screen.getByRole('article')
+    expect(await screen.findByText('1 of 2')).toBeInTheDocument()
+    expect(within(card()).getByText('Newer')).toBeInTheDocument()
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Older card' }))
+    expect(within(card()).getByText('Oldie')).toBeInTheDocument()
+    expect(screen.getByText('2 of 2')).toBeInTheDocument()
+
+    await createEmbercub()
+    expect(await screen.findByText('1 of 3')).toBeInTheDocument()
+    expect(within(card()).getByText('Embercub')).toBeInTheDocument()
+  })
+
+  it('adds a custom card to the battle team, and deleting it leaves the team', async () => {
+    await saveCreation({ ...creature, id: 1001 })
+    stubFetch()
+    renderWithClient(<CreatorScreen />)
+    const user = userEvent.setup()
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Add Embercub to team' })
+    )
+    expect(screen.getByRole('button', { name: 'On your team' })).toBeDisabled()
+    expect(
+      screen.getByRole('link', { name: 'Battle with Embercub' })
+    ).toHaveAttribute('href', '/battle?id=1001')
+    expect(teamIds()).toEqual([1001])
+
+    await user.click(screen.getByRole('button', { name: 'Delete Embercub' }))
+    expect(teamIds()).toEqual([])
+  })
+
+  it('allows at most two types', async () => {
+    const user = userEvent.setup()
+    stubFetch()
+    renderWithClient(<CreatorScreen />)
+
+    await user.click(screen.getByRole('button', { name: 'Fire' }))
+    await user.click(screen.getByRole('button', { name: 'Water' }))
+    expect(screen.getByRole('button', { name: 'Ice' })).toBeDisabled()
+
+    await user.click(screen.getByRole('button', { name: 'Water' }))
+    expect(screen.getByRole('button', { name: 'Ice' })).toBeEnabled()
+  })
+
+  it("shows the API's error message", async () => {
+    const user = userEvent.setup()
+    stubFetch(() =>
+      Response.json(
+        { error: "You've made a lot of creatures! Try again in an hour." },
+        { status: 429 }
+      )
+    )
+    renderWithClient(<CreatorScreen />)
+
+    await user.type(screen.getByLabelText('Name'), 'Embercub')
+    await user.click(screen.getByRole('button', { name: 'Fire' }))
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      "You've made a lot of creatures! Try again in an hour."
+    )
+  })
+})

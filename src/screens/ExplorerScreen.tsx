@@ -7,6 +7,7 @@ import { SortMenu } from '@/components/SortMenu'
 import { StatusBox, type StatusKind } from '@/components/StatusBox'
 import { TeamBar } from '@/components/team/TeamBar'
 import { TypeFilterChip } from '@/components/TypeFilterChip'
+import { useCreations } from '@/hooks/useCreations'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import { useLoadMoreSentinel } from '@/hooks/useLoadMoreSentinel'
 import { useCatalogTotal, usePokemonPages } from '@/hooks/usePokemonPages'
@@ -21,6 +22,8 @@ import {
 import { addMember, isTeamFull, makeUid, newMember } from '@/lib/team/team'
 import { cn } from '@/lib/utils'
 
+import { queryPokemon } from '../../server/query'
+
 const SEARCH_DEBOUNCE_MS = 250
 const FIRST_PAGE_SKELETONS = 10
 const MORE_SKELETONS = 4
@@ -28,6 +31,8 @@ const MORE_SKELETONS = 4
 export function ExplorerScreen() {
   const [searchInput, setSearchInput] = useState('')
   const [type, setType] = useState<null | PokemonType>(null)
+  // "Custom" shows the cards made in the Creature Lab instead of the catalog.
+  const [custom, setCustom] = useState(false)
   const [sort, setSort] = useState<SortKey>('id')
   const [expandedIds, setExpandedIds] = useState<ReadonlySet<number>>(
     () => new Set()
@@ -59,15 +64,31 @@ export function ExplorerScreen() {
   const { fetchNextPage, hasNextPage, isError, isFetchingNextPage, isPending } =
     query
 
-  const pokemon = useMemo(
+  const { creations } = useCreations()
+  const catalog = useMemo(
     () => query.data?.pages.flatMap(page => page.data) ?? [],
     [query.data]
   )
-  const total = query.data?.pages[0]?.pagination.total
-  const filtering = search !== '' || type !== null
+  // Few enough to filter in one go, with the API's own search and sort.
+  const customCards = useMemo(
+    () =>
+      queryPokemon(creations, {
+        limit: Math.max(creations.length, 1),
+        page: 1,
+        search,
+        sort,
+        type: null
+      }).data,
+    [creations, search, sort]
+  )
+  const pokemon = custom ? customCards : catalog
+  const total = custom
+    ? customCards.length
+    : query.data?.pages[0]?.pagination.total
+  const filtering = search !== '' || type !== null || custom
 
   const sentinelRef = useLoadMoreSentinel({
-    enabled: hasNextPage && !isFetchingNextPage && !isError,
+    enabled: !custom && hasNextPage && !isFetchingNextPage && !isError,
     onLoadMore: () => void fetchNextPage(),
     pageCount: query.data?.pages.length ?? 0
   })
@@ -86,6 +107,7 @@ export function ExplorerScreen() {
   const clearFilters = () => {
     setSearchInput('')
     setType(null)
+    setCustom(false)
     searchRef.current?.focus()
   }
 
@@ -105,17 +127,20 @@ export function ExplorerScreen() {
   }
 
   let status: null | StatusKind = null
-  if (isError) status = 'error'
+  if (custom) status = pokemon.length === 0 ? 'empty' : 'end'
+  else if (isError) status = 'error'
   else if (isPending) status = null
   else if (pokemon.length === 0) status = 'empty'
   else if (isFetchingNextPage) status = 'loading'
   else if (!hasNextPage) status = 'end'
 
-  const skeletons = isPending
-    ? FIRST_PAGE_SKELETONS
-    : isFetchingNextPage
-      ? MORE_SKELETONS
-      : 0
+  const skeletons = custom
+    ? 0
+    : isPending
+      ? FIRST_PAGE_SKELETONS
+      : isFetchingNextPage
+        ? MORE_SKELETONS
+        : 0
 
   return (
     <main className="mx-auto flex max-w-[1400px] flex-col gap-5 px-4 pt-6 pb-16 xs:px-6 lg:px-14 lg:pt-12">
@@ -144,18 +169,35 @@ export function ExplorerScreen() {
           {/* Phones: one swipeable row (spec). 480px+: equal-width cells so rows line up. */}
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-2 xs:mx-0 xs:grid xs:grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] xs:overflow-visible xs:px-0 xs:py-0">
             <TypeFilterChip
-              onPress={() => setType(null)}
-              pressed={type === null}
+              onPress={() => {
+                setType(null)
+                setCustom(false)
+              }}
+              pressed={type === null && !custom}
               type={null}
             />
             {POKEMON_TYPES.map(option => (
               <TypeFilterChip
                 key={option}
-                onPress={() => setType(option)}
-                pressed={type === option}
+                onPress={() => {
+                  setType(option)
+                  setCustom(false)
+                }}
+                pressed={type === option && !custom}
                 type={option}
               />
             ))}
+            {creations.length > 0 && (
+              <TypeFilterChip
+                label={`Custom (${creations.length})`}
+                onPress={() => {
+                  setType(null)
+                  setCustom(true)
+                }}
+                pressed={custom}
+                type={null}
+              />
+            )}
           </div>
         </fieldset>
         <SortMenu onChange={setSort} value={sort} />

@@ -275,6 +275,80 @@ no separate plan document).
   substring search. If backend depth is wanted later, Cloud SQL Postgres + Drizzle, managed by Pulumi and seeded from
   the JSON, as a separate PR.
 
+## 2026-10-15: Creature Lab: generated creatures with Nano Banana on Vertex AI
+
+- **What:** a `/create` page where you name a creature, pick 1–2 types and optionally describe it; `POST /api/creatures`
+  draws it with Gemini's image model (Nano Banana) and returns a card with rolled stats. A deliberate extra beyond the
+  brief, to show the API and GCP side.
+- **Vertex AI as the runtime service account, no API key.** Cloud Run already runs as `pokemon-explorer-run`, so the
+  bootstrap stack grants it `roles/aiplatform.user` and enables the API. Rejected: a Gemini API key in Secret Manager
+  (a secret to rotate and leak when identity auth already exists) and calling Gemini from the browser (exposes the key).
+  The IAM grant lives in bootstrap because the CI deployer can't grant project roles, by design.
+- **Model `gemini-3.1-flash-lite-image` (Nano Banana 2 Lite), `global` endpoint**, overridable with `IMAGE_MODEL`.
+  Cheapest image model (~$0.03 per 1K image); the newer image models aren't served from regional endpoints.
+- **The server writes the prompt.** User text only fills quoted name/type/concept fields (newlines and quotes
+  stripped), so every image keeps the card style and the input can't replace the instructions. Safety-filter blocks
+  return 422 with a friendly message.
+- **Spend caps in memory:** 5 per client IP per hour and 100 per day overall, per instance. With prod's 3 max instances
+  the worst case is ~300 images (~$10) a day. Rejected for now: a shared counter in Firestore/Redis; the counters reset
+  on restart, which is acceptable for a demo. `trust proxy` is 1 so `req.ip` is the caller behind Cloud Run's front end.
+- **Nothing is stored on the server** (superseded below: cards are now kept in the browser). Rejected: saving to GCS with a
+  shared gallery, which would show strangers' generations to anyone visiting (moderation risk) and add a bucket,
+  URLs and a listing endpoint for a feature that doesn't need to persist.
+
+## 2026-10-15: Bootstrap stack actually adopted; billing moved to a credits account
+
+- **The bootstrap stack had no state.** The entry above says its resources were adopted with `pulumi import`, but no
+  `pokemon-explorer-bootstrap` stack existed in the state bucket, so a `pulumi up` would have tried to recreate the
+  bucket, deployer and WIF pool. Ran `pulumi stack init prod` and `pulumi import --file import.json` against
+  `gs://finny-take-home-pulumi-state`: 15 resources adopted with zero diffs, then `pulumi up` created only the Creature
+  Lab's two additions (Vertex AI API, `roles/aiplatform.user` for the runtime account).
+- **Billing for `finny-take-home` moved to a separate billing account with free credits.** Linked by hand (`gcloud
+  billing projects link`) after granting that account `roles/billing.projectManager` on the project; not in Pulumi,
+  since billing links are an owner's call, not deploy config. Rejected: running Vertex in a second project under the
+  credits account, which would need cross-project IAM that neither stack could manage.
+- **Verified live:** `gemini-3.1-flash-lite-image` on the `global` endpoint returns a 1024×1024 JPEG in ~3.5s.
+
+## 2026-10-15: Custom cards are saved in the browser
+
+- **What:** creations are kept in IndexedDB (`src/lib/creation-store.ts`) and listed under "Custom cards" on `/create`
+  and behind a "Custom (n)" chip in the explorer, numbered from No.1001. Each card can be downloaded or deleted. The
+  explorer filters them with the API's own `queryPokemon`, so search and sort behave the same as for the catalog.
+- **Why browser-only:** no sign-in and no new infrastructure, and nobody sees strangers' generations. IndexedDB, not
+  localStorage, because each image is ~200 KB against localStorage's ~5 MB. If the browser refuses storage (e.g.
+  private mode) the card still shows for that visit.
+- **Rejected: tying cards to the client's IP.** It needs the same server storage as a shared gallery, and IPs are
+  unreliable as identity: they change (mobile networks, IPv6 privacy addresses) and are shared (an office NAT would
+  show colleagues each other's cards). The per-IP rate limit is fine because a limit only needs to be approximate.
+- **Copy:** dropped "Up to 5 an hour; nothing is saved…" under the button (the 429 message explains the limit when it
+  matters). No AI-attribution tag on the image; the page already says the lab draws it.
+
+## 2026-10-15: Creature Lab guardrails and one-screen layout
+
+- **Guardrails are request config, not extra calls:** `personGeneration: 'ALLOW_NONE'` and
+  `prominentPeople: BLOCK_PROMINENT_PEOPLE` (a creature lab never needs a human), and all eight harm categories at
+  `BLOCK_LOW_AND_ABOVE` instead of the default medium. Vertex rejects the SDK's own `PersonGeneration.DONT_ALLOW`
+  value with a 400, so the documented string is used. Verified live: "a realistic photo of [a celebrity] singing"
+  came back as a cartoon puppy with a microphone, "a photo of a man hiking" as a rock golem, and a gore prompt was
+  blocked (422). Rejected for now: a separate LLM pre-check of the description (a second call, ~0.5s, more code) and
+  word blocklists (easy to dodge, block innocent words). Saved cards are only visible in their creator's browser,
+  which lowers the stakes.
+- **Vertex's per-minute quota (HTTP 429) maps to 503 + `Retry-After: 60`** ("The lab is busy right now"), not the
+  generic 502; a new project's image quota is low enough to hit while testing.
+- **Layout fits one laptop screen (~940px tall):** form in a fixed 440px left column (3 type chips per row, ≈690px
+  tall), cards on the right; each card goes image-left/details-right once it is ≥36rem wide (a container query on the
+  card, so it also works in narrow columns), ≈425px tall.
+- **Custom cards are a deck, not a list.** The lab shows one card at a time, newest on top, with up to two card
+  edges peeking out underneath and "1 of n" arrows to flip back. A new creation replaces what's shown instead of
+  pushing a growing list down the page. The explorer's "Custom" chip still lists them all.
+- **Reveal is a card flip.** While the lab draws, a face-down card back (striped, "?") wobbles on top of the deck;
+  when the image arrives the new card lifts, turns over in 3D (`rotateY`, the back is a second face with
+  `backface-visibility: hidden`) and settles, 760ms. It plays once, only for a card made this visit, not on page
+  load or when flipping back to it. Arrows slide cards in from the direction of travel. Smooth easing here rather
+  than the app's usual `steps()`: a stepped 3D turn reads as a glitch. All of it is off under reduced motion.
+  `add` returns the new id synchronously (the IndexedDB write finishes in the background) so the card mounts
+  face-down in the same render instead of flashing face-up first.
+
 ## 2026-10-15: Union merges for the decision log
 
 - **Why:** PRs worked on in parallel (one worktree each) all append to the end of `docs/decisions.md`, so any two
@@ -283,3 +357,39 @@ no separate plan document).
   GitHub's merge button ignores merge drivers, so `AGENTS.md` now says to merge `main` into a branch before opening
   a PR, which is where the union driver applies.
 - **Rejected:** one file per decision (no conflicts at all, but turns a readable log into a folder of fragments).
+
+## 2026-10-15: Custom cards can battle
+
+- **What:** Creature Lab cards have the catalog card's actions (▶ Battle, + Team) and fight like any creature.
+  `creatureQuery` (the one place the battle, team bar and `/battle?id=N` starter look a creature up) resolves ids
+  ≥ 1001 from the browser's IndexedDB store instead of `GET /api/pokemon`; a deleted card is a `CreatureNotFoundError`,
+  the same "missing" path a vanished catalog id takes. Wild opponents stay catalog-only (`fetchRandomPokemon` already
+  ignores ids above the catalog total).
+- **Deleting a custom card also removes it from the team**, and its by-id query cache entry is dropped (and primed on
+  create): ids are reused after a delete, and the battle caches creatures by id with `staleTime: Infinity`.
+- **Rejected: copying custom creatures into the team's saved data.** The team deliberately stores only progress
+  (id, level, XP, HP) and looks creatures up; keeping that shape means one lookup rule, not two kinds of member.
+
+## 2026-10-15: Landing page is a game title screen
+
+- **What:** the landing page follows the "Retro Pocket Landing" design: sky with drifting clouds, a bat sprite
+  flying across, sparkles, three hills with creature sprites, a dropping EXPLORER wordmark, a three-item title menu
+  with a blinking ▶ cursor (first item until you point at another) and "Press start". Sprites are the design's own
+  pixel GIFs, in `public/landing/`.
+- **Menu:** Start exploring → `/explore`, Battle → `/battle`, Creature Lab → `/create`. The design's third item was
+  "Options", which has no page in the app; the lab took its slot.
+- **Dropped from the old landing:** the top nav, "1000 creatures on file", the About dialog box, the round play
+  button and the type-badge marquee: the menu now does the navigating.
+- **Deviation:** the footer sits on a navy pill. White 13px text straight on the hills (as drawn) is ~3:1, under
+  WCAG's 4.5:1. Hill colors use the app's existing hill tokens rather than the design's near-identical greens.
+
+## 2026-10-15: "▶ Battle with X" always sends out X
+
+- **Bug:** `/battle?id=N` only used N to start an *empty* team. With anyone already on the team, ▶ Battle on a card
+  (catalog or custom) quietly sent out the existing lead instead. Found on the PR preview with a custom card.
+- **Fix:** `leadWith(team, creature)` puts X first (the battle sends out the first healthy member): moved up if it's
+  on the team, added at the front if there's room. The battle waits until X leads before finding a wild creature, so
+  it can't start with the old lead.
+- **Full team without X:** a message ("Your team is full, so X can't join") with "Battle with my team" or back to the
+  explorer. Rejected: silently replacing a member (loses their levels) or battling X as an unsaved guest (the battle
+  saves HP/XP back to team members by uid).

@@ -29,6 +29,16 @@ export function addMember(team: TeamMember[], member: TeamMember) {
     : [...team, member]
 }
 
+// "Battle with X": X leads (the battle sends out the first healthy member).
+// Already on the team, it moves to the front; otherwise it joins at the front
+// if there's room. A full team without X comes back unchanged.
+export function leadWith(team: TeamMember[], creature: Pokemon, uid: string) {
+  const index = team.findIndex(member => member.creatureId === creature.id)
+  if (index === 0) return team
+  if (index > 0) return [team[index], ...team.filter((_, i) => i !== index)]
+  return isTeamFull(team) ? team : [newMember(creature, uid), ...team]
+}
+
 export function newMember(
   creature: Pokemon,
   uid: string,

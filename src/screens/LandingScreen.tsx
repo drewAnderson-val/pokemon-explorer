@@ -1,79 +1,46 @@
-import { DialogBox } from '@/components/DialogBox'
 import { LandingScene } from '@/components/LandingScene'
-import { PlayButton } from '@/components/PlayButton'
-import { useCatalogTotal } from '@/hooks/usePokemonPages'
 
+// A game-style title screen: wordmark, a three-item menu, "Press start".
 export function LandingScreen() {
-  const total = useCatalogTotal()
-  const count = total.data ?? '…'
-
   return (
-    <div className="relative isolate flex min-h-[max(100svh,900px)] flex-col">
+    <main className="relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden px-5 pt-12 pb-60">
       <LandingScene />
 
-      <nav
-        aria-label="Main"
-        className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-4 px-4 py-6 text-white xs:px-6"
-      >
-        <a
-          aria-label="Pokemon Explorer home"
-          className="flex items-center gap-2 text-label font-bold uppercase sky-shadow focus-visible:focus-ring-sky"
-          href="/"
-        >
-          <span
-            aria-hidden
-            className="size-6 rounded-tag frame-tag bg-accent"
-          />
-          Explorer
-        </a>
-        <ul className="flex flex-wrap gap-x-5 gap-y-2 text-label font-bold uppercase sky-shadow">
-          <li>
-            <a className="focus-visible:focus-ring-sky" href="/explore">
-              Browse
-            </a>
-          </li>
-          <li>
-            <a className="focus-visible:focus-ring-sky" href="/explore#types">
-              Types
-            </a>
-          </li>
-          <li>
-            <a className="focus-visible:focus-ring-sky" href="#about">
-              About
-            </a>
-          </li>
-        </ul>
-      </nav>
-
-      <main className="mx-auto flex w-full max-w-[900px] flex-col items-center gap-7 px-4 pt-8 pb-56 text-center">
-        <p className="rounded-tag frame-tag bg-box px-2 py-0.5 text-label font-bold uppercase">
-          {count} creatures on file
+      <div className="relative flex w-full max-w-[640px] flex-col items-center gap-6 text-center">
+        <p className="rounded-[6px] bg-title-outline px-3.5 py-1.5 text-label font-bold text-white uppercase">
+          A pocket creature adventure
         </p>
-        <div>
-          <p className="mb-3 text-label font-bold text-white uppercase sky-shadow">
-            Finny · Pokemon
-          </p>
-          <h1 className="text-display font-bold text-white uppercase title-outline">
-            Explorer
-          </h1>
-        </div>
-        <DialogBox
-          className="w-full max-w-[560px] text-left"
-          id="about"
-          showMore
-        >
-          <p className="text-body-lg">
-            A wild catalog appeared! Search {count} creatures by name, type or
-            description, then open any card to see its stats.
-          </p>
-        </DialogBox>
-        <PlayButton href="/explore" />
-      </main>
+        <h1 className="animate-drop text-display font-bold text-white uppercase title-outline">
+          Explorer
+        </h1>
 
-      <p className="absolute inset-x-0 bottom-4 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-tag bg-box/90 px-2 text-center text-caption">
-        Fan-made demo. Creatures are randomly generated; not affiliated with any
-        game company.
+        <nav
+          aria-label="Title menu"
+          className="title-menu flex w-full max-w-[360px] animate-pop flex-col gap-1 rounded-box frame-box bg-box p-3 text-left [animation-delay:800ms]"
+        >
+          <a className="title-menu-item" href="/explore">
+            Start exploring
+          </a>
+          <a className="title-menu-item" href="/battle">
+            Battle
+          </a>
+          <a className="title-menu-item" href="/create">
+            Creature Lab
+          </a>
+        </nav>
+
+        <p
+          aria-hidden
+          className="animate-blink text-caption font-bold text-white uppercase sky-shadow"
+        >
+          Press start
+        </p>
+      </div>
+
+      {/* On a pill: white text straight on the hills is ~3:1, under 4.5:1. */}
+      <p className="absolute inset-x-0 bottom-2.5 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-tag bg-title-outline/85 px-2 text-center text-caption text-white">
+        Fan-made. All creatures and art are original.
       </p>
-    </div>
+    </main>
   )
 }

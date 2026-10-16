@@ -31,7 +31,7 @@ export function buttonClass(
   className?: string
 ) {
   return cn(
-    'inline-flex h-11 items-center justify-center rounded-tag px-4 text-label font-bold uppercase focus-visible:focus-ring',
+    'inline-flex h-11 items-center justify-center rounded-tag px-4 text-label font-bold uppercase focus-visible:focus-ring disabled:cursor-not-allowed disabled:opacity-50',
     variants[variant],
     className
   )

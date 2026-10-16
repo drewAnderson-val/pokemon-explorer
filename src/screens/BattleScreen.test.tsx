@@ -1,9 +1,10 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SETTINGS_STORAGE_KEY } from '@/hooks/useSettings'
 import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
+import { clearCreations, saveCreation } from '@/lib/creation-store'
 import { parseTeam, serializeTeam, type TeamMember } from '@/lib/team/team'
 import { stubFetch } from '@/test/fake-api'
 import { renderWithClient } from '@/test/render'
@@ -68,7 +69,62 @@ async function readUntil(text: RegExp | string) {
   )
 }
 
+afterEach(() => clearCreations())
+
 describe('BattleScreen', () => {
+  it('battles with a custom card from the Creature Lab', async () => {
+    await saveCreation({
+      attack: 80,
+      defense: 70,
+      description: 'A sleepy fox',
+      generation: 10,
+      height: 0.6,
+      hp: 55,
+      id: 1001,
+      imageUrl: 'data:image/jpeg;base64,AAAA',
+      name: 'Embercub',
+      specialAttack: 90,
+      specialDefense: 60,
+      speed: 100,
+      types: ['Fire'],
+      weight: 9.5
+    })
+    stubFetch()
+    renderWithClient(<BattleScreen playerId={1001} rng={alwaysZero} />)
+    // Custom ids aren't in the catalog, so the wild pick skips nothing: #1.
+    await expectMessage('A wild Geovanni appeared!')
+    expect(savedTeam()).toEqual([expect.objectContaining({ creatureId: 1001 })])
+    expect(
+      screen.getByRole('region', { name: 'Your creature' })
+    ).toHaveTextContent('Embercub')
+  })
+
+  // The bug: ▶ Battle on a card sent out whoever already led the team.
+  it('leads with the picked creature when the team already has others', async () => {
+    save([member('ten', 10)])
+    stubFetch()
+    renderWithClient(<BattleScreen playerId={1} rng={alwaysZero} />)
+    await expectMessage('A wild Britney appeared!')
+    expect(savedTeam().map(m => m.creatureId)).toEqual([1, 10])
+    expect(
+      screen.getByRole('region', { name: 'Your creature' })
+    ).toHaveTextContent('Geovanni')
+  })
+
+  it('says so when a full team has no room for the pick, then can battle anyway', async () => {
+    save(Array.from({ length: 6 }, (_, i) => member(`m${i}`, 20 + i)))
+    stubFetch()
+    renderWithClient(<BattleScreen playerId={1} rng={alwaysZero} />)
+    expect(
+      await screen.findByText(/Your team is full, so Geovanni can't join/)
+    ).toBeInTheDocument()
+    expect(savedTeam()).toHaveLength(6)
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Battle with my team' })
+    )
+    await expectMessage('A wild Geovanni appeared!')
+  })
+
   it('starts a team from the picked creature when the team is empty', async () => {
     await open(1)
     expect(savedTeam()).toEqual([

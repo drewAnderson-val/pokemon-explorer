@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { stubFetch } from '@/test/fake-api'
@@ -7,43 +7,28 @@ import { renderWithClient } from '@/test/render'
 import { LandingScreen } from './LandingScreen'
 
 describe('LandingScreen', () => {
-  it('has the wordmark, count and a play link into the explorer', async () => {
+  it('is a title screen: wordmark and a menu into each part of the app', () => {
     stubFetch()
     renderWithClient(<LandingScreen />)
     expect(
       screen.getByRole('heading', { level: 1, name: 'Explorer' })
     ).toBeInTheDocument()
-    expect(screen.getByText('Finny · Pokemon')).toBeInTheDocument()
+    const menu = screen.getByRole('navigation', { name: 'Title menu' })
     expect(
-      screen.getByRole('link', { name: 'Start exploring' })
-    ).toHaveAttribute('href', '/explore')
-    expect(
-      await screen.findByText('1000 creatures on file')
-    ).toBeInTheDocument()
-  })
-
-  // The default blue ring is ~1.25:1 on the sky; links there need the white one.
-  it('uses the sky-safe focus ring on every link over the sky', () => {
-    stubFetch()
-    renderWithClient(<LandingScreen />)
-    for (const link of screen.getAllByRole('link')) {
-      expect(link.className).toContain('focus-visible:focus-ring-sky')
-    }
-  })
-
-  it('tabs logo → Browse → Types → About → play, skipping scenery', () => {
-    stubFetch()
-    renderWithClient(<LandingScreen />)
-    expect(
-      screen
+      within(menu)
         .getAllByRole('link')
-        .map(link => link.getAttribute('aria-label') ?? link.textContent)
+        .map(link => [link.textContent, link.getAttribute('href')])
     ).toEqual([
-      'Pokemon Explorer home',
-      'Browse',
-      'Types',
-      'About',
-      'Start exploring'
+      ['Start exploring', '/explore'],
+      ['Battle', '/battle'],
+      ['Creature Lab', '/create']
     ])
+  })
+
+  it('keeps the scenery out of the accessibility tree and the tab order', () => {
+    stubFetch()
+    renderWithClient(<LandingScreen />)
+    expect(screen.queryAllByRole('img')).toEqual([])
+    expect(screen.getAllByRole('link')).toHaveLength(3)
   })
 })
