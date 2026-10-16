@@ -14,6 +14,8 @@ export type HandheldKey =
 // The battle is laid out at this width inside the shell, then zoomed to fit
 // the glass. CSS zoom (unlike transform) scales layout, hit-testing and focus.
 const SCREEN_WIDTH = 520
+// A fixed shape, near the original 160×144 screen; the scene flexes inside it.
+const SCREEN_HEIGHT = 540
 
 type Control = (key: HandheldKey) => Record<string, unknown>
 
@@ -43,7 +45,7 @@ export function Handheld({
 
   return (
     // Outer: the size (and the container the cqw units measure). Inner: the body.
-    <div className="md:@container md:mx-auto md:w-[clamp(440px,calc((100svh-36px)/1.74),600px)]">
+    <div className="handheld-device md:@container md:mx-auto md:w-[clamp(440px,calc((100svh-36px)/1.74),600px)]">
       <div className="md:relative md:rounded-[2.5cqw_2.5cqw_16cqw_2.5cqw] md:border-2 md:border-[#9d9892] md:bg-[#c9c5c0] md:px-[5cqw] md:pt-[2cqw] md:pb-[7cqw] md:shadow-[inset_-1.2cqw_-1.2cqw_0_#b0aba5,inset_0.8cqw_0.8cqw_0_#dedbd7]">
         <FourGreens />
 
@@ -66,7 +68,13 @@ export function Handheld({
             data-classic={classic || undefined}
             ref={glassRef}
           >
-            <div style={shell ? { width: SCREEN_WIDTH, zoom } : undefined}>
+            <div
+              style={
+                shell
+                  ? { height: SCREEN_HEIGHT, width: SCREEN_WIDTH, zoom }
+                  : undefined
+              }
+            >
               {children}
             </div>
           </div>
@@ -129,12 +137,10 @@ function Battery() {
   return (
     <div
       aria-hidden
-      className="absolute top-[38%] left-[2.2cqw] flex flex-col items-center gap-[0.8cqw] max-md:hidden"
+      className="absolute top-[38%] left-[1.4cqw] flex flex-col items-center gap-[0.8cqw] max-md:hidden"
     >
       <span className="size-[2.2cqw] rounded-full bg-[#e8343b] shadow-[0_0_1.4cqw_#e8343b]" />
-      <span className="text-[1.4cqw] font-bold tracking-[0.06em] text-[#d8d5d2]">
-        BATTERY
-      </span>
+      <span className="text-[1.15cqw] font-bold text-[#d8d5d2]">BATTERY</span>
     </div>
   )
 }

@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { BattleArena } from '@/components/battle/BattleArena'
 import { Handheld } from '@/components/battle/Handheld'
 import { DialogBox } from '@/components/DialogBox'
 import { Button, buttonClass } from '@/components/ui/button'
+import { useFullscreen } from '@/hooks/useFullscreen'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useSettings } from '@/hooks/useSettings'
 import { useTeam } from '@/hooks/useTeam'
@@ -32,14 +33,16 @@ export function BattleScreen({
   rng = Math.random
 }: BattleScreenProps) {
   const [settings] = useSettings()
+  const stageRef = useRef<HTMLDivElement>(null)
+  const fullscreen = useFullscreen(stageRef)
   return (
     // lg: the title and settings sit beside the handheld, which is sized from
     // the window height, so the whole console fits on screen.
-    <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 pt-6 pb-16 xs:px-6 md:max-w-[1240px] lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start lg:gap-8 lg:py-3">
+    <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 pt-6 pb-16 xs:px-6 md:max-w-[1240px] lg:grid lg:grid-cols-[minmax(12rem,1fr)_auto_minmax(0,1fr)] lg:items-start lg:gap-8 lg:py-3">
       <header className="flex flex-wrap items-center justify-between gap-3 lg:flex-col lg:items-start lg:pt-6">
         <h1 className="text-heading font-bold uppercase">Battle</h1>
         <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
-          <SettingsToggles />
+          <SettingsToggles fullscreen={fullscreen} />
           <a
             className="inline-flex h-11 items-center text-label font-bold uppercase focus-visible:focus-ring"
             href="/explore"
@@ -48,9 +51,20 @@ export function BattleScreen({
           </a>
         </div>
       </header>
-      <Handheld classic={settings.classic}>
-        <BattleLoader playerId={playerId} rng={rng} />
-      </Handheld>
+      <div className="battle-stage" ref={stageRef}>
+        {fullscreen.active && (
+          <button
+            className={buttonClass('secondary', 'fixed top-4 right-4 z-10')}
+            onClick={() => void fullscreen.toggle()}
+            type="button"
+          >
+            Exit full screen
+          </button>
+        )}
+        <Handheld classic={settings.classic}>
+          <BattleLoader playerId={playerId} rng={rng} />
+        </Handheld>
+      </div>
     </main>
   )
 }
@@ -230,13 +244,31 @@ function Searching() {
 }
 
 // Sound (off until asked for) and the timing bar (on, unless reduced motion).
-function SettingsToggles() {
+function SettingsToggles({
+  fullscreen
+}: {
+  fullscreen: ReturnType<typeof useFullscreen>
+}) {
   const [settings, setSettings] = useSettings()
   const reduced = usePrefersReducedMotion()
   const toggleClass = (pressed: boolean) =>
     buttonClass(pressed ? 'primary' : 'secondary', 'h-10 gap-1.5 px-3')
   return (
-    <div aria-label="Battle settings" className="flex gap-2" role="group">
+    <div
+      aria-label="Battle settings"
+      className="flex flex-wrap gap-2"
+      role="group"
+    >
+      {fullscreen.supported && (
+        <button
+          className={toggleClass(false)}
+          onClick={() => void fullscreen.toggle()}
+          type="button"
+        >
+          <span aria-hidden>⛶</span>
+          Full screen
+        </button>
+      )}
       <button
         aria-pressed={settings.sound}
         className={toggleClass(settings.sound)}

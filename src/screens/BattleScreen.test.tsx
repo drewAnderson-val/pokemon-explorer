@@ -164,6 +164,32 @@ describe('BattleScreen', () => {
     expect(screen.getByRole('button', { name: 'Fight' })).toHaveFocus()
   })
 
+  it('offers full screen only where the browser supports it', async () => {
+    await open(1)
+    // jsdom has no Fullscreen API, like iPhone Safari: no button.
+    expect(
+      screen.queryByRole('button', { name: 'Full screen' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('puts the battle stage full screen', async () => {
+    // jsdom has no Fullscreen API: add just enough of it for this test.
+    Object.defineProperty(document, 'fullscreenEnabled', {
+      configurable: true,
+      value: true
+    })
+    const request = vi.fn(() => Promise.resolve())
+    HTMLElement.prototype.requestFullscreen = request
+    await open(1)
+    await userEvent.click(screen.getByRole('button', { name: 'Full screen' }))
+    expect(request).toHaveBeenCalledOnce()
+    expect(request.mock.contexts[0]).toHaveClass('battle-stage')
+    // @ts-expect-error jsdom has no requestFullscreen; remove the stub.
+    delete HTMLElement.prototype.requestFullscreen
+    // @ts-expect-error likewise for fullscreenEnabled.
+    delete document.fullscreenEnabled
+  })
+
   it('switches the screen between classic greens and color', async () => {
     await open(1)
     const screenEl = () => document.querySelector('[data-classic]')
