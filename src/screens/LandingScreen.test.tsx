@@ -44,13 +44,4 @@ describe('LandingScreen', () => {
       within(startMenu()).getByRole('link', { name: /Load your roster/ })
     ).toHaveTextContent('2/6 creatures on your team.')
   })
-
-  it('shows the real catalog numbers', async () => {
-    stubFetch()
-    renderWithClient(<LandingScreen />)
-    const glance = screen.getByRole('region', { name: 'At a glance' })
-    expect(await within(glance).findByText('1,000')).toBeInTheDocument()
-    expect(within(glance).getByText('18')).toBeInTheDocument()
-    expect(within(glance).getByText('9')).toBeInTheDocument()
-  })
 })

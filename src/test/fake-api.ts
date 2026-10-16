@@ -2,19 +2,12 @@ import { vi } from 'vitest'
 
 import pokemonData from '@/data/pokemon.json'
 
-import {
-  parsePokemonQuery,
-  queryPokemon,
-  summarizePokemon
-} from '../../server/query'
+import { parsePokemonQuery, queryPokemon } from '../../server/query'
 
 type Handler = (url: URL) => Promise<Response> | Response
 
 // The real API logic over the real fixture data, without a server.
 export function apiResponse(url: URL): Response {
-  if (url.pathname === '/api/summary') {
-    return Response.json(summarizePokemon(pokemonData))
-  }
   const parsed = parsePokemonQuery(Object.fromEntries(url.searchParams))
   if (!parsed.ok) return Response.json({ error: parsed.error }, { status: 400 })
   return Response.json(queryPokemon(pokemonData, parsed.query))

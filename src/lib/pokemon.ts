@@ -1,9 +1,3 @@
-// GET /api/summary: the landing page's numbers, from the real data.
-export type CatalogSummary = {
-  generations: number
-  total: number
-}
-
 export type Pagination = {
   hasNext: boolean
   hasPrev: boolean

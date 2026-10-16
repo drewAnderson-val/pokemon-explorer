@@ -1,5 +1,4 @@
 import {
-  type CatalogSummary,
   isPokemonType,
   MAX_SEARCH_LENGTH,
   PAGE_SIZE,
@@ -103,12 +102,5 @@ export function queryPokemon(
       total,
       totalPages
     }
-  }
-}
-
-export function summarizePokemon(data: readonly Pokemon[]): CatalogSummary {
-  return {
-    generations: new Set(data.map(p => p.generation)).size,
-    total: data.length
   }
 }

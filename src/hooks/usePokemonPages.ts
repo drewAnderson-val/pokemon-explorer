@@ -2,20 +2,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 
 import type { PokemonPage } from '@/lib/pokemon'
 
-import {
-  fetchCatalogSummary,
-  fetchPokemonPage,
-  type PokemonFilters
-} from '@/lib/api'
-
-// Totals for the landing page: count, generations and creatures per type.
-export function useCatalogSummary() {
-  return useQuery({
-    queryFn: ({ signal }) => fetchCatalogSummary(signal),
-    queryKey: ['pokemon', 'summary'],
-    staleTime: Infinity
-  })
-}
+import { fetchPokemonPage, type PokemonFilters } from '@/lib/api'
 
 export function useCatalogTotal() {
   return useQuery({

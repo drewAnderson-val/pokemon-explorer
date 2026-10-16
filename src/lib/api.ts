@@ -1,7 +1,6 @@
 import type { CreatureRequest, CreatureResponse } from './creature'
 
 import {
-  type CatalogSummary,
   PAGE_SIZE,
   type PokemonPage,
   type PokemonType,
@@ -40,14 +39,6 @@ export async function createCreature(
     throw new Error(message ?? `Creature request failed (${response.status})`)
   }
   return body
-}
-
-export async function fetchCatalogSummary(signal?: AbortSignal) {
-  const response = await fetch('/api/summary', { signal })
-  if (!response.ok) {
-    throw new Error(`Summary request failed (${response.status})`)
-  }
-  return (await response.json()) as CatalogSummary
 }
 
 // Ids run 1…total with no gaps, so in id order creature N is on page N of a

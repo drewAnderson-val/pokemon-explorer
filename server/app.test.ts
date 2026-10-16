@@ -33,12 +33,6 @@ describe('GET /api/pokemon', () => {
     expect(body.data.every(p => p.types.includes('Fire'))).toBe(true)
   })
 
-  it('summarises the catalog for the landing page', async () => {
-    const res = await fetch(`${base}/api/summary`)
-    expect(res.status).toBe(200)
-    expect(await res.json()).toEqual({ generations: 9, total: 1000 })
-  })
-
   it('rejects bad input with a 400', async () => {
     const res = await fetch(`${base}/api/pokemon?limit=10000`)
     expect(res.status).toBe(400)
