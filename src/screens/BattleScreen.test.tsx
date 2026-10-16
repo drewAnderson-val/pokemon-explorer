@@ -359,20 +359,82 @@ describe('BattleScreen', () => {
     })
   })
 
-  it('explains an empty team', async () => {
-    stubFetch()
-    renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
-    expect(
-      await screen.findByText(/No creature to send out!/)
-    ).toBeInTheDocument()
-  })
+  describe('team picker', () => {
+    const tab = (name: RegExp | string) => screen.getByRole('tab', { name })
+    const row = (name: RegExp | string) => screen.findByRole('button', { name })
 
-  it('explains a creature that is not on file', async () => {
-    stubFetch()
-    renderWithClient(<BattleScreen playerId={5000} rng={alwaysZero} />)
-    expect(
-      await screen.findByText(/No creature to send out!/)
-    ).toBeInTheDocument()
+    it('starts an empty team on the ALL list, then battles from START', async () => {
+      stubFetch()
+      renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
+      expect(
+        await screen.findByRole('group', { name: 'Choose your team' })
+      ).toBeInTheDocument()
+      expect(tab('all')).toHaveAttribute('aria-selected', 'true')
+      const start = screen.getByRole('button', { name: 'Start' })
+      expect(start).toBeDisabled()
+
+      await userEvent.click(await row(/Geovanni/))
+      expect(savedTeam().map(m => m.creatureId)).toEqual([1])
+      expect(tab('Team 1/6')).toBeInTheDocument()
+
+      await userEvent.click(start)
+      await expectMessage('A wild Britney appeared!')
+    })
+
+    it('plays with the D-pad: ◀▶ lists, ▲▼ rows, A toggles, START', async () => {
+      stubFetch()
+      renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: /Geovanni/ })).toHaveFocus()
+      )
+      const control = (key: string) =>
+        document.querySelector<HTMLButtonElement>(`[data-control="${key}"]`)!
+      await userEvent.click(control('ArrowDown'))
+      expect(screen.getByRole('button', { name: /Britney/ })).toHaveFocus()
+      await userEvent.click(control('A'))
+      await userEvent.click(control('ArrowUp'))
+      await userEvent.click(control('A'))
+      expect(savedTeam().map(m => m.creatureId)).toEqual([2, 1])
+
+      // ◀ from ALL is TEAM, where A takes a member off.
+      await userEvent.click(control('ArrowLeft'))
+      expect(tab('Team 2/6')).toHaveAttribute('aria-selected', 'true')
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: /Britney/ })).toHaveFocus()
+      )
+      await userEvent.click(control('A'))
+      expect(savedTeam().map(m => m.creatureId)).toEqual([1])
+
+      await userEvent.click(control('Start'))
+      await expectMessage('A wild Britney appeared!')
+    })
+
+    it('shows the picker when a ▶ Battle creature is not on file', async () => {
+      stubFetch()
+      renderWithClient(<BattleScreen playerId={5000} rng={alwaysZero} />)
+      expect(
+        await screen.findByRole('group', { name: 'Choose your team' })
+      ).toBeInTheDocument()
+    })
+
+    it('changes the team after a battle', async () => {
+      await open(1)
+      await userEvent.click(screen.getByRole('button', { name: 'Run' }))
+      await readUntil('Got away safely!')
+      // Enter past the last message to the end screen.
+      while (!screen.queryByRole('button', { name: 'Change team' })) {
+        await userEvent.keyboard('{Enter}')
+      }
+      await userEvent.click(screen.getByRole('button', { name: 'Change team' }))
+      expect(tab('Team 1/6')).toHaveAttribute('aria-selected', 'true')
+      await userEvent.click(await row(/Geovanni/))
+      expect(savedTeam()).toEqual([])
+      await userEvent.click(tab('all'))
+      await userEvent.click(await row(/Hershel/))
+      await userEvent.click(screen.getByRole('button', { name: 'Start' }))
+      await expectMessage(/A wild .+ appeared!/)
+      expect(savedTeam().map(m => m.creatureId)).toEqual([3])
+    })
   })
 })
 

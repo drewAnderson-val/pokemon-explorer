@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 import { BattleArena } from '@/components/battle/BattleArena'
 import { Handheld } from '@/components/battle/Handheld'
+import { TeamPicker } from '@/components/battle/TeamPicker'
 import { DialogBox } from '@/components/DialogBox'
 import { Button, buttonClass } from '@/components/ui/button'
 import { useFullscreen } from '@/hooks/useFullscreen'
@@ -14,13 +15,16 @@ import { useWildFighter } from '@/hooks/useWildFighter'
 import { createFighter, type Rng } from '@/lib/battle/engine'
 import { unlockAudio } from '@/lib/sound'
 import {
+  addMember,
   hasCreature,
   isTeamFull,
   leadWith,
   makeUid,
+  newMember,
   restAll,
   saveBattle
 } from '@/lib/team/team'
+import { cn } from '@/lib/utils'
 
 type BattleScreenProps = {
   // From `?id=N` (the ▶ Battle link): that creature leads this battle.
@@ -84,7 +88,11 @@ function BattleLoader({
 }) {
   const [team, setTeam] = useTeam()
   const [round, setRound] = useState(0)
-  const [fullTeamOk, setFullTeamOk] = useState(false)
+  // The player chose to battle with their team as it is (from the full-team
+  // message or the picker's START): the ▶ Battle pick no longer applies.
+  const [ownTeam, setOwnTeam] = useState(false)
+  // The console's team picker, opened from a message or the end of a battle.
+  const [picking, setPicking] = useState(false)
   const pick = useQuery({
     ...creatureQuery(playerId ?? 0),
     enabled: playerId !== null
@@ -106,6 +114,7 @@ function BattleLoader({
     !hasCreature(team, pick.data.id)
   const pickPending =
     playerId !== null &&
+    !ownTeam &&
     !pick.isError &&
     !pickBlocked &&
     team[0]?.creatureId !== playerId
@@ -129,15 +138,45 @@ function BattleLoader({
     !isPending &&
     !isError &&
     !pickPending &&
-    (!pickBlocked || fullTeamOk)
+    (!pickBlocked || ownTeam)
   const canFight = party.some(fighter => fighter.hp > 0)
+  // An empty team (and no ▶ Battle pick on its way) opens the picker, which
+  // then stays until START, not just until the first creature joins.
+  const needsTeam = team.length === 0 && (playerId === null || pick.isError)
+  useEffect(() => {
+    if (needsTeam) setPicking(true)
+  }, [needsTeam])
+  const showPicker = picking || needsTeam
   const wild = useWildFighter({
-    enabled: ready && canFight,
+    enabled: ready && canFight && !showPicker,
     excludeIds: team.map(member => member.creatureId),
     levels: party.map(fighter => fighter.level),
     rng,
     round
   })
+
+  if (showPicker) {
+    return (
+      <Screen className="justify-start">
+        <TeamPicker
+          onStart={() => {
+            setPicking(false)
+            setOwnTeam(true)
+            setRound(r => r + 1)
+          }}
+          onToggle={creature =>
+            setTeam(current =>
+              hasCreature(current, creature.id)
+                ? current.filter(member => member.creatureId !== creature.id)
+                : addMember(current, newMember(creature, makeUid()))
+            )
+          }
+          team={team}
+        />
+      </Screen>
+    )
+  }
+  const changeTeam = () => setPicking(true)
 
   // A started battle keeps going even when saving makes the team "tired".
   if (wild.data) {
@@ -146,6 +185,7 @@ function BattleLoader({
         enemy={wild.data}
         key={round}
         onBattleAgain={() => setRound(r => r + 1)}
+        onChangeTeam={changeTeam}
         onSave={state => setTeam(current => saveBattle(current, state))}
         party={party}
         rng={rng}
@@ -157,24 +197,21 @@ function BattleLoader({
 
   // Everything short of a battle: a message on the console's screen.
   function message() {
-    if (team.length === 0) {
-      if (playerId !== null && !pick.isError) return <Searching />
-      return <NotFound />
-    }
-    if (pickBlocked && !fullTeamOk) {
+    if (team.length === 0) return <Searching />
+    if (pickBlocked && !ownTeam) {
       return (
         <DialogBox className="flex flex-col items-center gap-4 text-center">
           <p className="text-body-lg">
-            Your team is full, so {pick.data?.name} can't join. Make room in the
-            explorer&apos;s team bar, or battle with your team.
+            Your team is full, so {pick.data?.name} can't join. Make room, or
+            battle with your team.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button onClick={() => setFullTeamOk(true)}>
+            <Button onClick={() => setOwnTeam(true)}>
               Battle with my team
             </Button>
-            <a className={buttonClass('secondary')} href="/explore">
-              Back to explorer
-            </a>
+            <Button onClick={changeTeam} variant="secondary">
+              Change team
+            </Button>
           </div>
         </DialogBox>
       )
@@ -202,12 +239,9 @@ function BattleLoader({
       return (
         <DialogBox className="flex flex-col items-center gap-4 text-center">
           <p className="text-body-lg">
-            Your team's creatures are no longer on file. Add new ones in the
-            explorer.
+            Your team's creatures are no longer on file. Pick new ones.
           </p>
-          <a className={buttonClass()} href="/explore">
-            Back to explorer
-          </a>
+          <Button onClick={changeTeam}>Change team</Button>
         </DialogBox>
       )
     }
@@ -217,7 +251,12 @@ function BattleLoader({
           <p className="text-body-lg">
             Your team is too tired to battle. Rest first!
           </p>
-          <Button onClick={() => setTeam(restAll)}>Rest</Button>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button onClick={() => setTeam(restAll)}>Rest</Button>
+            <Button onClick={changeTeam} variant="secondary">
+              Change team
+            </Button>
+          </div>
         </DialogBox>
       )
     }
@@ -225,26 +264,22 @@ function BattleLoader({
   }
 }
 
-function NotFound() {
-  return (
-    <DialogBox className="flex flex-col items-center gap-4 text-center">
-      <p className="text-body-lg">
-        No creature to send out! Add one in the explorer first.
-      </p>
-      <a className={buttonClass()} href="/explore">
-        Back to explorer
-      </a>
-    </DialogBox>
-  )
-}
-
 // Fills the handheld's glass like the battle does, so a message doesn't float
 // at the top of an empty screen (and the screen doesn't jump when the battle
 // starts).
-function Screen({ children }: { children: ReactNode }) {
+function Screen({
+  children,
+  className
+}: {
+  children: ReactNode
+  className?: string
+}) {
   return (
     <section
-      className="flex flex-col justify-center rounded-box frame-box bg-box p-2 sm:p-3"
+      className={cn(
+        'flex flex-col justify-center rounded-box frame-box bg-box p-2 sm:p-3',
+        className
+      )}
       data-battle-message
     >
       {children}

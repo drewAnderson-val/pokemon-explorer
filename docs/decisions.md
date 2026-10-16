@@ -445,3 +445,11 @@ no separate plan document).
   then needs Esc *held* to leave, which in use read as "exit doesn't work". A refused request (no user gesture)
   leaves the page as it was. Not verifiable from automation: Chrome refuses full screen for synthetic clicks and
   script ("not granted", "Permissions check failed"); entering and exiting are covered by unit tests.
+- **Choosing the team on the console:** an empty team used to dead-end with "No creature to send out!" and a link
+  back to the explorer. The battle now opens a team picker on the handheld's screen: a tab bar on top (TEAM n/6 ·
+  ALL · CUSTOM · TYPE, ◀▶ to switch), a list (▲▼, A adds or removes, same team as the explorer's team bar) and
+  START, which the START pill now presses. It also opens from "Change team" at the end of a battle and on the
+  tired / team-full / not-on-file messages. Left out: text search (typing on a D-pad is clunky; the explorer keeps
+  it) and a BACK from the picker (the arena unmounts while picking, so back would just start a new battle, the same
+  as START). Pressing START also drops a pending `▶ Battle with X` pick, so a changed team can't wait forever for X
+  to lead. Messages and the picker now fill the glass like the battle, so the screen no longer jumps.

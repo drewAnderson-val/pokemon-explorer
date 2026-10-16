@@ -10,6 +10,7 @@ export type HandheldKey =
   | 'ArrowRight'
   | 'ArrowUp'
   | 'B'
+  | 'Start'
 
 // The battle is laid out at this width inside the shell, then zoomed to fit
 // the glass. CSS zoom (unlike transform) scales layout, hit-testing and focus.
@@ -108,7 +109,7 @@ export function Handheld({
           data-shell-extra
         >
           <Pill label="Select" />
-          <Pill label="Start" />
+          <Pill control={control('Start')} label="Start" />
         </div>
 
         <Speaker />
@@ -120,13 +121,18 @@ export function Handheld({
 // The on-screen buttons press the keys the keyboard would, on whatever the
 // battle has focused, so the battle keeps one set of controls. A presses the
 // focused control (or Enter, which advances a message when nothing is
-// focused); B is Escape (back); the D-pad is the arrow keys.
+// focused); B is Escape (back); the D-pad is the arrow keys; START presses
+// the screen's `data-start` button.
 export function pressHandheldKey(screen: HTMLElement | null, key: HandheldKey) {
   const active = document.activeElement
   const target =
     screen && active instanceof HTMLElement && screen.contains(active)
       ? active
       : document.body
+  if (key === 'Start') {
+    screen?.querySelector<HTMLButtonElement>('[data-start]:enabled')?.click()
+    return
+  }
   if (key === 'A' && target !== document.body) {
     target.click()
     return
@@ -252,11 +258,26 @@ function DPad({ control }: { control: Control }) {
   )
 }
 
-// Decorative, like on the real thing here: START/SELECT do nothing.
-function Pill({ label }: { label: string }) {
+// SELECT is decorative; START presses the screen's START button, if any.
+function Pill({
+  control,
+  label
+}: {
+  control?: Record<string, unknown>
+  label: string
+}) {
+  const pill =
+    'block h-[2.4cqw] w-[11cqw] rounded-full bg-[#8f8a84] shadow-[inset_-0.4cqw_-0.4cqw_0_#6b6762]'
   return (
     <span className="flex -rotate-[25deg] flex-col items-center gap-[1.2cqw]">
-      <span className="h-[2.4cqw] w-[11cqw] rounded-full bg-[#8f8a84] shadow-[inset_-0.4cqw_-0.4cqw_0_#6b6762]" />
+      {control ? (
+        <button
+          {...control}
+          className={cn(pill, 'active:translate-y-[0.3cqw]')}
+        />
+      ) : (
+        <span className={pill} />
+      )}
       <span className="text-[2cqw] font-bold tracking-[0.12em] text-[#2c3e8f] uppercase italic">
         {label}
       </span>
