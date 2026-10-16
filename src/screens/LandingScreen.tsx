@@ -4,11 +4,9 @@ import { DialogBox } from '@/components/DialogBox'
 import { HpBar } from '@/components/HpBar'
 import { LandingScene } from '@/components/LandingScene'
 import { TypeBadge } from '@/components/TypeBadge'
-import { useCatalogSummary } from '@/hooks/usePokemonPages'
 import { useTeam } from '@/hooks/useTeam'
 import { MAX_TEAM } from '@/lib/battle/engine'
 import { formatNumber } from '@/lib/format'
-import { POKEMON_TYPES } from '@/lib/pokemon'
 import { typeStyle } from '@/lib/type-colors'
 import { cn } from '@/lib/utils'
 
@@ -45,8 +43,6 @@ const onSky = 'text-white sky-shadow focus-visible:focus-ring-sky'
 const skyText = '[text-shadow:2px_2px_0_var(--color-title-outline)]'
 
 export function LandingScreen() {
-  const summary = useCatalogSummary()
-
   return (
     <div className="flex min-h-svh flex-col">
       <header className="relative isolate overflow-hidden pb-[150px]">
@@ -105,15 +101,6 @@ export function LandingScreen() {
             <h1 className="text-display font-bold text-white uppercase title-outline">
               Explorer
             </h1>
-            <p
-              className={cn(
-                'max-w-[480px] text-[22px] leading-[1.35] text-white',
-                skyText
-              )}
-            >
-              Every creature, every type, every stat. Battle wild creatures,
-              draw your own, or pick up where your team left off.
-            </p>
             <StartMenu />
             <p
               aria-hidden
@@ -136,22 +123,6 @@ export function LandingScreen() {
           </div>
         </div>
       </header>
-
-      <main className="relative z-3 mx-auto -mt-16 w-full max-w-[1200px] px-6">
-        <section aria-label="At a glance">
-          <dl className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
-            <Stat
-              label="creatures on file"
-              value={summary.data?.total.toLocaleString('en-US') ?? '…'}
-            />
-            <Stat label="types to filter by" value={POKEMON_TYPES.length} />
-            <Stat
-              label="generations"
-              value={summary.data?.generations ?? '…'}
-            />
-          </dl>
-        </section>
-      </main>
 
       <footer className="mx-auto w-full max-w-[1200px] px-6 pt-10 pb-12 text-caption text-ink-muted">
         Fan-made explorer for a take-home project. Pokémon is a trademark of its
@@ -265,14 +236,5 @@ function StartOption({
         </span>
       </a>
     </li>
-  )
-}
-
-function Stat({ label, value }: { label: string; value: number | string }) {
-  return (
-    <div className="flex flex-row-reverse items-baseline justify-end gap-3.5 rounded-box frame-box bg-box px-5.5 py-4.5">
-      <dt className="text-[18px] text-ink-muted">{label}</dt>
-      <dd className="text-[44px] leading-none font-bold">{value}</dd>
-    </div>
   )
 }

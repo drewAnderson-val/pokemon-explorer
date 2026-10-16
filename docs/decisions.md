@@ -453,3 +453,10 @@ no separate plan document).
   it) and a BACK from the picker (the arena unmounts while picking, so back would just start a new battle, the same
   as START). Pressing START also drops a pending `▶ Battle with X` pick, so a changed team can't wait forever for X
   to lead. Messages and the picker now fill the glass like the battle, so the screen no longer jumps.
+
+## 2026-10-16: Landing page trimmed to the start menu
+
+- **What:** removed the "at a glance" stats strip (1,000 creatures / 18 types / 9 generations) and the hero tagline
+  ("Every creature, every type, every stat…"), at the owner's request. The start menu already says what you can do.
+- **Removed with it:** `GET /api/summary`, `summarizePokemon`, `fetchCatalogSummary`, `useCatalogSummary` and the
+  `CatalogSummary` type, which only the strip used. Kept: the fan-made disclaimer footer.
