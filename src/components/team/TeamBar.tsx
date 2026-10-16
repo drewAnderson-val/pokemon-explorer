@@ -16,7 +16,9 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
   return (
     <DialogBox
       aria-labelledby="team-heading"
-      className="flex flex-col gap-3"
+      className="flex scroll-mt-6 flex-col gap-3"
+      // The landing page's "Load your roster" links here.
+      id="team"
       role="region"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">

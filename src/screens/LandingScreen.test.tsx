@@ -1,34 +1,56 @@
 import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
+import { serializeTeam } from '@/lib/team/team'
 import { stubFetch } from '@/test/fake-api'
 import { renderWithClient } from '@/test/render'
 
 import { LandingScreen } from './LandingScreen'
 
+const startMenu = () => screen.getByRole('navigation', { name: 'Start' })
+
 describe('LandingScreen', () => {
-  it('is a title screen: wordmark and a menu into each part of the app', () => {
+  it('offers three ways in: battle, the Creature Lab and your roster', () => {
     stubFetch()
     renderWithClient(<LandingScreen />)
     expect(
       screen.getByRole('heading', { level: 1, name: 'Explorer' })
     ).toBeInTheDocument()
-    const menu = screen.getByRole('navigation', { name: 'Title menu' })
     expect(
-      within(menu)
+      within(startMenu())
         .getAllByRole('link')
-        .map(link => [link.textContent, link.getAttribute('href')])
-    ).toEqual([
-      ['Start exploring', '/explore'],
-      ['Battle', '/battle'],
-      ['Creature Lab', '/create']
-    ])
+        .map(link => link.getAttribute('href'))
+    ).toEqual(['/battle', '/create', '/explore#team'])
   })
 
-  it('keeps the scenery out of the accessibility tree and the tab order', () => {
+  it('says how big your roster is, or that there is none yet', () => {
+    stubFetch()
+    const { unmount } = renderWithClient(<LandingScreen />)
+    expect(
+      within(startMenu()).getByRole('link', { name: /Load your roster/ })
+    ).toHaveTextContent('No team yet')
+    unmount()
+
+    localStorage.setItem(
+      TEAM_STORAGE_KEY,
+      serializeTeam([
+        { creatureId: 1, hp: null, level: 5, uid: 'a', xp: 125 },
+        { creatureId: 2, hp: null, level: 5, uid: 'b', xp: 125 }
+      ])
+    )
+    renderWithClient(<LandingScreen />)
+    expect(
+      within(startMenu()).getByRole('link', { name: /Load your roster/ })
+    ).toHaveTextContent('2/6 creatures on your team.')
+  })
+
+  it('shows the real catalog numbers', async () => {
     stubFetch()
     renderWithClient(<LandingScreen />)
-    expect(screen.queryAllByRole('img')).toEqual([])
-    expect(screen.getAllByRole('link')).toHaveLength(3)
+    const glance = screen.getByRole('region', { name: 'At a glance' })
+    expect(await within(glance).findByText('1,000')).toBeInTheDocument()
+    expect(within(glance).getByText('18')).toBeInTheDocument()
+    expect(within(glance).getByText('9')).toBeInTheDocument()
   })
 })

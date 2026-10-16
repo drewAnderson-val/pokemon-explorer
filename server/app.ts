@@ -8,7 +8,7 @@ import {
   createVertexImageGenerator,
   type ImageGenerator
 } from './image-generator'
-import { parsePokemonQuery, queryPokemon } from './query'
+import { parsePokemonQuery, queryPokemon, summarizePokemon } from './query'
 import { createWindowLimiter } from './rate-limit'
 
 const pokemon = pokemonData as Pokemon[]
@@ -48,6 +48,12 @@ app.get('/api/pokemon', (req, res) => {
     return
   }
   res.json(queryPokemon(pokemon, parsed.query))
+})
+
+// The data never changes while the server runs, so summarise it once.
+const summary = summarizePokemon(pokemon)
+app.get('/api/summary', (_req, res) => {
+  res.json(summary)
 })
 
 export default app
