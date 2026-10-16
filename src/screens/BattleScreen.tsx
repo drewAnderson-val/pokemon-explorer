@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 import { BattleArena } from '@/components/battle/BattleArena'
 import { Handheld } from '@/components/battle/Handheld'
@@ -153,71 +153,76 @@ function BattleLoader({
       />
     )
   }
-  if (team.length === 0) {
-    if (playerId !== null && !pick.isError) return <Searching />
-    return <NotFound />
-  }
-  if (pickBlocked && !fullTeamOk) {
-    return (
-      <DialogBox className="flex flex-col items-center gap-4 text-center">
-        <p className="text-body-lg">
-          Your team is full, so {pick.data?.name} can't join. Make room in the
-          explorer&apos;s team bar, or battle with your team.
-        </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <Button onClick={() => setFullTeamOk(true)}>
-            Battle with my team
+  return <Screen>{message()}</Screen>
+
+  // Everything short of a battle: a message on the console's screen.
+  function message() {
+    if (team.length === 0) {
+      if (playerId !== null && !pick.isError) return <Searching />
+      return <NotFound />
+    }
+    if (pickBlocked && !fullTeamOk) {
+      return (
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg">
+            Your team is full, so {pick.data?.name} can't join. Make room in the
+            explorer&apos;s team bar, or battle with your team.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button onClick={() => setFullTeamOk(true)}>
+              Battle with my team
+            </Button>
+            <a className={buttonClass('secondary')} href="/explore">
+              Back to explorer
+            </a>
+          </div>
+        </DialogBox>
+      )
+    }
+    if (isError || wild.isError) {
+      return (
+        <DialogBox className="text-center" role="alert">
+          <p className="text-body-lg font-bold text-danger">
+            The connection fled! Try again.
+          </p>
+          <Button
+            className="mt-4"
+            onClick={() => {
+              retry()
+              if (wild.isError) void wild.refetch()
+            }}
+            variant="secondary"
+          >
+            Try again
           </Button>
-          <a className={buttonClass('secondary')} href="/explore">
+        </DialogBox>
+      )
+    }
+    if (ready && party.length === 0) {
+      return (
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg">
+            Your team's creatures are no longer on file. Add new ones in the
+            explorer.
+          </p>
+          <a className={buttonClass()} href="/explore">
             Back to explorer
           </a>
-        </div>
-      </DialogBox>
-    )
+        </DialogBox>
+      )
+    }
+    if (ready && !canFight) {
+      return (
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg">
+            Your team is too tired to battle. Rest first!
+          </p>
+          <Button onClick={() => setTeam(restAll)}>Rest</Button>
+        </DialogBox>
+      )
+    }
+    return <Searching />
   }
-  if (isError || wild.isError) {
-    return (
-      <DialogBox className="text-center" role="alert">
-        <p className="text-body-lg font-bold text-danger">
-          The connection fled! Try again.
-        </p>
-        <Button
-          className="mt-4"
-          onClick={() => {
-            retry()
-            if (wild.isError) void wild.refetch()
-          }}
-          variant="secondary"
-        >
-          Try again
-        </Button>
-      </DialogBox>
-    )
-  }
-  if (ready && party.length === 0) {
-    return (
-      <DialogBox className="flex flex-col items-center gap-4 text-center">
-        <p className="text-body-lg">
-          Your team's creatures are no longer on file. Add new ones in the
-          explorer.
-        </p>
-        <a className={buttonClass()} href="/explore">
-          Back to explorer
-        </a>
-      </DialogBox>
-    )
-  }
-  if (ready && !canFight) {
-    return (
-      <DialogBox className="flex flex-col items-center gap-4 text-center">
-        <p className="text-body-lg">
-          Your team is too tired to battle. Rest first!
-        </p>
-        <Button onClick={() => setTeam(restAll)}>Rest</Button>
-      </DialogBox>
-    )
-  }
-  return <Searching />
 }
 
 function NotFound() {
@@ -230,6 +235,20 @@ function NotFound() {
         Back to explorer
       </a>
     </DialogBox>
+  )
+}
+
+// Fills the handheld's glass like the battle does, so a message doesn't float
+// at the top of an empty screen (and the screen doesn't jump when the battle
+// starts).
+function Screen({ children }: { children: ReactNode }) {
+  return (
+    <section
+      className="flex flex-col justify-center rounded-box frame-box bg-box p-2 sm:p-3"
+      data-battle-message
+    >
+      {children}
+    </section>
   )
 }
 

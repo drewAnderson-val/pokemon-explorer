@@ -431,7 +431,8 @@
   /* The glass has a fixed shape (Handheld sets its height): the scene takes
      whatever the text box and menu leave, so opening a longer menu squeezes
      the scene instead of growing the console. */
-  .handheld-screen > div > [aria-label='Battle'] {
+  .handheld-screen > div > [aria-label='Battle'],
+  .handheld-screen > div > [data-battle-message] {
     height: 100%;
     border: 0;
     border-radius: 0;
