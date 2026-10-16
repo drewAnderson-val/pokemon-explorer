@@ -33,6 +33,19 @@ describe('GET /api/pokemon', () => {
     expect(body.data.every(p => p.types.includes('Fire'))).toBe(true)
   })
 
+  it('summarises the catalog for the landing page', async () => {
+    const res = await fetch(`${base}/api/summary`)
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as {
+      generations: number
+      total: number
+      types: Record<string, number>
+    }
+    expect(body).toMatchObject({ generations: 9, total: 1000 })
+    expect(Object.keys(body.types)).toHaveLength(18)
+    expect(body.types.Fire).toBe(71)
+  })
+
   it('rejects bad input with a 400', async () => {
     const res = await fetch(`${base}/api/pokemon?limit=10000`)
     expect(res.status).toBe(400)

@@ -1,3 +1,11 @@
+// GET /api/summary: the landing page's numbers, from the real data.
+export type CatalogSummary = {
+  generations: number
+  total: number
+  // Dual-type creatures count once under each type, so these sum past total.
+  types: Record<string, number>
+}
+
 export type Pagination = {
   hasNext: boolean
   hasPrev: boolean

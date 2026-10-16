@@ -393,3 +393,17 @@ no separate plan document).
 - **Full team without X:** a message ("Your team is full, so X can't join") with "Battle with my team" or back to the
   explorer. Rejected: silently replacing a member (loses their levels) or battling X as an unsaved guest (the battle
   saves HP/XP back to team members by uid).
+
+## 2026-10-15: Landing page v2 (marketing-style) replaces the title screen
+
+- **What:** the landing follows "D · Landing page v2" from the style-directions canvas: nav, wordmark, a working
+  hero search, floating sample cards, a stats strip, "What will you do?" feature cards, 18 type tiles and a "Ready,
+  trainer?" call to action. Replaces the title screen from earlier the same day (its sprites and CSS are removed).
+- **It's wired, not a picture:** the hero search is a plain GET form to `/explore?search=…` and the type tiles and
+  "Try" chips link to `/explore?type=…`; the explorer reads both once on load (`initialFilters`, unknown types
+  ignored, search capped). Numbers come from a new `GET /api/summary` computed once from the data (1,000 creatures,
+  9 generations, real per-type counts: the canvas's counts were placeholders).
+- **Additions the design predates:** Battle and Create in the nav and as two more feature cards.
+- **Sample cards** in the hero are decorative (`aria-hidden`) with letter art, as designed: the catalog's photos
+  aren't the creatures, so real records wouldn't look like cards. Type tiles get an `aria-label` ("Fire, 71
+  creatures") because the visible text reads as "Fire71".

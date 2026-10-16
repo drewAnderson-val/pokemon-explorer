@@ -1,8 +1,10 @@
 import {
+  type CatalogSummary,
   isPokemonType,
   MAX_SEARCH_LENGTH,
   PAGE_SIZE,
   type Pokemon,
+  POKEMON_TYPES,
   type PokemonPage,
   type PokemonType,
   SORT_KEYS,
@@ -102,5 +104,17 @@ export function queryPokemon(
       total,
       totalPages
     }
+  }
+}
+
+export function summarizePokemon(data: readonly Pokemon[]): CatalogSummary {
+  const types: Record<string, number> = {}
+  for (const type of POKEMON_TYPES) types[type] = 0
+  for (const p of data)
+    for (const type of p.types) types[type] = (types[type] ?? 0) + 1
+  return {
+    generations: new Set(data.map(p => p.generation)).size,
+    total: data.length,
+    types
   }
 }
