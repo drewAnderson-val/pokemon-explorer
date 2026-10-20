@@ -460,3 +460,15 @@ no separate plan document).
   ("Every creature, every type, every stat…"), at the owner's request. The start menu already says what you can do.
 - **Removed with it:** `GET /api/summary`, `summarizePokemon`, `fetchCatalogSummary`, `useCatalogSummary` and the
   `CatalogSummary` type, which only the strip used. Kept: the fan-made disclaimer footer.
+
+## 2026-10-20: README leads with gameplay media
+
+- **What:** the README is now a showcase: a linked walkthrough video, GIFs and screenshots of the explorer, battle,
+  Creature Lab and phone layout, all in `docs/media/` (recorded with Playwright against `pnpm dev`, encoded with
+  ffmpeg). The deployment write-up moved verbatim to `docs/deployment.md`.
+- **Why GIFs inline and the MP4 as a link:** GitHub only plays `<video>` for files uploaded as user attachments; a
+  committed MP4 renders as a link, while GIFs animate in place.
+- **Size:** ~14 MB of media in git. `docs` is already in `.dockerignore`, so the app image doesn't grow.
+- **Not shown:** a generated Creature Lab card (needs Vertex AI credentials locally); the form is shown filled in.
+- **Architecture diagram:** Mermaid in the README (GitHub renders it, and it diffs as text), drawn from the code:
+  browser stores, the one Cloud Run container, the JSON data, the rate-limited Vertex call and the deploy path.
