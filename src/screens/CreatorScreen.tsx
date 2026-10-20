@@ -3,6 +3,7 @@ import { type FormEvent, useId, useState } from 'react'
 
 import { CardDeck } from '@/components/CardDeck'
 import { DialogBox } from '@/components/DialogBox'
+import { HomeLink } from '@/components/HomeLink'
 import { TypeFilterChip } from '@/components/TypeFilterChip'
 import { Button } from '@/components/ui/button'
 import { useCreations } from '@/hooks/useCreations'
@@ -55,12 +56,15 @@ export function CreatorScreen() {
             Describe a creature and the lab will draw it.
           </p>
         </DialogBox>
-        <a
-          className="inline-flex h-11 items-center rounded-tag frame-tag bg-box px-4 text-label font-bold uppercase hover:bg-inset focus-visible:focus-ring"
-          href="/explore"
-        >
-          ◀ Explorer
-        </a>
+        <div className="flex flex-wrap items-center gap-4">
+          <HomeLink />
+          <a
+            className="inline-flex h-11 items-center rounded-tag frame-tag bg-box px-4 text-label font-bold uppercase hover:bg-inset focus-visible:focus-ring"
+            href="/explore"
+          >
+            ◀ Explorer
+          </a>
+        </div>
       </header>
 
       {/* Desktop: the form stays put on the left and cards fill the right, so

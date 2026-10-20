@@ -5,6 +5,7 @@ import { BattleArena } from '@/components/battle/BattleArena'
 import { Handheld } from '@/components/battle/Handheld'
 import { TeamPicker } from '@/components/battle/TeamPicker'
 import { DialogBox } from '@/components/DialogBox'
+import { HomeLink } from '@/components/HomeLink'
 import { Button, buttonClass } from '@/components/ui/button'
 import { useFullscreen } from '@/hooks/useFullscreen'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
@@ -47,12 +48,15 @@ export function BattleScreen({
         <h1 className="text-heading font-bold uppercase">Battle</h1>
         <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <SettingsToggles fullscreen={fullscreen} />
-          <a
-            className="inline-flex h-11 items-center text-label font-bold uppercase focus-visible:focus-ring"
-            href="/explore"
-          >
-            ◀ Explorer
-          </a>
+          <div className="flex items-center gap-4">
+            <HomeLink />
+            <a
+              className="inline-flex h-11 items-center text-label font-bold uppercase focus-visible:focus-ring"
+              href="/explore"
+            >
+              ◀ Explorer
+            </a>
+          </div>
         </div>
       </header>
       <div className="battle-stage" ref={stageRef}>
