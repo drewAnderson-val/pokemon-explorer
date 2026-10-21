@@ -15,6 +15,22 @@ describe('App', () => {
     expect(screen.getByLabelText('What will you look for?')).toBeInTheDocument()
   })
 
+  it.each(['/explore', '/battle', '/create'])(
+    'links back to the landing page from %s',
+    path => {
+      window.history.pushState({}, '', path)
+      stubFetch()
+      renderWithClient(<App />)
+      expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+        'href',
+        '/'
+      )
+      expect(
+        screen.queryByRole('link', { name: '◀ Explorer' })
+      ).not.toBeInTheDocument()
+    }
+  )
+
   it('renders the landing page everywhere else', () => {
     stubFetch()
     renderWithClient(<App />)

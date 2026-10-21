@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 
 import { CreatureCard, CreatureCardSkeleton } from '@/components/CreatureCard'
 import { DialogBox } from '@/components/DialogBox'
+import { HomeLink } from '@/components/HomeLink'
 import { SearchField } from '@/components/SearchField'
 import { SortMenu } from '@/components/SortMenu'
 import { StatusBox, type StatusKind } from '@/components/StatusBox'
@@ -143,7 +144,8 @@ export function ExplorerScreen() {
         : 0
 
   return (
-    <main className="mx-auto flex max-w-[1400px] flex-col gap-5 px-4 pt-6 pb-16 xs:px-6 lg:px-14 lg:pt-12">
+    <main className="mx-auto flex max-w-[1400px] flex-col gap-5 px-4 pt-3 pb-16 xs:px-6 lg:px-14 lg:pt-6">
+      <HomeLink className="self-start" />
       <header className="flex flex-col gap-6 md:flex-row">
         <DialogBox className="shrink-0">
           <h1 className="text-heading font-bold uppercase">Explorer</h1>
