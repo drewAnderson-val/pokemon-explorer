@@ -56,15 +56,7 @@ export function CreatorScreen() {
             Describe a creature and the lab will draw it.
           </p>
         </DialogBox>
-        <div className="flex flex-wrap items-center gap-4">
-          <HomeLink />
-          <a
-            className="inline-flex h-11 items-center rounded-tag frame-tag bg-box px-4 text-label font-bold uppercase hover:bg-inset focus-visible:focus-ring"
-            href="/explore"
-          >
-            ◀ Explorer
-          </a>
-        </div>
+        <HomeLink className="rounded-tag frame-tag bg-box px-4 hover:bg-inset" />
       </header>
 
       {/* Desktop: the form stays put on the left and cards fill the right, so

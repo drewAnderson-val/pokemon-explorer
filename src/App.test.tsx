@@ -25,6 +25,9 @@ describe('App', () => {
         'href',
         '/'
       )
+      expect(
+        screen.queryByRole('link', { name: '◀ Explorer' })
+      ).not.toBeInTheDocument()
     }
   )
 

@@ -476,8 +476,9 @@ no separate plan document).
 ## 2026-10-20: A Home link on every screen
 
 - **What:** Explorer, Battle and Creature Lab each get a `◀ Home` link to the landing page's start menu
-  (`src/components/HomeLink.tsx`), next to the existing `◀ Explorer` link where there is one; on the explorer it sits
-  above the header. The landing page was only reachable by editing the URL or the browser's back button.
+  (`src/components/HomeLink.tsx`). On Battle and Creature Lab it replaces the `◀ Explorer` link, at the owner's
+  request: one back link, always to the start menu, which links on to everything else. On the explorer it sits above
+  the header. Before, the landing page was only reachable through the browser's back button.
 - **Why a link, not a shared top nav:** each screen already has its own header layout (the battle's sits beside
   the handheld on desktop), and one small link fits all three without redesigning them. Rejected: making the
   screen titles link home, since a heading that's also a link isn't obvious.

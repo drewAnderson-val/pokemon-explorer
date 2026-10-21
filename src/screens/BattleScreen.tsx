@@ -48,15 +48,7 @@ export function BattleScreen({
         <h1 className="text-heading font-bold uppercase">Battle</h1>
         <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <SettingsToggles fullscreen={fullscreen} />
-          <div className="flex items-center gap-4">
-            <HomeLink />
-            <a
-              className="inline-flex h-11 items-center text-label font-bold uppercase focus-visible:focus-ring"
-              href="/explore"
-            >
-              ◀ Explorer
-            </a>
-          </div>
+          <HomeLink />
         </div>
       </header>
       <div className="battle-stage" ref={stageRef}>
