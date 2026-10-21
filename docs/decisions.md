@@ -482,3 +482,11 @@ no separate plan document).
 - **Why a link, not a shared top nav:** each screen already has its own header layout (the battle's sits beside
   the handheld on desktop), and one small link fits all three without redesigning them. Rejected: making the
   screen titles link home, since a heading that's also a link isn't obvious.
+
+## 2026-10-21: A shorter README
+
+- **What:** at the owner's request the README keeps only the landing, explorer and battle GIFs, a short Creature Lab
+  line, a smaller architecture diagram and the run commands. Dropped: the walkthrough video link, the screenshot
+  tables, the phone section and the repo map. The unreferenced files (`review.mp4`, `mobile.gif`, the PNGs) were
+  removed from `docs/media/`; they stay in git history.
+- **Why:** the page was long enough that the GIFs did the showing and the tables only repeated them.
