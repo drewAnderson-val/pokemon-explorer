@@ -50,7 +50,7 @@ export function LandingScreen() {
 
         <nav
           aria-label="Main"
-          className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-4 px-6 pt-6"
+          className="mx-auto flex max-w-[1200px] items-center px-6 pt-6"
         >
           <a
             className={cn(
@@ -65,32 +65,6 @@ export function LandingScreen() {
             />
             Explorer
           </a>
-          <ul className="flex flex-wrap items-center gap-1 text-[17px]">
-            <li>
-              <a
-                className={cn('inline-block px-3.5 py-3', onSky)}
-                href="/battle"
-              >
-                Battle
-              </a>
-            </li>
-            <li>
-              <a
-                className={cn('inline-block px-3.5 py-3', onSky)}
-                href="/create"
-              >
-                Create
-              </a>
-            </li>
-            <li className="ml-2">
-              <a
-                className="inline-flex h-11 items-center rounded-[4px] border-2 border-ink bg-box px-4 text-label font-bold uppercase hover:bg-inset focus-visible:focus-ring-sky"
-                href="/explore"
-              >
-                Open explorer
-              </a>
-            </li>
-          </ul>
         </nav>
 
         <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-12 px-6 pt-16">

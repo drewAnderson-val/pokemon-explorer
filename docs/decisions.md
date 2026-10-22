@@ -510,3 +510,8 @@ no separate plan document).
   link beside the console already leaves the battle.
 - **Rejected:** a selection index kept in React state per menu. Focus already is the selection; tracking it twice
   could drift.
+## 2026-10-22: Landing page drops the top-right links
+
+- **What:** at the owner's request the landing header keeps only the `Explorer` logo link; the Battle, Create and
+  Open explorer links are gone. The start menu below already links to all three (`/battle`, `/create`,
+  `/explore#team`), so the header repeated it.
