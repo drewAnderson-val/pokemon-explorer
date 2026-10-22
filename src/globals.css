@@ -389,6 +389,12 @@
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
+/* Rows the D-pad steps through show the selection on any focus: after a mouse
+   click, Chrome focuses the next button without :focus-visible. */
+[data-arrow-nav] :is(button, a):focus {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
 /* On the landing sky the blue ring is ~1.25:1, so links there get a white ring
    (~4.8:1 on sky-top) with an ink edge that also shows on light boxes. */
 @utility focus-ring-sky {
