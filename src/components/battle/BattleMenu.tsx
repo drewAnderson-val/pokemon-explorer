@@ -90,22 +90,13 @@ function MenuButton({
   return (
     <button
       className={cn(
-        'group flex min-h-11 min-w-0 items-start gap-1 rounded-tag px-1 py-1.5 text-left focus-visible:focus-ring enabled:hover:bg-inset disabled:text-ink-muted',
+        'flex min-h-11 min-w-0 items-start gap-1 rounded-tag px-2 py-1.5 text-left focus:bg-accent focus:focus-ring enabled:hover:bg-inset disabled:text-ink-muted',
         className
       )}
       disabled={disabled}
       onClick={onClick}
       type="button"
     >
-      <span
-        aria-hidden
-        className={cn(
-          'invisible text-label font-bold',
-          !disabled && 'group-hover:visible group-focus-visible:visible'
-        )}
-      >
-        ▶
-      </span>
       <span className="flex min-w-0 flex-col gap-1">
         <span className="text-label font-bold uppercase">{label}</span>
         {detail}

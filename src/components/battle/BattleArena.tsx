@@ -2,7 +2,7 @@ import { useEffect, useReducer, useRef, useState } from 'react'
 
 import { DialogBox } from '@/components/DialogBox'
 import { TypeBadge } from '@/components/TypeBadge'
-import { Button, buttonClass } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useSettings } from '@/hooks/useSettings'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -282,7 +282,7 @@ export function BattleArena({
         <DialogBox className="flex flex-col items-start gap-3 text-left">
           <h2 className="text-heading font-bold uppercase">{outcome.title}</h2>
           <p className="text-body-lg">{outcome.line}</p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3" data-arrow-nav>
             <Button onClick={onBattleAgain} ref={endRef}>
               Battle again
             </Button>
@@ -291,9 +291,6 @@ export function BattleArena({
                 Change team
               </Button>
             )}
-            <a className={buttonClass('secondary')} href="/explore">
-              Back to explorer
-            </a>
           </div>
         </DialogBox>
       ) : (
