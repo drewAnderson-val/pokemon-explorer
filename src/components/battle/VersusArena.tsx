@@ -17,6 +17,12 @@ import {
   type MatchView
 } from '@/lib/versus-api'
 
+import {
+  caption,
+  useBodyAdvance,
+  useCueSound,
+  usePhaseFocus
+} from './arena-hooks'
 import { BattleMenu, type MenuItem } from './BattleMenu'
 import { BattleScene } from './BattleScene'
 import { TimingBar } from './TimingBar'
@@ -29,10 +35,6 @@ type VersusArenaProps = {
 }
 
 const WAITING = 'Waiting for your friend…'
-
-const caption = (text: string) => (
-  <span className="text-caption text-ink-muted">{text}</span>
-)
 
 // A friend match from the first send-out to the end screen. The server
 // resolves turns; each newer `view.turn` is played through the same message
@@ -88,31 +90,12 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
   const advance = () =>
     typed.done ? dispatch({ type: 'advance' }) : typed.finish()
 
-  const messageRef = useRef<HTMLButtonElement>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const endRef = useRef<HTMLButtonElement>(null)
-  const lastMove = useRef(0)
+  const { endRef, lastMove, menuRef, messageRef } = usePhaseFocus(
+    pending !== null ? 'timing' : ended ? 'end' : phase,
+    waiting
+  )
 
-  // Each phase hands focus to its control, so the keyboard never drops to <body>.
-  useEffect(() => {
-    if (pending !== null) return // the timing bar focuses itself
-    if (ended) endRef.current?.focus()
-    else if (phase === 'messages') messageRef.current?.focus()
-    else if (phase === 'moves') {
-      menuRef.current?.querySelectorAll('button')[lastMove.current]?.focus()
-    } else {
-      menuRef.current
-        ?.querySelector<HTMLButtonElement>('button:enabled')
-        ?.focus()
-    }
-  }, [ended, pending, phase, waiting])
-
-  const played = useRef(-1)
-  useEffect(() => {
-    if (!settings.sound || played.current === flow.messageId) return
-    played.current = flow.messageId
-    if (step?.cue) playSound(step.cue)
-  }, [flow.messageId, settings.sound, step?.cue])
+  useCueSound(flow.messageId, step?.cue, settings.sound)
   useEffect(() => {
     if (settings.sound && ended && outcome.winner === 'you') {
       playSound('victory')
@@ -120,22 +103,7 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
     // Keyed on reaching the end only, not on a later toggle.
   }, [ended])
 
-  // Enter/Space still advance after a click elsewhere left focus on <body>.
-  const advanceRef = useRef(advance)
-  useEffect(() => {
-    advanceRef.current = advance
-  })
-  useEffect(() => {
-    if (!canAdvance) return
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.target !== document.body) return
-      if (event.key !== 'Enter' && event.key !== ' ') return
-      event.preventDefault()
-      advanceRef.current()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [canAdvance])
+  useBodyAdvance(canAdvance, advance)
 
   // A rejected send (network, 409) frees the menu to try again.
   const submit = (action: MatchAction) => {

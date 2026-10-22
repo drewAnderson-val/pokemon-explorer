@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 
 import { DialogBox } from '@/components/DialogBox'
 import { TypeBadge } from '@/components/TypeBadge'
@@ -25,6 +25,12 @@ import {
 } from '@/lib/battle/flow'
 import { playSound } from '@/lib/sound'
 
+import {
+  caption,
+  useBodyAdvance,
+  useCueSound,
+  usePhaseFocus
+} from './arena-hooks'
 import { BattleMenu, type MenuItem } from './BattleMenu'
 import { BattleScene } from './BattleScene'
 import { TimingBar } from './TimingBar'
@@ -43,10 +49,6 @@ type BattleArenaProps = {
 }
 
 type Result = { events: BattleEvent[]; state: BattleState }
-
-const caption = (text: string) => (
-  <span className="text-caption text-ink-muted">{text}</span>
-)
 
 // One battle from "A wild X appeared!" to the end screen. Remount (new `key`)
 // to start over.
@@ -83,32 +85,12 @@ export function BattleArena({
   const advance = () =>
     typed.done ? dispatch({ type: 'advance' }) : typed.finish()
 
-  const messageRef = useRef<HTMLButtonElement>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const endRef = useRef<HTMLButtonElement>(null)
-  const lastMove = useRef(0)
-
-  // Each phase hands focus to its control, so the keyboard never drops to <body>.
-  useEffect(() => {
-    if (pending !== null) return // the timing bar focuses itself
-    if (phase === 'messages') messageRef.current?.focus()
-    else if (phase === 'end') endRef.current?.focus()
-    else if (phase === 'moves') {
-      menuRef.current?.querySelectorAll('button')[lastMove.current]?.focus()
-    } else {
-      menuRef.current
-        ?.querySelector<HTMLButtonElement>('button:enabled')
-        ?.focus()
-    }
-  }, [pending, phase])
+  const { endRef, lastMove, menuRef, messageRef } = usePhaseFocus(
+    pending !== null ? 'timing' : phase
+  )
 
   // Each message plays its cue once; a win or catch ends on a jingle.
-  const played = useRef(-1)
-  useEffect(() => {
-    if (!settings.sound || played.current === flow.messageId) return
-    played.current = flow.messageId
-    if (step?.cue) playSound(step.cue)
-  }, [flow.messageId, settings.sound, step?.cue])
+  useCueSound(flow.messageId, step?.cue, settings.sound)
   useEffect(() => {
     if (!settings.sound || phase !== 'end') return
     if (flow.outcome === 'won' || flow.outcome === 'caught')
@@ -116,22 +98,7 @@ export function BattleArena({
     // Keyed on phase only: play on reaching the end, not on a later toggle.
   }, [phase])
 
-  // Enter/Space still advance after a click elsewhere left focus on <body>.
-  const advanceRef = useRef(advance)
-  useEffect(() => {
-    advanceRef.current = advance
-  })
-  useEffect(() => {
-    if (!canAdvance) return
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.target !== document.body) return
-      if (event.key !== 'Enter' && event.key !== ' ') return
-      event.preventDefault()
-      advanceRef.current()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [canAdvance])
+  useBodyAdvance(canAdvance, advance)
 
   const act = (result: Result) => {
     dispatch({ type: 'resolved', ...result })
