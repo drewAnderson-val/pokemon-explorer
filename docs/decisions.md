@@ -490,3 +490,9 @@ no separate plan document).
   tables, the phone section and the repo map. The unreferenced files (`review.mp4`, `mobile.gif`, the PNGs) were
   removed from `docs/media/`; they stay in git history.
 - **Why:** the page was long enough that the GIFs did the showing and the tables only repeated them.
+
+## 2026-10-22: Landing page drops the top-right links
+
+- **What:** at the owner's request the landing header keeps only the `Explorer` logo link; the Battle, Create and
+  Open explorer links are gone. The start menu below already links to all three (`/battle`, `/create`,
+  `/explore#team`), so the header repeated it.
