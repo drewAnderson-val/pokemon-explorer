@@ -66,4 +66,41 @@ describe('TeamBar', () => {
       screen.getByText(/Open a card and add a creature/)
     ).toBeInTheDocument()
   })
+
+  it('marks who goes first while pointing at Battle, and reorders', async () => {
+    stubFetch()
+    save([
+      { creatureId: 1, hp: 0, level: 5, uid: 'a', xp: 125 },
+      { creatureId: 2, hp: null, level: 5, uid: 'b', xp: 125 },
+      { creatureId: 3, hp: null, level: 5, uid: 'c', xp: 125 }
+    ])
+    renderWithClient(<TeamBar onNotice={() => {}} />)
+    const list = screen.getByRole('list', { name: 'Team members' })
+    await within(list).findByText('Hershel')
+    expect(screen.queryByText('Goes first')).toBeNull()
+
+    // Geovanni has fainted, so Britney leads.
+    await userEvent.hover(screen.getByRole('link', { name: '▶ Battle' }))
+    const items = () => within(list).getAllByRole('listitem')
+    expect(items()[1]).toHaveTextContent('Goes first')
+    await userEvent.unhover(screen.getByRole('link', { name: '▶ Battle' }))
+    expect(screen.queryByText('Goes first')).toBeNull()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Move Hershel earlier' })
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Move Hershel earlier' })
+    )
+    expect(items().map(item => item.textContent)).toEqual([
+      expect.stringContaining('Hershel'),
+      expect.stringContaining('Geovanni'),
+      expect.stringContaining('Britney')
+    ])
+    expect(
+      screen.getByRole('button', { name: 'Move Hershel earlier' })
+    ).toBeDisabled()
+    await userEvent.hover(screen.getByRole('link', { name: '▶ Battle' }))
+    expect(items()[0]).toHaveTextContent('Goes first')
+  })
 })
