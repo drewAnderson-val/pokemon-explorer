@@ -491,14 +491,14 @@ no separate plan document).
   removed from `docs/media/`; they stay in git history.
 - **Why:** the page was long enough that the GIFs did the showing and the tables only repeated them.
 
-## 2026-10-22: The battle cursor always shows
+## 2026-10-22: A highlight instead of the ▶ cursor
 
-- **What:** the ▶ cursor in the battle menus and the console's team picker now shows on any focus (`:focus`), not
-  only `:focus-visible`. After a mouse click (on a message, a menu item or the page), the browser focuses the next
-  menu without `:focus-visible`, so the cursor vanished and the D-pad looked dead. The focus ring stays
-  `:focus-visible`-only.
+- **What:** the battle menus and the console's team picker drop the ▶ cursor. The selected option is highlighted
+  instead (filled background plus the focus ring) on any focus, not only `:focus-visible`, at the owner's request:
+  one look whether you got there by mouse, keyboard or D-pad. Before, a mouse click focused the next menu without
+  `:focus-visible`, so nothing showed and the D-pad looked dead; and keyboard focus showed both ▶ and a ring.
 - **D-pad after a click elsewhere:** the handheld remembers the last focused control on its screen. If focus has
-  left the screen, the first arrow brings the cursor back there and A presses it, instead of sending keys to
+  left the screen, the first arrow brings the selection back there and A presses it, instead of sending keys to
   `<body>`. B and START are unchanged.
-- **Rejected:** a cursor index kept in React state per menu. Focus already is the cursor; tracking it twice could
-  drift.
+- **Rejected:** a selection index kept in React state per menu. Focus already is the selection; tracking it twice
+  could drift.

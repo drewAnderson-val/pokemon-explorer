@@ -123,7 +123,6 @@ export function TeamPicker({ onStart, onToggle, team }: TeamPickerProps) {
               }
               type="button"
             >
-              <Cursor />
               <span className="text-label font-bold uppercase">Type</span>
               <TypeBadge type={type} />
               <span className="ml-auto text-label">Next ▸</span>
@@ -153,7 +152,6 @@ export function TeamPicker({ onStart, onToggle, team }: TeamPickerProps) {
           onClick={onStart}
           type="button"
         >
-          <Cursor />
           <span className="text-label font-bold uppercase">Start</span>
         </button>
       </div>
@@ -162,7 +160,7 @@ export function TeamPicker({ onStart, onToggle, team }: TeamPickerProps) {
 }
 
 const rowClass =
-  'group flex min-h-11 w-full items-center gap-2 rounded-tag px-1 py-1 text-left focus-visible:focus-ring enabled:hover:bg-inset disabled:text-ink-muted'
+  'flex min-h-11 w-full items-center gap-2 rounded-tag px-2 py-1 text-left focus:bg-inset focus:focus-ring enabled:hover:bg-inset disabled:text-ink-muted'
 
 function CatalogList({
   full,
@@ -185,7 +183,6 @@ function CatalogList({
         onClick={() => void pages.refetch()}
         type="button"
       >
-        <Cursor />
         <span className="text-label font-bold text-danger">
           Couldn&apos;t load. Try again
         </span>
@@ -204,25 +201,12 @@ function CatalogList({
           onClick={() => void pages.fetchNextPage()}
           type="button"
         >
-          <Cursor />
           <span className="text-label font-bold uppercase">
             {pages.isFetchingNextPage ? 'Loading…' : 'More ▼'}
           </span>
         </button>
       )}
     </>
-  )
-}
-
-// The focused item shows ▶, like the battle menus.
-function Cursor() {
-  return (
-    <span
-      aria-hidden
-      className="invisible text-label font-bold group-hover:visible group-focus:visible"
-    >
-      ▶
-    </span>
   )
 }
 
@@ -289,7 +273,6 @@ function Rows({
               onClick={() => onToggle(creature)}
               type="button"
             >
-              <Cursor />
               <span className="relative size-10 shrink-0 overflow-hidden rounded-tag bg-inset">
                 <CreatureArt
                   height={80}
