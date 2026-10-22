@@ -3,14 +3,11 @@ import type { Pokemon } from '../pokemon'
 import {
   type BattleEvent,
   type BattleState,
-  calcDamage,
   createFighter,
-  CRIT_CHANCE,
   type Fighter,
-  hits,
   type Rng,
-  rollFrom,
   type Side,
+  strike,
   turnOrder
 } from './engine'
 
@@ -159,30 +156,19 @@ function attack(
   const move = attacker.moves[action.index]
   if (!move) throw new Error(`No move ${action.index} for ${seat}`)
 
-  events.push({ move, side, type: 'move' })
-  if (!hits(move, rng)) {
-    events.push({ side, type: 'miss' })
-    return
-  }
-  const crit = rng() < CRIT_CHANCE
-  const { damage, effectiveness } = calcDamage({
-    attacker,
-    bonus: clampTiming(action.timing),
-    crit,
-    defender,
-    move,
-    roll: rollFrom(rng)
-  })
-  defender.hp = Math.max(0, defender.hp - damage)
-  events.push({
-    amount: damage,
-    crit: crit && damage > 0,
-    effectiveness,
-    hp: defender.hp,
-    target: sideOf(targetSeat),
-    type: 'damage'
-  })
-  if (defender.hp === 0) faint(state, targetSeat, events)
+  const struck = strike(
+    {
+      attacker,
+      bonus: clampTiming(action.timing),
+      defender,
+      move,
+      rng,
+      side,
+      target: sideOf(targetSeat)
+    },
+    events
+  )
+  if (struck && defender.hp === 0) faint(state, targetSeat, events)
 }
 
 // Copies everything a turn mutates, so the input state is untouched.

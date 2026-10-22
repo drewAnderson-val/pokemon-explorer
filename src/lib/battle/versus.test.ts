@@ -106,7 +106,7 @@ describe('resolveVersusTurn', () => {
     const { events, state: next } = resolveVersusTurn(
       state,
       { guest: move(), host: move() },
-      scriptedRng(...HIT, 0.1, ...HIT)
+      scriptedRng(...HIT, ...HIT)
     )
     // Guest is faster, so it attacks first; host's move then faints it.
     expect(events.map(e => e.type)).toEqual([
@@ -183,7 +183,20 @@ describe('versusSendOut', () => {
     state.host.party[1].hp = 0
     state.host.mustSwitch = true
     expect(() => versusSendOut(state, 'host', 1)).toThrow()
-    expect(() => versusSendOut(state, 'host', 0)).toThrow()
+    expect(() => versusSendOut(state, 'host', 0)).toThrow("Can't switch to 0")
+  })
+
+  it('rejects a live active fighter as the target', () => {
+    const state = makeState()
+    state.host.mustSwitch = true
+    expect(() => versusSendOut(state, 'host', 0)).toThrow("Can't switch to 0")
+    expect(() =>
+      resolveVersusTurn(
+        makeState(),
+        { guest: move(), host: { to: 0, type: 'switch' } },
+        NEVER
+      )
+    ).toThrow("Can't switch to 0")
   })
 
   it('clears mustSwitch and emits a switch from null', () => {
