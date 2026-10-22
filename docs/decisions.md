@@ -573,3 +573,10 @@ server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles
 - **What:** at the owner's request the landing header keeps only the `Explorer` logo link; the Battle, Create and
   Open explorer links are gone. The start menu below already links to all three (`/battle`, `/create`,
   `/explore#team`), so the header repeated it.
+
+## 2026-10-22: The friend-battle invite sits beside the console
+
+- **What:** at the owner's request the host's share link (`Invite a friend`: the link, `Copy link`, "Waiting for a
+  friend…") moved off the handheld's screen into the side column under the settings and Home link (above the
+  console on narrow screens). It's rendered through a portal, since the match state lives inside the console.
+- **Why:** the link is for the player, not part of the game; on the screen it crowded the team picker.

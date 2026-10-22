@@ -1,4 +1,5 @@
 import { type ReactNode, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { ConsoleScreen } from '@/components/battle/ConsoleScreen'
 import { FloatingQuestion } from '@/components/battle/FloatingQuestion'
@@ -38,6 +39,8 @@ export function VersusScreen({ matchId }: { matchId: null | string }) {
   const [settings] = useSettings()
   const stageRef = useRef<HTMLDivElement>(null)
   const fullscreen = useFullscreen(stageRef)
+  // The host's invitation sits beside the console, not on its screen.
+  const [inviteSlot, setInviteSlot] = useState<HTMLDivElement | null>(null)
   return (
     <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 pt-6 pb-16 xs:px-6 md:max-w-[1240px] lg:grid lg:grid-cols-[minmax(12rem,1fr)_auto_minmax(0,1fr)] lg:items-start lg:gap-8 lg:py-3">
       <header className="flex flex-wrap items-center justify-between gap-3 lg:flex-col lg:items-start lg:pt-6">
@@ -46,6 +49,7 @@ export function VersusScreen({ matchId }: { matchId: null | string }) {
           <SettingsToggles fullscreen={fullscreen} timingAlwaysOn />
           <HomeLink />
         </div>
+        <div className="w-full lg:max-w-80" ref={setInviteSlot} />
       </header>
       <div className="battle-stage" ref={stageRef}>
         {fullscreen.active && (
@@ -58,7 +62,7 @@ export function VersusScreen({ matchId }: { matchId: null | string }) {
           </button>
         )}
         <Handheld classic={settings.classic}>
-          <Match matchId={matchId} />
+          <Match inviteSlot={inviteSlot} matchId={matchId} />
         </Handheld>
       </div>
     </main>
@@ -107,7 +111,13 @@ function Create({ onCreated }: { onCreated: (matchId: string) => void }) {
   )
 }
 
-function Lobby({ matchId }: { matchId: string }) {
+function Lobby({
+  inviteSlot,
+  matchId
+}: {
+  inviteSlot: HTMLElement | null
+  matchId: string
+}) {
   const { retry, send, status, view } = useMatch(matchId)
   // The friend match's own team: seeded from the saved one (minus Creature
   // Lab creatures, which the server can't know), never written back to it.
@@ -184,13 +194,17 @@ function Lobby({ matchId }: { matchId: string }) {
     )
   }
 
-  const host = view.you === 'host'
+  const inviting = !view.opponent.joined
+  // Locked in before the friend arrived, the host still needs the link.
+  const invite =
+    inviting &&
+    view.you === 'host' &&
+    inviteSlot &&
+    createPortal(<ShareLink matchId={matchId} />, inviteSlot)
   if (view.ready) {
-    // Locked in before the friend arrived: the host still needs the link.
-    const inviting = !view.opponent.joined
     return (
-      <ConsoleScreen className={inviting ? 'justify-start gap-2' : undefined}>
-        {inviting && host && <ShareLink matchId={matchId} />}
+      <ConsoleScreen>
+        {invite}
         <DialogBox className="flex flex-col items-center gap-4 text-center">
           <FloatingQuestion className="text-[64px]" label={SECRET} />
           {!inviting && (
@@ -205,7 +219,7 @@ function Lobby({ matchId }: { matchId: string }) {
 
   return (
     <ConsoleScreen className="justify-start gap-2">
-      {host && !view.opponent.joined && <ShareLink matchId={matchId} />}
+      {invite}
       <div className="flex items-center gap-2 border-b-4 border-ink pb-2">
         <FloatingQuestion className="text-heading" label={SECRET} />
         <p className="text-label font-bold uppercase">{SECRET}</p>
@@ -242,13 +256,19 @@ function Lobby({ matchId }: { matchId: string }) {
   )
 }
 
-function Match({ matchId }: { matchId: null | string }) {
+function Match({
+  inviteSlot,
+  matchId
+}: {
+  inviteSlot: HTMLElement | null
+  matchId: null | string
+}) {
   // The URL moves to the new match without a navigation, so the id it makes
   // is kept here.
   const [created, setCreated] = useState<null | string>(null)
   const id = matchId ?? created
   if (id === null) return <Create onCreated={setCreated} />
-  return <Lobby key={id} matchId={id} />
+  return <Lobby inviteSlot={inviteSlot} key={id} matchId={id} />
 }
 
 function Message({ children }: { children: ReactNode }) {
@@ -278,23 +298,25 @@ function ShareLink({ matchId }: { matchId: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-1 border-b-4 border-ink pb-2">
-      <div className="flex items-center gap-2">
-        <input
-          aria-label="Match link"
-          className="h-11 min-w-0 flex-1 rounded-tag border-2 border-ink bg-white px-2 text-label focus-visible:focus-ring"
-          onFocus={event => event.currentTarget.select()}
-          readOnly
-          ref={inputRef}
-          value={link}
-        />
-        <Button onClick={() => void copy()} variant="secondary">
-          {copied ? 'Copied' : 'Copy link'}
-        </Button>
-      </div>
+    <section
+      aria-label="Invite a friend"
+      className="flex flex-col gap-2 rounded-box frame-box bg-box p-3"
+    >
+      <h2 className="text-label font-bold uppercase">Invite a friend</h2>
+      <input
+        aria-label="Match link"
+        className="h-11 w-full min-w-0 rounded-tag border-2 border-ink bg-white px-2 text-label focus-visible:focus-ring"
+        onFocus={event => event.currentTarget.select()}
+        readOnly
+        ref={inputRef}
+        value={link}
+      />
+      <Button onClick={() => void copy()} variant="secondary">
+        {copied ? 'Copied' : 'Copy link'}
+      </Button>
       <p className="text-label text-ink-muted" role="status">
         Waiting for a friend…
       </p>
-    </div>
+    </section>
   )
 }

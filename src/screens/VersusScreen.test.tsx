@@ -116,6 +116,10 @@ describe('VersusScreen', () => {
       `${window.location.origin}/battle/vs/${ID}`
     )
     expect(screen.getByText('Waiting for a friend…')).toBeInTheDocument()
+    // Beside the console, not on its screen.
+    const link = screen.getByLabelText('Match link')
+    expect(link.closest('header')).not.toBeNull()
+    expect(link.closest('.battle-stage')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Copy link' }))
     expect(writeText).toHaveBeenCalledWith(
       `${window.location.origin}/battle/vs/${ID}`
