@@ -24,7 +24,8 @@ export type BattleEvent =
       target: Side
       type: 'damage'
     }
-  | { fighter: Fighter; from: null | string; type: 'switch' }
+  // side: set in friend matches, where either side can switch.
+  | { fighter: Fighter; from: null | string; side?: Side; type: 'switch' }
   | { fighter: Fighter; type: 'levelUp' }
   | { move: Move; side: Side; type: 'move' }
   | { shakes: number; type: 'catch' }
@@ -40,6 +41,8 @@ export type BattleState = {
   // The active creature fainted and another must be sent out.
   mustSwitch: boolean
   party: Fighter[]
+  // Friend match: no catching, XP or blackout.
+  versus?: boolean
   winner: null | Side
 }
 
