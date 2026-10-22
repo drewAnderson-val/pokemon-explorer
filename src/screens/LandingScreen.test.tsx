@@ -22,6 +22,12 @@ describe('LandingScreen', () => {
         .getAllByRole('link')
         .map(link => link.getAttribute('href'))
     ).toEqual(['/battle', '/create', '/explore#team'])
+    // The header doesn't repeat the start menu: just the logo, linking home.
+    expect(
+      within(screen.getByRole('navigation', { name: 'Main' }))
+        .getAllByRole('link')
+        .map(link => link.getAttribute('href'))
+    ).toEqual(['/'])
   })
 
   it('says how big your roster is, or that there is none yet', () => {

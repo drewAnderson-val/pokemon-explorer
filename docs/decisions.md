@@ -568,3 +568,8 @@ server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles
 - Seat tokens fall back to memory when `sessionStorage` is blocked, so the tab keeps its seat until a reload.
 - The Timing toggle is shown disabled ("Always on in friend battles") on the friend battle screen, since it does
   nothing there.
+## 2026-10-22: Landing page drops the top-right links
+
+- **What:** at the owner's request the landing header keeps only the `Explorer` logo link; the Battle, Create and
+  Open explorer links are gone. The start menu below already links to all three (`/battle`, `/create`,
+  `/explore#team`), so the header repeated it.
