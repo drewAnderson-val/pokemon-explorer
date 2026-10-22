@@ -38,10 +38,11 @@ export type Step = {
 
 const VISIBLE_SHAKES = 3
 
-// Names repeat across creatures, so the wild one is always "Wild X".
+// Names repeat across creatures, so the enemy is always "Wild X" (or "Foe X"
+// against a friend).
 export function displayName(state: BattleState, side: Side) {
   return side === 'enemy'
-    ? `Wild ${state.enemy.creature.name}`
+    ? `${state.versus ? 'Foe' : 'Wild'} ${state.enemy.creature.name}`
     : activeFighter(state).creature.name
 }
 
@@ -53,6 +54,12 @@ export function effectivenessText(multiplier: number, target: string) {
 }
 
 export function introSteps(state: BattleState): Step[] {
+  if (state.versus) {
+    return [
+      { text: `Your friend sent out ${state.enemy.creature.name}!` },
+      { text: `Go! ${activeFighter(state).creature.name}!` }
+    ]
+  }
   return [
     { text: `A wild ${state.enemy.creature.name} appeared!` },
     { text: `Go! ${activeFighter(state).creature.name}!` }
@@ -134,12 +141,19 @@ export function stepsFor(state: BattleState, events: BattleEvent[]): Step[] {
         break
       case 'switch': {
         const name = event.fighter.creature.name
-        steps.push({
-          show: { fighter: event.fighter, side: 'player' },
-          text: event.from
+        const side = event.side ?? 'player'
+        const mine = side === 'player'
+        let text: string
+        if (mine) {
+          text = event.from
             ? `Come back, ${event.from}! Go, ${name}!`
             : `Go! ${name}!`
-        })
+        } else {
+          text = event.from
+            ? `Your friend withdrew ${event.from} and sent out ${name}!`
+            : `Your friend sent out ${name}!`
+        }
+        steps.push({ show: { fighter: event.fighter, side }, text })
         break
       }
       case 'xp':
