@@ -1,10 +1,11 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Pokemon } from '@/lib/pokemon'
 
 import pokemon from '@/data/pokemon.json'
+import { SETTINGS_STORAGE_KEY } from '@/hooks/useSettings'
 import {
   battleViewFor,
   createVersusTeam,
@@ -118,6 +119,8 @@ beforeEach(() => {
     removeEventListener: () => {}
   }))
 })
+
+afterEach(() => localStorage.clear())
 
 describe('VersusArena', () => {
   it('opens on the friend sending out their creature, then ours', async () => {
@@ -240,27 +243,68 @@ describe('VersusArena', () => {
     error.mockRestore()
   })
 
-  it('forfeits, and ends at once when the friend leaves', async () => {
+  it('ends at once when the friend leaves', async () => {
     const state = startState()
-    const { onNewMatch, send, update } = mount(viewOf(state))
+    const { onNewMatch, update } = mount(viewOf(state))
     await readUntil('What will Geovanni do?')
-    await userEvent.click(actionButton('Forfeit'))
-    expect(send).toHaveBeenCalledWith({ type: 'forfeit' })
     update(
       viewOf(state, {
-        outcome: { reason: 'left', winner: 'them' },
+        outcome: { reason: 'left', winner: 'you' },
         phase: 'over'
       })
     )
-    expect(
-      await screen.findByText('Your friend left the battle.')
-    ).toBeInTheDocument()
+    expect(await screen.findByText('You won!')).toBeInTheDocument()
+    expect(screen.getByText('Your friend left the battle.')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'New match' }))
     expect(onNewMatch).toHaveBeenCalled()
     expect(screen.getByRole('link', { name: /Home/ })).toHaveAttribute(
       'href',
       '/'
     )
+  })
+
+  it('says so when the player was away too long', async () => {
+    mount(
+      viewOf(startState(), {
+        outcome: { reason: 'left', winner: 'them' },
+        phase: 'over'
+      })
+    )
+    expect(await screen.findByText('You lost…')).toBeInTheDocument()
+    expect(screen.getByText('You were away too long.')).toBeInTheDocument()
+  })
+
+  it('reopens on the send-out after a reload mid-switch', async () => {
+    const fainted = knockOut(startState(), 'host')
+    const { send } = mount(viewOf(fainted, { turn: 4 }))
+    await expectMessage('Who will you send out?')
+    expect(screen.queryByRole('button', { name: /Back/i })).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: /Hershel/ }))
+    expect(send).toHaveBeenCalledWith({ to: 1, type: 'sendOut' })
+  })
+
+  it('runs the timing bar even with the Timing setting off', async () => {
+    localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({ classic: true, sound: false, timing: false })
+    )
+    vi.stubGlobal('matchMedia', () => ({
+      addEventListener: () => {},
+      matches: false,
+      removeEventListener: () => {}
+    }))
+    const state = startState()
+    const { send } = mount(viewOf(state))
+    await readUntil('What will Geovanni do?')
+    await userEvent.click(actionButton('Fight'))
+    const first = state.host.party[0].moves[0].name
+    await userEvent.click(
+      screen.getByRole('button', { name: new RegExp(first) })
+    )
+    expect(
+      screen.getByRole('button', { name: 'Stop the timing bar' })
+    ).toBeInTheDocument()
+    expect(send).not.toHaveBeenCalled()
   })
 
   it.each([

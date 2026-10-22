@@ -40,15 +40,19 @@ const WAITING = 'Waiting for your friend…'
 // resolves turns; each newer `view.turn` is played through the same message
 // flow as a wild battle.
 export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
-  const [flow, dispatch] = useReducer(flowReducer, null, () =>
-    startFlow(view.battle as BattleState)
-  )
+  const [flow, dispatch] = useReducer(flowReducer, null, () => {
+    const start = view.battle as BattleState
+    const flow = startFlow(start)
+    // Reloaded mid send-out: straight to choosing who goes out.
+    if (!start.mustSwitch) return flow
+    const fainted = { ...flow.fainted, player: true }
+    return { ...flow, fainted, phase: 'switch' as const }
+  })
   // Turns before mount already happened: a reload shows where things stand.
   const applied = useRef(view.turn)
   const [overAtMount] = useState(view.outcome !== null)
   const instant = usePrefersReducedMotion()
   const [settings] = useSettings()
-  const timingOn = settings.timing && !instant
   const [pending, setPending] = useState<null | number>(null)
   // The turn an action was sent on: no second action until the view moves on.
   const [sentOn, setSentOn] = useState<null | number>(null)
@@ -68,7 +72,12 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
   const ended =
     outcome !== null &&
     (outcome.reason !== 'knockout' || phase === 'end' || overAtMount)
-  const waiting = view.acted || view.opponent.switching || sentOn === view.turn
+  // Also while a newer turn waits to be played, so the menu never lags it.
+  const waiting =
+    view.acted ||
+    view.opponent.switching ||
+    sentOn === view.turn ||
+    view.turn > applied.current
   const away = view.phase === 'battle' && !view.opponent.connected
 
   const prompt =
@@ -144,9 +153,10 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
     label: item.name,
     onSelect: () => {
       lastMove.current = index
-      if (timingOn) setPending(index)
-      // Reduced motion gets the middle of the bar's range; Timing off, none.
-      else move(index, instant ? NO_BAR_BONUS : 1)
+      // The bar always runs in a friend match; reduced motion gets the
+      // middle of its range instead.
+      if (instant) move(index, NO_BAR_BONUS)
+      else setPending(index)
     }
   }))
   const teamItems: MenuItem[] = battle.party.map((fighter, index) => {
@@ -164,7 +174,7 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
       key: fighter.uid,
       label: fighter.creature.name,
       onSelect: () => {
-        if (phase === 'switch') {
+        if (phase === 'switch' || view.battle?.mustSwitch) {
           submit({ to: index, type: 'sendOut' })
           return
         }
@@ -310,6 +320,9 @@ function outcomeCopy({ reason, winner }: MatchOutcome) {
         title
       }
     case 'left':
-      return { line: 'Your friend left the battle.', title }
+      return {
+        line: won ? 'Your friend left the battle.' : 'You were away too long.',
+        title
+      }
   }
 }
