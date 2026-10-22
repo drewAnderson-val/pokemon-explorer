@@ -100,7 +100,8 @@ const service = new gcp.cloudrunv2.Service(
           }
         }
       ],
-      scaling: { maxInstanceCount: isProd ? 3 : 1, minInstanceCount: 0 },
+      // One instance in prod: friend battles live in memory, so both players must reach the same server.
+      scaling: { maxInstanceCount: 1, minInstanceCount: 0 },
       serviceAccount: `${runtimeAccountId}@${project}.iam.gserviceaccount.com`
     }
   },

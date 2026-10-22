@@ -22,6 +22,13 @@ and full color.
 
 <p align="center"><img src="docs/media/battle.gif" alt="Two battles on the handheld: one on the Classic green screen, one in color" width="400"></p>
 
+## Battle a friend
+
+On Battle, choose **Battle a friend** and **Create match**, then send the link to a friend (or open it in a second
+tab). Each of you picks up to six creatures; everyone fights at Lv50 and nothing is saved to your team. Both pick a
+move each turn and the server settles it. Reload and you rejoin; a player who stays away for 60 seconds in the
+battle forfeits. Matches live in server memory, so prod runs a single instance.
+
 ## Creature Lab
 
 Name a creature, pick its types, describe it, and Gemini on Vertex AI draws its card (deployed app or local Google
