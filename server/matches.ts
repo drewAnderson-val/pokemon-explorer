@@ -28,6 +28,8 @@ export type MatchListener = {
   send: (view: MatchView) => void
 }
 
+export type MatchStore = ReturnType<typeof createMatchStore>
+
 type Match = {
   createdAt: number
   // Host-side events of the last turn or send-out.
