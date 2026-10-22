@@ -75,6 +75,7 @@ export function Handheld({
             onFocus={event => {
               lastFocusRef.current = event.target
             }}
+            onKeyDown={moveInButtonRow}
             ref={glassRef}
           >
             <div
@@ -203,6 +204,28 @@ function Lines({ className }: { className: string }) {
       <span className="h-[0.6cqw] bg-[#2c3e8f]" />
     </span>
   )
+}
+
+// Plain button rows on the screen (the end of a battle, messages) have no
+// menu of their own: arrows step through a `data-arrow-nav` row in order.
+function moveInButtonRow(event: React.KeyboardEvent<HTMLElement>) {
+  const step =
+    event.key === 'ArrowLeft' || event.key === 'ArrowUp'
+      ? -1
+      : event.key === 'ArrowRight' || event.key === 'ArrowDown'
+        ? 1
+        : 0
+  if (step === 0 || event.defaultPrevented) return
+  if (!(event.target instanceof HTMLElement)) return
+  const row = event.target.closest('[data-arrow-nav]')
+  if (!row) return
+  const items = Array.from(
+    row.querySelectorAll<HTMLElement>('button:enabled, a[href]')
+  )
+  const index = items.indexOf(event.target)
+  if (index < 0) return
+  event.preventDefault()
+  items[Math.max(0, Math.min(items.length - 1, index + step))]?.focus()
 }
 
 // The two thin lines across the top of the bezel, broken by a caption.

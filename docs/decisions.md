@@ -500,5 +500,7 @@ no separate plan document).
 - **D-pad after a click elsewhere:** the handheld remembers the last focused control on its screen. If focus has
   left the screen, the first arrow brings the selection back there and A presses it, instead of sending keys to
   `<body>`. B and START are unchanged.
+- **Button rows:** the end of a battle and the full-team / tired messages are plain buttons, not a menu, so the
+  D-pad did nothing there. Rows marked `data-arrow-nav` now step through their buttons and links with the arrows.
 - **Rejected:** a selection index kept in React state per menu. Focus already is the selection; tracking it twice
   could drift.

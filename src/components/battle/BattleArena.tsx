@@ -282,7 +282,7 @@ export function BattleArena({
         <DialogBox className="flex flex-col items-start gap-3 text-left">
           <h2 className="text-heading font-bold uppercase">{outcome.title}</h2>
           <p className="text-body-lg">{outcome.line}</p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3" data-arrow-nav>
             <Button onClick={onBattleAgain} ref={endRef}>
               Battle again
             </Button>

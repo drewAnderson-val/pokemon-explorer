@@ -182,6 +182,24 @@ describe('BattleScreen', () => {
     expect(screen.getByRole('group', { name: /move/i })).toBeInTheDocument()
   })
 
+  it('moves between the end screen buttons with the D-pad', async () => {
+    await open(1)
+    const control = (key: string) =>
+      document.querySelector<HTMLButtonElement>(`[data-control="${key}"]`)!
+    await userEvent.click(screen.getByRole('button', { name: 'Run' }))
+    await readUntil('Got away safely!')
+    while (!screen.queryByRole('button', { name: 'Battle again' })) {
+      await userEvent.keyboard('{Enter}')
+    }
+    expect(screen.getByRole('button', { name: 'Battle again' })).toHaveFocus()
+    await userEvent.click(control('ArrowRight'))
+    expect(screen.getByRole('button', { name: 'Change team' })).toHaveFocus()
+    await userEvent.click(control('ArrowDown'))
+    expect(screen.getByRole('link', { name: 'Back to explorer' })).toHaveFocus()
+    await userEvent.click(control('ArrowLeft'))
+    expect(screen.getByRole('button', { name: 'Change team' })).toHaveFocus()
+  })
+
   it('offers full screen only where the browser supports it', async () => {
     await open(1)
     // jsdom has no Fullscreen API, like iPhone Safari: no button.
