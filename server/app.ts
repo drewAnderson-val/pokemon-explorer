@@ -8,6 +8,8 @@ import {
   createVertexImageGenerator,
   type ImageGenerator
 } from './image-generator'
+import { createMatchStore } from './matches'
+import { matchesRoute } from './matches-route'
 import { parsePokemonQuery, queryPokemon } from './query'
 import { createWindowLimiter } from './rate-limit'
 
@@ -38,6 +40,19 @@ app.use(
     },
     global: createWindowLimiter(100, 24 * HOUR),
     perClient: createWindowLimiter(5, HOUR)
+  })
+)
+
+// pokemon.json only, so Creature Lab creatures can't enter a friend match.
+const matchStore = createMatchStore({
+  creatures: new Map(pokemon.map(p => [p.id, p])),
+  maxOpen: 500
+})
+setInterval(() => matchStore.sweep(), 5_000).unref()
+app.use(
+  matchesRoute({
+    perClient: createWindowLimiter(20, HOUR),
+    store: matchStore
   })
 )
 

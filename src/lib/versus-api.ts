@@ -1,0 +1,115 @@
+import type { BattleEvent, BattleState } from './battle/engine'
+import type { Seat } from './battle/versus'
+
+// Wire types shared by the match routes and the friend battle client.
+export type MatchAction =
+  | { creatureIds: number[]; type: 'team' }
+  | { index: number; timing: number; type: 'move' }
+  | { to: number; type: 'sendOut' }
+  | { to: number; type: 'switch' }
+  | { type: 'forfeit' }
+
+export type MatchOutcome = {
+  reason: 'forfeit' | 'knockout' | 'left'
+  winner: 'them' | 'you'
+}
+
+// One player's view of a match. The opponent's team is never in it before the
+// battle; after, only their active creature (as `battle.enemy`) and a count.
+export type MatchView = {
+  // You've chosen this turn's action.
+  acted: boolean
+  // From your side; null before the battle.
+  battle: BattleState | null
+  // The turn that produced `battle`, from your side.
+  events: BattleEvent[]
+  opponent: {
+    acted: boolean
+    connected: boolean
+    joined: boolean
+    ready: boolean
+    standing: number
+    switching: boolean
+  }
+  outcome: MatchOutcome | null
+  phase: 'battle' | 'over' | 'picking' | 'waiting'
+  // Your team is locked in.
+  ready: boolean
+  // 0 until the battle starts; +1 per resolved turn or send-out.
+  turn: number
+  you: Seat
+}
+
+export const tokenKey = (matchId: string) => `pokemon-explorer:match:${matchId}`
+
+export const matchPath = (matchId: string) => `/battle/vs/${matchId}`
+
+// Errors carry the API's message, which is written for people to read.
+export async function createMatch(): Promise<{
+  matchId: string
+  token: string
+}> {
+  const response = await fetch('/api/matches', { method: 'POST' })
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, 'Could not create the match'))
+  }
+  return (await response.json()) as { matchId: string; token: string }
+}
+
+export async function joinMatch(
+  matchId: string
+): Promise<{ status: 'full' | 'gone' } | { token: string }> {
+  const response = await fetch(`/api/matches/${matchId}/join`, {
+    method: 'POST'
+  })
+  if (response.status === 404) return { status: 'gone' }
+  if (response.status === 409) return { status: 'full' }
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, 'Could not join the match'))
+  }
+  return (await response.json()) as { token: string }
+}
+
+// Seat tokens live in sessionStorage so each tab holds its own seat. When
+// storage is blocked they live in memory instead (and a reload loses them).
+const tokens = new Map<string, string>()
+
+export function loadToken(matchId: string): null | string {
+  try {
+    const saved = window.sessionStorage.getItem(tokenKey(matchId))
+    if (saved) return saved
+  } catch {
+    // Blocked storage: fall back to memory.
+  }
+  return tokens.get(matchId) ?? null
+}
+
+export function saveToken(matchId: string, token: string) {
+  try {
+    window.sessionStorage.setItem(tokenKey(matchId), token)
+  } catch {
+    tokens.set(matchId, token)
+  }
+}
+
+export async function sendAction(
+  matchId: string,
+  token: string,
+  action: MatchAction
+): Promise<void> {
+  const response = await fetch(`/api/matches/${matchId}/actions`, {
+    body: JSON.stringify({ action, token }),
+    headers: { 'content-type': 'application/json' },
+    method: 'POST'
+  })
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, 'Could not send that move'))
+  }
+}
+
+async function errorMessage(response: Response, fallback: string) {
+  const body = (await response.json().catch(() => null)) as null | {
+    error?: string
+  }
+  return body?.error ?? `${fallback} (${response.status})`
+}

@@ -491,6 +491,84 @@ no separate plan document).
   removed from `docs/media/`; they stay in git history.
 - **Why:** the page was long enough that the GIFs did the showing and the tables only repeated them.
 
+## 2026-10-22: Friend battles
+
+Online one-on-one battles: the host makes a match and sends a link, a friend opens it, each picks a team, and the
+server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles-design.md`.
+
+**The owner's choices**
+
+- Online, on separate devices (or two tabs). The host shares a link; no matchmaking with strangers.
+- Each player sees the same handheld mirrored: their creature at the bottom with the menu, the opponent's at the top.
+- Each player picks their own team of up to 6 ("choose your explorer"). The opponent's team stays hidden until the
+  battle starts; while picking, their spot shows a floating question mark.
+- Reviewers testing with two tabs, and real friends on two devices: both must work.
+
+**Claude's calls** (the owner said "pick your choice"; each is open to pushback)
+
+- **Turns:** both players choose, then the server resolves the turn: switches first, then moves in speed order
+  (tie = coin flip). Rejected: alternating turns, which are unlike the games and halve the pace.
+- **Timing bar:** kept; each player stops their own bar and the server clamps the multiplier to 1-1.25. It runs
+  even with the Timing setting off (reduced motion gets a fixed ×1.125 instead). Rejected: dropping it (it is the
+  battle's signature), a server-timed bar (needs latency compensation), and honouring the setting (turning it off
+  would cost up to 25% damage).
+- **Levels:** everyone fights at Lv50, full HP, and nothing is written to the saved team. Rejected: saved levels (a
+  Lv5 newcomer would be stomped, and the server would trust client-sent levels).
+- **Menu and ending:** FIGHT, TEAM, FORFEIT, no CATCH. Win by knocking out the other team. A fainted creature's owner
+  sends out another for free while the other waits.
+- **Seats:** a secret token per player in `sessionStorage`, so two tabs are two players. Rejected: `localStorage`
+  (both tabs would be one player) and accounts (out of scope).
+- **Team picking:** reuses `TeamPicker`, starting from the saved team, but changes stay local to the match.
+  Rejected: editing the saved team, since two tabs would overwrite each other.
+- **Server authority:** the server holds the state and rolls with its own `Math.random`; clients send intents only.
+  Rejected: peer-to-peer or client-resolved turns (cheating, shared RNG).
+- **Transport:** Server-Sent Events for updates, `POST` for actions. Rejected: WebSockets (new dependency, nothing
+  needs client-to-server streaming) and polling (laggy or chatty).
+- **Storage and scale:** in memory, no database, so Cloud Run `maxInstanceCount` in prod goes from 3 to 1
+  (`infra/index.ts`). Rejected: Redis or Firestore (right for scale-out, too much for a take-home) and session
+  affinity (two players can still land on different instances).
+- **Disconnects:** in the battle, a dropped player has 60 s to return with the same token before it counts as a
+  forfeit. Before the battle nothing is forfeited, since phones suspend the host's tab while they share the link.
+- **Expiry and abuse:** a match that hasn't started expires 30 min after creation; a finished one is dropped after
+  10 min. Creating matches is limited to 20/hour per client (`createWindowLimiter`) and 500 held at once.
+
+**Calls made during the build** (Claude's)
+
+- The events stream never answers with an HTTP error: for an unknown or expired match, or a bad token, it answers
+  200 and sends one `gone` event, then ends, because an `EventSource` can't read the status. The `POST` routes keep
+  their status codes. This departs from the spec.
+- `team` is accepted while waiting as well as while picking, so the host can pick before the friend joins.
+- A seat that had already dropped before the battle starts gets its full 60 s counted from battle start.
+- Forfeit is allowed before the battle starts; joining a finished match answers 409; the opponent's standing count
+  is 0 before the battle.
+- Creature Lab creatures in the saved team are left out of a friend team.
+- A join that fails (network or 5xx) shows "Couldn't reach the server." with Try again, rather than "gone".
+- React StrictMode's double effect shares one in-flight join per match, so a seat is claimed once.
+- A player who comes back after 60 s away sees "You were away too long." (a loss), not a generic message.
+- The timing bar is not disabled by the Timing setting in a friend match; the menu is disabled while a newer turn is
+  queued, closing a one-frame stale-menu window.
+- The wild battle's hit/crit/damage step became a shared helper used by both engines (same random draw order); the
+  arena's focus, sound and keyboard effects became hooks shared by both arenas.
+- Route tests mount the matches router on a fresh app per test, so the rate-limit test can't disturb the flow tests.
+
+**Calls from the final review** (Claude's)
+
+- Cloud Run request concurrency goes from the default 80 to 1000 (`infra/index.ts`): every player holds an idle SSE
+  stream, so 80 would cap the single instance at about 40 battles. Rejected: more instances (matches live in memory).
+- A dropped stream is shown to the opponent only after 5 s away (`AWAY_GRACE_MS`, checked by the 5 s sweep), so a
+  reload doesn't flicker "disconnected". The 60 s forfeit still counts from the drop.
+- Forfeit needs a second tap ("Forfeit? Tap again"; any other action or phase change cancels it), and stays available
+  while waiting for the friend, so a stalled opponent can always be left.
+- The end screen stays after the server drops the finished match, instead of switching to "This match has ended or
+  expired."
+- A stream replaced by a newer one with the same token gets a `replaced` event and says "This match is open in another
+  tab." Rejected: reusing `gone`, which told the older tab the match was over.
+- An `EventSource` the browser gives up on (an error status on reconnect) shows "Couldn't reach the server." with Try
+  again, which reconnects with the saved token. Errors it is still retrying are left to it.
+- Seat tokens fall back to memory when `sessionStorage` is blocked, so the tab keeps its seat until a reload.
+- The Timing toggle is shown disabled ("Always on in friend battles") on the friend battle screen, since it does
+  nothing there.
+
 ## 2026-10-22: A highlight instead of the ▶ cursor
 
 - **What:** the battle menus and the console's team picker drop the ▶ cursor. The selected option is highlighted
@@ -510,8 +588,16 @@ no separate plan document).
   link beside the console already leaves the battle.
 - **Rejected:** a selection index kept in React state per menu. Focus already is the selection; tracking it twice
   could drift.
+
 ## 2026-10-22: Landing page drops the top-right links
 
 - **What:** at the owner's request the landing header keeps only the `Explorer` logo link; the Battle, Create and
   Open explorer links are gone. The start menu below already links to all three (`/battle`, `/create`,
   `/explore#team`), so the header repeated it.
+
+## 2026-10-22: The friend-battle invite sits beside the console
+
+- **What:** at the owner's request the host's share link (`Invite a friend`: the link, `Copy link`, "Waiting for a
+  friend…") moved off the handheld's screen into the side column under the settings and Home link (above the
+  console on narrow screens). It's rendered through a portal, since the match state lives inside the console.
+- **Why:** the link is for the player, not part of the game; on the screen it crowded the team picker.

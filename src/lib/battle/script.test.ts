@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { makeFighter } from '@/test/battle'
 
 import { type BattleEvent, createBattle } from './engine'
-import { effectivenessText, introSteps, stepsFor } from './script'
+import { displayName, effectivenessText, introSteps, stepsFor } from './script'
 
 const sparky = makeFighter({ name: 'Sparky', types: ['Electric'] }, 5, {
   uid: 'p'
@@ -18,6 +18,48 @@ describe('introSteps', () => {
     expect(introSteps(battle).map(s => s.text)).toEqual([
       'A wild Puddle appeared!',
       'Go! Sparky!'
+    ])
+  })
+})
+
+describe('in a friend match', () => {
+  const versus = { ...battle, versus: true }
+
+  it('names the foe "Foe X", and the wild one "Wild X"', () => {
+    expect(displayName(versus, 'enemy')).toBe('Foe Puddle')
+    expect(displayName(battle, 'enemy')).toBe('Wild Puddle')
+  })
+
+  it('has the friend send out their creature first', () => {
+    expect(introSteps(versus).map(s => s.text)).toEqual([
+      'Your friend sent out Puddle!',
+      'Go! Sparky!'
+    ])
+  })
+
+  it("shows the friend's send-outs on the enemy side", () => {
+    expect(
+      stepsFor(versus, [
+        { fighter: puddle, from: null, side: 'enemy', type: 'switch' }
+      ])
+    ).toEqual([
+      {
+        show: { fighter: puddle, side: 'enemy' },
+        text: 'Your friend sent out Puddle!'
+      }
+    ])
+    expect(
+      stepsFor(versus, [
+        { fighter: puddle, from: 'Drip', side: 'enemy', type: 'switch' }
+      ]).map(s => s.text)
+    ).toEqual(['Your friend withdrew Drip and sent out Puddle!'])
+  })
+
+  it('still shows a switch with no side on the player', () => {
+    expect(
+      stepsFor(battle, [{ fighter: sparky, from: null, type: 'switch' }])
+    ).toEqual([
+      { show: { fighter: sparky, side: 'player' }, text: 'Go! Sparky!' }
     ])
   })
 })

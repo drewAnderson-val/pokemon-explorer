@@ -1,20 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
-import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { BattleArena } from '@/components/battle/BattleArena'
+import { ConsoleScreen } from '@/components/battle/ConsoleScreen'
 import { Handheld } from '@/components/battle/Handheld'
+import { SettingsToggles } from '@/components/battle/SettingsToggles'
 import { TeamPicker } from '@/components/battle/TeamPicker'
 import { DialogBox } from '@/components/DialogBox'
 import { HomeLink } from '@/components/HomeLink'
 import { Button, buttonClass } from '@/components/ui/button'
 import { useFullscreen } from '@/hooks/useFullscreen'
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useSettings } from '@/hooks/useSettings'
 import { useTeam } from '@/hooks/useTeam'
 import { creatureQuery, useTeamCreatures } from '@/hooks/useTeamCreatures'
 import { useWildFighter } from '@/hooks/useWildFighter'
 import { createFighter, type Rng } from '@/lib/battle/engine'
-import { unlockAudio } from '@/lib/sound'
 import {
   addMember,
   hasCreature,
@@ -25,7 +25,6 @@ import {
   restAll,
   saveBattle
 } from '@/lib/team/team'
-import { cn } from '@/lib/utils'
 
 type BattleScreenProps = {
   // From `?id=N` (the ▶ Battle link): that creature leads this battle.
@@ -48,7 +47,16 @@ export function BattleScreen({
         <h1 className="text-heading font-bold uppercase">Battle</h1>
         <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <SettingsToggles fullscreen={fullscreen} />
-          <HomeLink />
+          <div className="flex flex-wrap items-center gap-3">
+            <HomeLink />
+            <a
+              className="inline-flex h-11 items-center gap-1 text-label font-bold uppercase focus-visible:focus-ring"
+              href="/battle/vs"
+            >
+              Battle a friend
+              <span aria-hidden>▶</span>
+            </a>
+          </div>
         </div>
       </header>
       <div className="battle-stage" ref={stageRef}>
@@ -153,7 +161,7 @@ function BattleLoader({
 
   if (showPicker) {
     return (
-      <Screen className="justify-start">
+      <ConsoleScreen className="justify-start">
         <TeamPicker
           onStart={() => {
             setPicking(false)
@@ -169,7 +177,7 @@ function BattleLoader({
           }
           team={team}
         />
-      </Screen>
+      </ConsoleScreen>
     )
   }
   const changeTeam = () => setPicking(true)
@@ -189,7 +197,7 @@ function BattleLoader({
       />
     )
   }
-  return <Screen>{message()}</Screen>
+  return <ConsoleScreen>{message()}</ConsoleScreen>
 
   // Everything short of a battle: a message on the console's screen.
   function message() {
@@ -260,29 +268,6 @@ function BattleLoader({
   }
 }
 
-// Fills the handheld's glass like the battle does, so a message doesn't float
-// at the top of an empty screen (and the screen doesn't jump when the battle
-// starts).
-function Screen({
-  children,
-  className
-}: {
-  children: ReactNode
-  className?: string
-}) {
-  return (
-    <section
-      className={cn(
-        'flex flex-col justify-center rounded-box frame-box bg-box p-2 sm:p-3',
-        className
-      )}
-      data-battle-message
-    >
-      {children}
-    </section>
-  )
-}
-
 function Searching() {
   return (
     <DialogBox className="text-center" showMore>
@@ -290,76 +275,5 @@ function Searching() {
         Searching the tall grass…
       </p>
     </DialogBox>
-  )
-}
-
-// Sound (off until asked for) and the timing bar (on, unless reduced motion).
-function SettingsToggles({
-  fullscreen
-}: {
-  fullscreen: ReturnType<typeof useFullscreen>
-}) {
-  const [settings, setSettings] = useSettings()
-  const reduced = usePrefersReducedMotion()
-  const toggleClass = (pressed: boolean) =>
-    buttonClass(pressed ? 'primary' : 'secondary', 'h-10 gap-1.5 px-3')
-  return (
-    <div
-      aria-label="Battle settings"
-      className="flex flex-wrap gap-2"
-      role="group"
-    >
-      {fullscreen.supported && (
-        <button
-          className={toggleClass(false)}
-          onClick={() => void fullscreen.toggle()}
-          type="button"
-        >
-          <span aria-hidden>⛶</span>
-          Full screen
-        </button>
-      )}
-      <button
-        aria-pressed={settings.sound}
-        className={toggleClass(settings.sound)}
-        onClick={() => {
-          // Browsers allow audio only after a user gesture: this is it.
-          unlockAudio()
-          setSettings(current => ({ ...current, sound: !current.sound }))
-        }}
-        type="button"
-      >
-        <span aria-hidden>{settings.sound ? '🔊' : '🔇'}</span>
-        Sound
-      </button>
-      <button
-        aria-pressed={settings.timing && !reduced}
-        className={toggleClass(settings.timing && !reduced)}
-        disabled={reduced}
-        onClick={() =>
-          setSettings(current => ({ ...current, timing: !current.timing }))
-        }
-        title={reduced ? 'Off while reduced motion is on' : undefined}
-        type="button"
-      >
-        <span aria-hidden>⏱</span>
-        Timing
-      </button>
-      <button
-        aria-pressed={settings.classic}
-        className={toggleClass(settings.classic)}
-        onClick={() =>
-          setSettings(current => ({ ...current, classic: !current.classic }))
-        }
-        title="The battle screen in four greens"
-        type="button"
-      >
-        <span
-          aria-hidden
-          className="size-3 border-2 border-current bg-[#8bac0f]"
-        />
-        Classic
-      </button>
-    </div>
   )
 }

@@ -10,10 +10,12 @@ import { type Pokemon, POKEMON_TYPES, type PokemonType } from '@/lib/pokemon'
 import { hasCreature, isTeamFull, type TeamMember } from '@/lib/team/team'
 import { cn } from '@/lib/utils'
 
-const TABS = ['team', 'all', 'custom', 'type'] as const
-type Tab = (typeof TABS)[number]
+const ALL_TABS = ['team', 'all', 'custom', 'type'] as const
+type Tab = (typeof ALL_TABS)[number]
 
 type TeamPickerProps = {
+  // false drops the Creature Lab tab (a friend match can't use custom ones).
+  allowCustom?: boolean
   onStart: () => void
   onToggle: (creature: Pokemon) => void
   team: TeamMember[]
@@ -21,7 +23,15 @@ type TeamPickerProps = {
 
 // Choosing the team on the console: a tab bar on top (◀▶ switches), a list
 // (▲▼ moves, A adds or removes), START to battle. Shares the explorer's team.
-export function TeamPicker({ onStart, onToggle, team }: TeamPickerProps) {
+export function TeamPicker({
+  allowCustom = true,
+  onStart,
+  onToggle,
+  team
+}: TeamPickerProps) {
+  const TABS: readonly Tab[] = allowCustom
+    ? ALL_TABS
+    : ALL_TABS.filter(name => name !== 'custom')
   const [tab, setTab] = useState<Tab>(team.length > 0 ? 'team' : 'all')
   const [type, setType] = useState<PokemonType>(POKEMON_TYPES[0])
   const rootRef = useRef<HTMLDivElement>(null)
@@ -73,7 +83,10 @@ export function TeamPicker({ onStart, onToggle, team }: TeamPickerProps) {
     >
       <div
         aria-label="Lists"
-        className="grid grid-cols-4 gap-1 border-b-4 border-ink pb-2"
+        className={cn(
+          'grid gap-1 border-b-4 border-ink pb-2',
+          allowCustom ? 'grid-cols-4' : 'grid-cols-3'
+        )}
         role="tablist"
       >
         {TABS.map(name => (

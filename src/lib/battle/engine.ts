@@ -24,7 +24,8 @@ export type BattleEvent =
       target: Side
       type: 'damage'
     }
-  | { fighter: Fighter; from: null | string; type: 'switch' }
+  // side: set in friend matches, where either side can switch.
+  | { fighter: Fighter; from: null | string; side?: Side; type: 'switch' }
   | { fighter: Fighter; type: 'levelUp' }
   | { move: Move; side: Side; type: 'move' }
   | { shakes: number; type: 'catch' }
@@ -40,6 +41,8 @@ export type BattleState = {
   // The active creature fainted and another must be sent out.
   mustSwitch: boolean
   party: Fighter[]
+  // Friend match: no catching, XP or blackout.
+  versus?: boolean
   winner: null | Side
 }
 
@@ -278,24 +281,32 @@ export function sendOut(state: BattleState, to: number): TurnResult {
   return { events, state: next }
 }
 
-function attack(
-  state: BattleState,
-  side: Side,
-  moveIndex: number,
-  rng: Rng,
-  events: BattleEvent[],
-  bonus = 1
+// One attack: the move event, then a miss or a damage event. Mutates the
+// defender's hp. Draws rng in order: hit, crit, roll. Returns whether it hit.
+export function strike(
+  {
+    attacker,
+    bonus,
+    defender,
+    move,
+    rng,
+    side,
+    target
+  }: {
+    attacker: Fighter
+    bonus: number
+    defender: Fighter
+    move: Move
+    rng: Rng
+    side: Side
+    target: Side
+  },
+  events: BattleEvent[]
 ) {
-  const target = opponentOf(side)
-  const attacker = side === 'player' ? activeFighter(state) : state.enemy
-  const defender = target === 'player' ? activeFighter(state) : state.enemy
-  const move = attacker.moves[moveIndex]
-  if (!move) throw new Error(`No move ${moveIndex} for ${side}`)
-
   events.push({ move, side, type: 'move' })
   if (!hits(move, rng)) {
     events.push({ side, type: 'miss' })
-    return
+    return false
   }
   const crit = rng() < CRIT_CHANCE
   const { damage, effectiveness } = calcDamage({
@@ -315,7 +326,28 @@ function attack(
     target,
     type: 'damage'
   })
-  if (defender.hp === 0) faint(state, target, events)
+  return true
+}
+
+function attack(
+  state: BattleState,
+  side: Side,
+  moveIndex: number,
+  rng: Rng,
+  events: BattleEvent[],
+  bonus = 1
+) {
+  const target = opponentOf(side)
+  const attacker = side === 'player' ? activeFighter(state) : state.enemy
+  const defender = target === 'player' ? activeFighter(state) : state.enemy
+  const move = attacker.moves[moveIndex]
+  if (!move) throw new Error(`No move ${moveIndex} for ${side}`)
+
+  const struck = strike(
+    { attacker, bonus, defender, move, rng, side, target },
+    events
+  )
+  if (struck && defender.hp === 0) faint(state, target, events)
 }
 
 // Defeating or catching gives XP to the creature on the field. Leveling
