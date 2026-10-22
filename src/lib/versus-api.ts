@@ -53,7 +53,7 @@ export async function createMatch(): Promise<{
   if (!response.ok) {
     throw new Error(await errorMessage(response, 'Could not create the match'))
   }
-  return response.json()
+  return (await response.json()) as { matchId: string; token: string }
 }
 
 export async function joinMatch(
@@ -67,7 +67,7 @@ export async function joinMatch(
   if (!response.ok) {
     throw new Error(await errorMessage(response, 'Could not join the match'))
   }
-  return response.json()
+  return (await response.json()) as { token: string }
 }
 
 // Seat tokens live in sessionStorage so each tab holds its own seat.

@@ -1,4 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { createElement, type ReactNode, StrictMode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { MatchView } from '@/lib/versus-api'
@@ -78,5 +79,30 @@ describe('useMatch', () => {
       action: { type: 'forfeit' },
       token: 'tok'
     })
+  })
+
+  it('joins once under StrictMode', async () => {
+    const fetchMock = stubFetch(() => Response.json({ token: 'new' }))
+    const Source = stubEventSource()
+    const wrapper = ({ children }: { children: ReactNode }) =>
+      createElement(StrictMode, null, children)
+    const { result } = renderHook(() => useMatch('abc'), { wrapper })
+    await waitFor(() => expect(Source.last).not.toBeNull())
+    act(() => Source.last?.emit('view', view))
+    expect(result.current.status).toBe('live')
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('reports a failed join and recovers on retry', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    stubFetch(() => Response.json({ error: 'boom' }, { status: 500 }))
+    const Source = stubEventSource()
+    const { result } = renderHook(() => useMatch('abc'))
+    await waitFor(() => expect(result.current.status).toBe('error'))
+    stubFetch(() => Response.json({ token: 'new' }))
+    act(() => result.current.retry())
+    await waitFor(() => expect(Source.last).not.toBeNull())
+    act(() => Source.last?.emit('view', view))
+    expect(result.current.status).toBe('live')
   })
 })
