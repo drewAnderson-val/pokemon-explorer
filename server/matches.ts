@@ -23,8 +23,11 @@ export type ActResult =
   | { error: string; ok: false; status: 400 | 404 | 409 }
   | { ok: true }
 
+// `replaced`: the same token opened a newer stream.
+export type CloseReason = 'gone' | 'replaced'
+
 export type MatchListener = {
-  close: () => void
+  close: (reason: CloseReason) => void
   send: (view: MatchView) => void
 }
 
@@ -44,6 +47,9 @@ type Match = {
 }
 
 type SeatState = {
+  // The opponent is told this seat is disconnected: it has had no stream for
+  // AWAY_GRACE_MS (or has never had one).
+  away: boolean
   // When the seat's last stream dropped (or the seat was claimed); null while
   // a stream is open.
   disconnectedAt: null | number
@@ -53,8 +59,10 @@ type SeatState = {
   token: string
 }
 
-// The battle's disconnect forfeit; the expiry of matches that never started
+// How long a seat is without a stream before the opponent sees it as away,
+// so a reload doesn't flicker. The battle's disconnect forfeit; the expiry of matches that never started
 // and of finished ones.
+export const AWAY_GRACE_MS = 5_000
 export const DISCONNECT_MS = 60_000
 export const UNSTARTED_MS = 30 * 60_000
 export const FINISHED_MS = 10 * 60_000
@@ -74,6 +82,7 @@ const isIndex = (value: unknown): value is number =>
 const newToken = () => randomBytes(32).toString('base64url')
 
 const newSeat = (time: number): SeatState => ({
+  away: true,
   disconnectedAt: time,
   listeners: new Set(),
   pending: null,
@@ -82,8 +91,8 @@ const newSeat = (time: number): SeatState => ({
 })
 
 // Friend matches held in memory. One instance holds them all, so `maxOpen`
-// caps the memory; `sweep` (run lazily by the routes) does the expiry and the
-// disconnect forfeits.
+// caps the memory; `sweep` (run by the routes and every 5 s) does the expiry,
+// the away flags and the disconnect forfeits.
 export function createMatchStore({
   creatures,
   maxOpen,
@@ -113,7 +122,7 @@ export function createMatchStore({
       events: eventsFor(match.events, seat),
       opponent: {
         acted: theirs?.pending != null,
-        connected: (theirs?.listeners.size ?? 0) > 0,
+        connected: theirs?.away === false,
         joined: theirs !== null,
         ready: theirs?.team != null,
         standing: state ? standing(state[otherSeat(seat)]) : 0,
@@ -149,7 +158,7 @@ export function createMatchStore({
   function remove(id: string, match: Match) {
     matches.delete(id)
     for (const seat of [match.host, match.guest]) {
-      for (const listener of seat?.listeners ?? []) listener.close()
+      for (const listener of seat?.listeners ?? []) listener.close('gone')
       seat?.listeners.clear()
     }
   }
@@ -312,22 +321,32 @@ export function createMatchStore({
       if (!match || !seat) return null
       const mine = match[seat]!
       // Newest stream wins: a reload or a second tab with the same token.
-      for (const old of mine.listeners) old.close()
+      for (const old of mine.listeners) old.close('replaced')
       mine.listeners.clear()
       mine.listeners.add(listener)
+      mine.away = false
       mine.disconnectedAt = null
       broadcast(match)
 
+      // The opponent hears about the drop from `sweep`, after the grace.
       return () => {
         if (!mine.listeners.delete(listener)) return
         if (mine.listeners.size === 0) mine.disconnectedAt = now()
-        if (matches.get(id) === match) broadcast(match)
       }
     },
 
     sweep() {
       const time = now()
       for (const [id, match] of matches) {
+        const away = [match.host, match.guest].filter(
+          seat =>
+            seat &&
+            !seat.away &&
+            seat.disconnectedAt !== null &&
+            time - seat.disconnectedAt >= AWAY_GRACE_MS
+        )
+        for (const seat of away) seat!.away = true
+
         if (match.finishedAt !== null) {
           if (time - match.finishedAt >= FINISHED_MS) remove(id, match)
         } else if (match.startedAt === null) {
@@ -344,8 +363,10 @@ export function createMatchStore({
           if (gone) {
             finish(match, otherSeat(gone), 'left')
             broadcast(match)
+            continue
           }
         }
+        if (away.length && matches.get(id) === match) broadcast(match)
       }
     }
   }

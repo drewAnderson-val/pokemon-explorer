@@ -1,6 +1,6 @@
 import express from 'express'
 
-import type { MatchStore } from './matches'
+import type { CloseReason, MatchStore } from './matches'
 import type { WindowLimiter } from './rate-limit'
 
 type MatchesRouteOptions = {
@@ -61,7 +61,8 @@ export function matchesRoute({ perClient, store }: MatchesRouteOptions) {
   )
 
   // Always answers 200: an EventSource can't read an error status, so an
-  // unknown match or a bad token gets one `gone` event instead.
+  // unknown match or a bad token gets one `gone` event instead. A stream
+  // superseded by a newer one with the same token gets `replaced`.
   router.get('/api/matches/:id/events', (req, res) => {
     store.sweep()
     res.set({
@@ -79,10 +80,10 @@ export function matchesRoute({ perClient, store }: MatchesRouteOptions) {
         // The close handler cleans up.
       }
     }
-    const gone = () => {
+    const end = (reason: CloseReason) => {
       clearInterval(ping)
       try {
-        res.write('event: gone\ndata: {}\n\n')
+        res.write(`event: ${reason}\ndata: {}\n\n`)
         res.end()
       } catch {
         // Already closed.
@@ -94,11 +95,11 @@ export function matchesRoute({ perClient, store }: MatchesRouteOptions) {
 
     const token = typeof req.query.token === 'string' ? req.query.token : ''
     const unsubscribe = store.subscribe(req.params.id, token, {
-      close: gone,
+      close: end,
       send: view => write(`event: view\ndata: ${JSON.stringify(view)}\n\n`)
     })
     if (!unsubscribe) {
-      gone()
+      end('gone')
       return
     }
     res.on('close', () => {

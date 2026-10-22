@@ -7,6 +7,7 @@ import type { MatchView } from '../src/lib/versus-api'
 import pokemonData from '../src/data/pokemon.json'
 import { eventsFor } from '../src/lib/battle/versus'
 import {
+  AWAY_GRACE_MS,
   createMatchStore,
   DISCONNECT_MS,
   FINISHED_MS,
@@ -65,15 +66,16 @@ function started() {
 
 function watch(id: string, token: string) {
   const views: MatchView[] = []
-  let closed = 0
+  const reasons: string[] = []
   const unsubscribe = store.subscribe(id, token, {
-    close: () => closed++,
+    close: reason => reasons.push(reason),
     send: view => views.push(view)
   })
   if (!unsubscribe) throw new Error('subscribe failed')
   return {
-    closed: () => closed,
+    closed: () => reasons.length,
     last: () => views[views.length - 1],
+    reasons,
     unsubscribe,
     views
   }
@@ -385,10 +387,40 @@ describe('disconnects', () => {
     expect(host.last().outcome).toEqual({ reason: 'left', winner: 'you' })
   })
 
+  it('shows a drop to the opponent only after 5 s away', () => {
+    const { guest, guestToken, host, id } = started()
+    guest.unsubscribe()
+    t += AWAY_GRACE_MS - 1
+    store.sweep()
+    watch(id, guestToken)
+    t += AWAY_GRACE_MS
+    store.sweep()
+    expect(host.views.every(view => view.opponent.connected)).toBe(true)
+  })
+
+  it('tells the opponent once a seat has been away 5 s', () => {
+    const { guest, host } = started()
+    guest.unsubscribe()
+    expect(host.last().opponent.connected).toBe(true)
+    t += AWAY_GRACE_MS
+    store.sweep()
+    expect(host.last().opponent.connected).toBe(false)
+  })
+
+  it('still forfeits 60 s after the drop, not after the grace', () => {
+    const { guest, host } = started()
+    guest.unsubscribe()
+    t += AWAY_GRACE_MS
+    store.sweep()
+    t += DISCONNECT_MS - AWAY_GRACE_MS
+    store.sweep()
+    expect(host.last().outcome).toEqual({ reason: 'left', winner: 'you' })
+  })
+
   it('lets the newest stream for a seat win', () => {
     const { guest, host: first, hostToken, id } = started()
     const second = watch(id, hostToken)
-    expect(first.closed()).toBe(1)
+    expect(first.reasons).toEqual(['replaced'])
     expect(second.closed()).toBe(0)
     // The old stream's own cleanup must not count as a disconnect.
     first.unsubscribe()
@@ -410,8 +442,8 @@ describe('expiry', () => {
     t = UNSTARTED_MS
     store.sweep()
     expect(store.size()).toBe(0)
-    expect(host.closed()).toBe(1)
-    expect(guest.closed()).toBe(1)
+    expect(host.reasons).toEqual(['gone'])
+    expect(guest.reasons).toEqual(['gone'])
     expect(store.subscribe(id, guestToken, { close() {}, send() {} })).toBe(
       null
     )

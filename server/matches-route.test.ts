@@ -200,6 +200,15 @@ describe('events', () => {
     expect(frame.event).toBe('view')
     expect(frame.data).toMatchObject({ phase: 'battle', turn: 1 })
   })
+
+  it('tells an older stream with the same token it was replaced', async () => {
+    const m = await startMatch()
+    const first = await openStream(m.url(m.host))
+    expect((await first.next()).event).toBe('view')
+    const second = await openStream(m.url(m.host))
+    expect((await second.next()).event).toBe('view')
+    expect((await first.next()).event).toBe('replaced')
+  })
 })
 
 describe('actions', () => {
