@@ -5,13 +5,17 @@ import { useSettings } from '@/hooks/useSettings'
 import { unlockAudio } from '@/lib/sound'
 
 // Sound (off until asked for) and the timing bar (on, unless reduced motion).
+// `timingAlwaysOn`: a friend battle, where the bar runs whatever the setting.
 export function SettingsToggles({
-  fullscreen
+  fullscreen,
+  timingAlwaysOn = false
 }: {
   fullscreen: ReturnType<typeof useFullscreen>
+  timingAlwaysOn?: boolean
 }) {
   const [settings, setSettings] = useSettings()
   const reduced = usePrefersReducedMotion()
+  const timingOn = !reduced && (timingAlwaysOn || settings.timing)
   const toggleClass = (pressed: boolean) =>
     buttonClass(pressed ? 'primary' : 'secondary', 'h-10 gap-1.5 px-3')
   return (
@@ -44,13 +48,19 @@ export function SettingsToggles({
         Sound
       </button>
       <button
-        aria-pressed={settings.timing && !reduced}
-        className={toggleClass(settings.timing && !reduced)}
-        disabled={reduced}
+        aria-pressed={timingOn}
+        className={toggleClass(timingOn)}
+        disabled={reduced || timingAlwaysOn}
         onClick={() =>
           setSettings(current => ({ ...current, timing: !current.timing }))
         }
-        title={reduced ? 'Off while reduced motion is on' : undefined}
+        title={
+          reduced
+            ? 'Off while reduced motion is on'
+            : timingAlwaysOn
+              ? 'Always on in friend battles'
+              : undefined
+        }
         type="button"
       >
         <span aria-hidden>⏱</span>

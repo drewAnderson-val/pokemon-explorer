@@ -122,6 +122,33 @@ describe('VersusScreen', () => {
     )
   })
 
+  it('keeps the share link after the host locks in before a friend joins', async () => {
+    stubFetch(matchApi)
+    sessionStorage.setItem(tokenKey(ID), 'tok')
+    renderWithClient(<VersusScreen matchId={ID} />)
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+    emit(
+      view({
+        opponent: { ...view().opponent, joined: false },
+        phase: 'waiting',
+        ready: true
+      })
+    )
+    expect(screen.getByLabelText('Match link')).toHaveValue(
+      `${window.location.origin}/battle/vs/${ID}`
+    )
+    expect(screen.getByText('Waiting for a friend…')).toBeInTheDocument()
+    expect(screen.queryByText('Waiting for your friend to pick…')).toBeNull()
+  })
+
+  it('shows the Timing toggle as always on', async () => {
+    stubFetch(matchApi)
+    renderWithClient(<VersusScreen matchId={null} />)
+    const timing = screen.getByRole('button', { name: /Timing/ })
+    expect(timing).toBeDisabled()
+    expect(timing).toHaveAttribute('title', 'Always on in friend battles')
+  })
+
   describe('picking', () => {
     async function renderPicking() {
       const fetchMock = stubFetch(matchApi)
@@ -261,6 +288,48 @@ describe('VersusScreen', () => {
       'href',
       '/battle/vs'
     )
+  })
+
+  it('keeps the end screen when the finished match is dropped', async () => {
+    stubFetch(matchApi)
+    sessionStorage.setItem(tokenKey(ID), 'tok')
+    renderWithClient(<VersusScreen matchId={ID} />)
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+    const state = {
+      guest: createVersusTeam([creature(2)], 'guest'),
+      host: createVersusTeam([creature(1)], 'host'),
+      winner: null
+    }
+    emit(
+      view({
+        battle: battleViewFor(state, 'host'),
+        outcome: { reason: 'forfeit', winner: 'you' },
+        phase: 'over',
+        ready: true,
+        turn: 1
+      })
+    )
+    expect(
+      await screen.findByText('Your friend forfeited.')
+    ).toBeInTheDocument()
+    act(() => FakeEventSource.last?.emit('gone'))
+    expect(screen.getByText('Your friend forfeited.')).toBeInTheDocument()
+    expect(screen.queryByText('This match has ended or expired.')).toBeNull()
+  })
+
+  it('says the match is open in another tab when replaced', async () => {
+    stubFetch(matchApi)
+    sessionStorage.setItem(tokenKey(ID), 'tok')
+    renderWithClient(<VersusScreen matchId={ID} />)
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+    emit(view())
+    act(() => FakeEventSource.last?.emit('replaced'))
+    expect(
+      screen.getByText('This match is open in another tab.')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Back to Battle' })
+    ).toHaveAttribute('href', '/battle')
   })
 
   it('offers a retry when the server cannot be reached', async () => {

@@ -4,9 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { MatchView } from '@/lib/versus-api'
 
-import { tokenKey } from '@/lib/versus-api'
+import { saveToken, tokenKey } from '@/lib/versus-api'
 import { stubFetch } from '@/test/fake-api'
-import { stubEventSource } from '@/test/fake-event-source'
+import { FakeEventSource, stubEventSource } from '@/test/fake-event-source'
 
 import { useMatch } from './useMatch'
 
@@ -14,7 +14,10 @@ const view = { phase: 'waiting', turn: 0, you: 'a' } as unknown as MatchView
 
 describe('useMatch', () => {
   beforeEach(() => sessionStorage.clear())
-  afterEach(() => vi.unstubAllGlobals())
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
 
   it('streams with a saved token without joining', async () => {
     const fetchMock = stubFetch()
@@ -57,6 +60,71 @@ describe('useMatch', () => {
     act(() => Source.last?.emit('gone'))
     expect(result.current.status).toBe('gone')
     expect(Source.last?.closed).toBe(true)
+  })
+
+  it('keeps the end screen when a finished match is dropped', () => {
+    const Source = stubEventSource()
+    sessionStorage.setItem(tokenKey('abc'), 'tok')
+    const { result } = renderHook(() => useMatch('abc'))
+    const over = { ...view, phase: 'over' } as MatchView
+    act(() => Source.last?.emit('view', over))
+    act(() => Source.last?.emit('gone'))
+    expect(result.current.status).toBe('live')
+    expect(result.current.view).toEqual(over)
+    expect(Source.last?.closed).toBe(true)
+  })
+
+  it('is replaced when a newer stream takes the seat', () => {
+    const Source = stubEventSource()
+    sessionStorage.setItem(tokenKey('abc'), 'tok')
+    const { result } = renderHook(() => useMatch('abc'))
+    act(() => Source.last?.emit('view', view))
+    act(() => Source.last?.emit('replaced'))
+    expect(result.current.status).toBe('replaced')
+    expect(Source.last?.closed).toBe(true)
+  })
+
+  it('leaves a reconnecting stream to the browser', () => {
+    const Source = stubEventSource()
+    sessionStorage.setItem(tokenKey('abc'), 'tok')
+    const { result } = renderHook(() => useMatch('abc'))
+    act(() => Source.last?.emit('view', view))
+    act(() => Source.last?.fail(FakeEventSource.CONNECTING))
+    act(() => Source.last?.fail(FakeEventSource.OPEN))
+    expect(result.current.status).toBe('live')
+    expect(Source.last?.closed).toBe(false)
+  })
+
+  it('reports a stream the browser gave up on and retries with the token', () => {
+    const fetchMock = stubFetch()
+    const Source = stubEventSource()
+    sessionStorage.setItem(tokenKey('abc'), 'tok')
+    const { result } = renderHook(() => useMatch('abc'))
+    const first = Source.last
+    act(() => first?.emit('view', view))
+    act(() => first?.fail(FakeEventSource.CLOSED))
+    expect(result.current.status).toBe('error')
+
+    act(() => result.current.retry())
+    expect(Source.last).not.toBe(first)
+    expect(Source.last?.url).toBe('/api/matches/abc/events?token=tok')
+    act(() => Source.last?.emit('view', view))
+    expect(result.current.status).toBe('live')
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('keeps the token in memory when storage is blocked', () => {
+    const fetchMock = stubFetch()
+    const Source = stubEventSource()
+    const blocked = () => {
+      throw new DOMException('blocked', 'SecurityError')
+    }
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(blocked)
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(blocked)
+    saveToken('mem', 'tok')
+    renderHook(() => useMatch('mem'))
+    expect(Source.last?.url).toBe('/api/matches/mem/events?token=tok')
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it('closes the source on unmount', () => {

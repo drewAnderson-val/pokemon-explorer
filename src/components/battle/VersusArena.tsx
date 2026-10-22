@@ -56,6 +56,8 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
   const [pending, setPending] = useState<null | number>(null)
   // The turn an action was sent on: no second action until the view moves on.
   const [sentOn, setSentOn] = useState<null | number>(null)
+  // Where Forfeit was first tapped; a second tap there sends it.
+  const [forfeitArmed, setForfeitArmed] = useState<null | string>(null)
   const { battle, phase } = flow
   const step = currentStep(flow)
   const active = activeFighter(battle)
@@ -114,9 +116,10 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
 
   useBodyAdvance(canAdvance, advance)
 
-  // A rejected send (network, 409) frees the menu to try again.
+  // A rejected send (network, 409) frees the menu to try again. Forfeit goes
+  // through while waiting.
   const submit = (action: MatchAction) => {
-    if (waiting) return
+    if (waiting && action.type !== 'forfeit') return
     const turn = view.turn
     setSentOn(turn)
     send(action).catch((caught: unknown) => {
@@ -129,17 +132,39 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
     dispatch({ type: 'back' })
   }
 
+  // Any other action or a phase change disarms it.
+  const forfeitAt = `${phase}:${view.turn}`
+  const confirming = forfeitArmed === forfeitAt
   const mainItems: MenuItem[] = [
     {
+      disabled: waiting,
       key: 'fight',
       label: 'Fight',
-      onSelect: () => dispatch({ type: 'fight' })
+      onSelect: () => {
+        setForfeitArmed(null)
+        dispatch({ type: 'fight' })
+      }
     },
-    { key: 'team', label: 'Team', onSelect: () => dispatch({ type: 'team' }) },
+    {
+      disabled: waiting,
+      key: 'team',
+      label: 'Team',
+      onSelect: () => {
+        setForfeitArmed(null)
+        dispatch({ type: 'team' })
+      }
+    },
     {
       key: 'forfeit',
-      label: 'Forfeit',
-      onSelect: () => submit({ type: 'forfeit' })
+      label: confirming ? 'Forfeit? Tap again' : 'Forfeit',
+      onSelect: () => {
+        if (!confirming) {
+          setForfeitArmed(forfeitAt)
+          return
+        }
+        setForfeitArmed(null)
+        submit({ type: 'forfeit' })
+      }
     }
   ]
   const moveItems: MenuItem[] = active.moves.map((item, index) => ({
@@ -231,7 +256,7 @@ export function VersusArena({ onNewMatch, send, view }: VersusArenaProps) {
     menu = (
       <BattleMenu
         cols={2}
-        disabled={phase !== 'menu' || waiting}
+        disabled={phase !== 'menu'}
         items={mainItems}
         label="Actions"
         ref={menuRef}

@@ -43,7 +43,7 @@ export function VersusScreen({ matchId }: { matchId: null | string }) {
       <header className="flex flex-wrap items-center justify-between gap-3 lg:flex-col lg:items-start lg:pt-6">
         <h1 className="text-heading font-bold uppercase">Battle</h1>
         <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
-          <SettingsToggles fullscreen={fullscreen} />
+          <SettingsToggles fullscreen={fullscreen} timingAlwaysOn />
           <HomeLink />
         </div>
       </header>
@@ -153,6 +153,16 @@ function Lobby({ matchId }: { matchId: string }) {
       </Message>
     )
   }
+  if (status === 'replaced') {
+    return (
+      <Message>
+        <p className="text-body-lg">This match is open in another tab.</p>
+        <a className={buttonClass('secondary')} href="/battle">
+          Back to Battle
+        </a>
+      </Message>
+    )
+  }
   if (status === 'gone' || !view) {
     return (
       <Message>
@@ -174,20 +184,25 @@ function Lobby({ matchId }: { matchId: string }) {
     )
   }
 
+  const host = view.you === 'host'
   if (view.ready) {
+    // Locked in before the friend arrived: the host still needs the link.
+    const inviting = !view.opponent.joined
     return (
-      <ConsoleScreen>
+      <ConsoleScreen className={inviting ? 'justify-start gap-2' : undefined}>
+        {inviting && host && <ShareLink matchId={matchId} />}
         <DialogBox className="flex flex-col items-center gap-4 text-center">
           <FloatingQuestion className="text-[64px]" label={SECRET} />
-          <p className="text-body-lg" role="status">
-            Waiting for your friend to pick…
-          </p>
+          {!inviting && (
+            <p className="text-body-lg" role="status">
+              Waiting for your friend to pick…
+            </p>
+          )}
         </DialogBox>
       </ConsoleScreen>
     )
   }
 
-  const host = view.you === 'host'
   return (
     <ConsoleScreen className="justify-start gap-2">
       {host && !view.opponent.joined && <ShareLink matchId={matchId} />}

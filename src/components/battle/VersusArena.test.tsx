@@ -236,11 +236,42 @@ describe('VersusArena', () => {
     send.mockRejectedValueOnce(new Error('Could not send that move (409)'))
     await readUntil('What will Geovanni do?')
     await userEvent.click(actionButton('Forfeit'))
+    await userEvent.click(actionButton('Forfeit'))
     expect(send).toHaveBeenCalledWith({ type: 'forfeit' })
-    await waitFor(() => expect(actionButton('Forfeit')).toBeEnabled())
+    await waitFor(() => expect(actionButton('Fight')).toBeEnabled())
     expect(error).toHaveBeenCalled()
     await expectMessage('What will Geovanni do?')
     error.mockRestore()
+  })
+
+  it('asks before forfeiting, and forgets after another action', async () => {
+    const { send } = mount(viewOf(startState()))
+    await readUntil('What will Geovanni do?')
+    await userEvent.click(actionButton('Forfeit'))
+    expect(send).not.toHaveBeenCalled()
+    expect(actionButton('Forfeit')).toHaveAccessibleName('Forfeit? Tap again')
+
+    await userEvent.click(actionButton('Fight'))
+    await userEvent.click(screen.getByRole('button', { name: 'Back' }))
+    expect(actionButton('Forfeit')).toHaveAccessibleName('Forfeit')
+    await userEvent.click(actionButton('Forfeit'))
+    expect(send).not.toHaveBeenCalled()
+    await userEvent.click(actionButton('Forfeit'))
+    expect(send).toHaveBeenCalledWith({ type: 'forfeit' })
+  })
+
+  it('keeps Forfeit available while waiting for the friend', async () => {
+    const state = startState()
+    const { send, update } = mount(viewOf(state))
+    await readUntil('What will Geovanni do?')
+    update(viewOf(state, { acted: true }))
+    await expectMessage('Waiting for your friend…')
+    expect(actionButton('Fight')).toBeDisabled()
+    expect(actionButton('Team')).toBeDisabled()
+    expect(actionButton('Forfeit')).toBeEnabled()
+    await userEvent.click(actionButton('Forfeit'))
+    await userEvent.click(actionButton('Forfeit'))
+    expect(send).toHaveBeenCalledWith({ type: 'forfeit' })
   })
 
   it('ends at once when the friend leaves', async () => {

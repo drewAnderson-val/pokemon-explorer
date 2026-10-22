@@ -9,7 +9,13 @@ import {
   sendAction
 } from '@/lib/versus-api'
 
-export type MatchStatus = 'connecting' | 'error' | 'full' | 'gone' | 'live'
+export type MatchStatus =
+  | 'connecting'
+  | 'error'
+  | 'full'
+  | 'gone'
+  | 'live'
+  | 'replaced'
 
 // One join per match at a time, so StrictMode's second effect run awaits the
 // first run's join instead of posting again (which would answer 409). The
@@ -44,12 +50,27 @@ export function useMatch(matchId: string) {
         }
         setState({ status: 'live', view })
       })
-      // Terminal, including when the same token opens a newer stream. Closing
-      // stops the browser's auto-reconnect. Plain network errors are left to
-      // it, which is how a Cloud Run request timeout is survived.
+      // Terminal. Closing stops the browser's auto-reconnect. A finished
+      // match keeps its end screen when the server drops it.
       source.addEventListener('gone', () => {
         source?.close()
-        setState(previous => ({ ...previous, status: 'gone' }))
+        setState(previous =>
+          previous.view?.phase === 'over'
+            ? previous
+            : { ...previous, status: 'gone' }
+        )
+      })
+      // The same token opened a newer stream (another tab, usually).
+      source.addEventListener('replaced', () => {
+        source?.close()
+        setState(previous => ({ ...previous, status: 'replaced' }))
+      })
+      // Plain network errors are left to the browser's auto-reconnect, which
+      // is how a Cloud Run request timeout is survived. Once it gives up
+      // (an error status on reconnect), `retry` opens a new stream.
+      source.addEventListener('error', () => {
+        if (source?.readyState !== EventSource.CLOSED) return
+        setState(previous => ({ ...previous, status: 'error' }))
       })
     }
 

@@ -70,20 +70,25 @@ export async function joinMatch(
   return (await response.json()) as { token: string }
 }
 
-// Seat tokens live in sessionStorage so each tab holds its own seat.
+// Seat tokens live in sessionStorage so each tab holds its own seat. When
+// storage is blocked they live in memory instead (and a reload loses them).
+const tokens = new Map<string, string>()
+
 export function loadToken(matchId: string): null | string {
   try {
-    return window.sessionStorage.getItem(tokenKey(matchId))
+    const saved = window.sessionStorage.getItem(tokenKey(matchId))
+    if (saved) return saved
   } catch {
-    return null
+    // Blocked storage: fall back to memory.
   }
+  return tokens.get(matchId) ?? null
 }
 
 export function saveToken(matchId: string, token: string) {
   try {
     window.sessionStorage.setItem(tokenKey(matchId), token)
   } catch {
-    // Blocked storage: this tab can't rejoin after a reload.
+    tokens.set(matchId, token)
   }
 }
 
