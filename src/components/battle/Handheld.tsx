@@ -33,12 +33,16 @@ export function Handheld({
   const shell = useMediaQuery('(min-width: 48rem)')
   const glassRef = useRef<HTMLDivElement>(null)
   const zoom = useFitZoom(glassRef, shell)
+  // Where the cursor last was, so the buttons can bring it back after a click
+  // elsewhere on the page took focus off the screen.
+  const lastFocusRef = useRef<HTMLElement | null>(null)
 
   // Keep focus in the battle when a button is clicked; the shell's buttons
   // duplicate the keyboard, so they stay out of the tab order and a11y tree.
   const control = (key: HandheldKey) => ({
     'data-control': key,
-    onClick: () => pressHandheldKey(glassRef.current, key),
+    onClick: () =>
+      pressHandheldKey(glassRef.current, key, lastFocusRef.current),
     onPointerDown: (event: React.PointerEvent) => event.preventDefault(),
     tabIndex: -1,
     type: 'button' as const
@@ -68,6 +72,9 @@ export function Handheld({
               classic && '[filter:url(#four-greens)]'
             )}
             data-classic={classic || undefined}
+            onFocus={event => {
+              lastFocusRef.current = event.target
+            }}
             ref={glassRef}
           >
             <div
@@ -122,17 +129,31 @@ export function Handheld({
 // battle has focused, so the battle keeps one set of controls. A presses the
 // focused control (or Enter, which advances a message when nothing is
 // focused); B is Escape (back); the D-pad is the arrow keys; START presses
-// the screen's `data-start` button.
-export function pressHandheldKey(screen: HTMLElement | null, key: HandheldKey) {
+// the screen's `data-start` button. If focus has left the screen, the first
+// arrow brings the cursor back to where it was instead of going nowhere.
+export function pressHandheldKey(
+  screen: HTMLElement | null,
+  key: HandheldKey,
+  lastFocus: HTMLElement | null = null
+) {
   const active = document.activeElement
-  const target =
-    screen && active instanceof HTMLElement && screen.contains(active)
-      ? active
-      : document.body
+  const onScreen = (el: Element | null): el is HTMLElement =>
+    !!screen && el instanceof HTMLElement && screen.contains(el)
   if (key === 'Start') {
     screen?.querySelector<HTMLButtonElement>('[data-start]:enabled')?.click()
     return
   }
+  if (
+    !onScreen(active) &&
+    key !== 'B' &&
+    onScreen(lastFocus) &&
+    !(lastFocus as HTMLButtonElement).disabled
+  ) {
+    lastFocus.focus()
+    if (key !== 'A') return
+  }
+  const focused = document.activeElement
+  const target = onScreen(focused) ? focused : document.body
   if (key === 'A' && target !== document.body) {
     target.click()
     return

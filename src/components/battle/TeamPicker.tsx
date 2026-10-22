@@ -214,12 +214,12 @@ function CatalogList({
   )
 }
 
-// Pressing an item shows ▶, like the battle menus.
+// The focused item shows ▶, like the battle menus.
 function Cursor() {
   return (
     <span
       aria-hidden
-      className="invisible text-label font-bold group-hover:visible group-focus-visible:visible"
+      className="invisible text-label font-bold group-hover:visible group-focus:visible"
     >
       ▶
     </span>

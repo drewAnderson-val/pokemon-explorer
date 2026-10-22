@@ -164,6 +164,24 @@ describe('BattleScreen', () => {
     expect(screen.getByRole('button', { name: 'Fight' })).toHaveFocus()
   })
 
+  // The bug: a click off the screen left the D-pad pressing keys on <body>.
+  it('brings the cursor back when focus has left the screen', async () => {
+    await open(1)
+    const control = (key: string) =>
+      document.querySelector<HTMLButtonElement>(`[data-control="${key}"]`)!
+    await userEvent.click(control('ArrowRight'))
+    act(() => (document.activeElement as HTMLElement).blur())
+
+    await userEvent.click(control('ArrowLeft')) // first press: back to TEAM
+    expect(screen.getByRole('button', { name: 'Team' })).toHaveFocus()
+    await userEvent.click(control('ArrowLeft'))
+    expect(screen.getByRole('button', { name: 'Fight' })).toHaveFocus()
+
+    act(() => (document.activeElement as HTMLElement).blur())
+    await userEvent.click(control('A')) // A presses where the cursor was
+    expect(screen.getByRole('group', { name: /move/i })).toBeInTheDocument()
+  })
+
   it('offers full screen only where the browser supports it', async () => {
     await open(1)
     // jsdom has no Fullscreen API, like iPhone Safari: no button.

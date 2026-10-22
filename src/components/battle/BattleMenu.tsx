@@ -101,7 +101,7 @@ function MenuButton({
         aria-hidden
         className={cn(
           'invisible text-label font-bold',
-          !disabled && 'group-hover:visible group-focus-visible:visible'
+          !disabled && 'group-hover:visible group-focus:visible'
         )}
       >
         ▶
