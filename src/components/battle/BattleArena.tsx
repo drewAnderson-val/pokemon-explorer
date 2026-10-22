@@ -2,7 +2,7 @@ import { useEffect, useReducer, useRef, useState } from 'react'
 
 import { DialogBox } from '@/components/DialogBox'
 import { TypeBadge } from '@/components/TypeBadge'
-import { Button, buttonClass } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useSettings } from '@/hooks/useSettings'
 import { useTypewriter } from '@/hooks/useTypewriter'
@@ -291,9 +291,6 @@ export function BattleArena({
                 Change team
               </Button>
             )}
-            <a className={buttonClass('secondary')} href="/explore">
-              Back to explorer
-            </a>
           </div>
         </DialogBox>
       ) : (

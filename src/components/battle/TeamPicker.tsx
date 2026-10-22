@@ -160,7 +160,7 @@ export function TeamPicker({ onStart, onToggle, team }: TeamPickerProps) {
 }
 
 const rowClass =
-  'flex min-h-11 w-full items-center gap-2 rounded-tag px-2 py-1 text-left focus:bg-inset focus:focus-ring enabled:hover:bg-inset disabled:text-ink-muted'
+  'flex min-h-11 w-full items-center gap-2 rounded-tag px-2 py-1 text-left focus:bg-accent focus:focus-ring enabled:hover:bg-inset disabled:text-ink-muted'
 
 function CatalogList({
   full,

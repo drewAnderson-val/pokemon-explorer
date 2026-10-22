@@ -106,8 +106,8 @@ export function Handheld({
         >
           <DPad control={control} />
           <div className="mr-[2cqw] flex -rotate-[25deg] items-center gap-[4cqw] rounded-full bg-[#bab5b0] px-[2.5cqw] py-[2cqw] shadow-[inset_0.6cqw_0.6cqw_0_#a8a39d]">
-            <RoundButton control={control('B')} label="B" />
-            <RoundButton control={control('A')} label="A" />
+            <RoundButton control={control('B')} hint="Esc" label="B" />
+            <RoundButton control={control('A')} hint="Enter" label="A" />
           </div>
         </div>
 
@@ -263,12 +263,12 @@ function useFitZoom(
 }
 
 const arm =
-  'flex items-center justify-center bg-[#2b2b2b] text-[2.4cqw] text-[#6b6762] active:bg-black active:text-[#b0aba5]'
+  'flex items-center justify-center bg-[#2b2b2b] text-[3.4cqw] text-[#d8d5d2] active:bg-black active:text-white'
 
 // A cross in a round recess, with a dimple in the middle.
 function DPad({ control }: { control: Control }) {
   return (
-    <div className="ml-[1cqw] rounded-full bg-[#bab5b0] p-[2.4cqw] shadow-[inset_0.6cqw_0.6cqw_0_#a8a39d]">
+    <div className="relative ml-[1cqw] rounded-full bg-[#bab5b0] p-[2.4cqw] shadow-[inset_0.6cqw_0.6cqw_0_#a8a39d]">
       <div className="grid size-[27cqw] grid-cols-3 grid-rows-3 drop-shadow-[0.6cqw_0.6cqw_0_#8f8a84]">
         <button
           {...control('ArrowUp')}
@@ -298,7 +298,30 @@ function DPad({ control }: { control: Control }) {
           ▼
         </button>
       </div>
+      <KeyHint className="absolute -bottom-[5cqw] left-1/2 -translate-x-1/2">
+        Arrow keys
+      </KeyHint>
     </div>
+  )
+}
+
+// The keyboard key a control stands for, printed under it on the shell.
+function KeyHint({
+  children,
+  className
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <span
+      className={cn(
+        'text-[2cqw] font-bold tracking-[0.08em] whitespace-nowrap text-[#2c3e8f] uppercase',
+        className
+      )}
+    >
+      {children}
+    </span>
   )
 }
 
@@ -331,9 +354,11 @@ function Pill({
 
 function RoundButton({
   control,
+  hint,
   label
 }: {
   control: Record<string, unknown>
+  hint: string
   label: string
 }) {
   return (
@@ -342,8 +367,11 @@ function RoundButton({
         {...control}
         className="block size-[13cqw] rounded-full bg-[#9b2a5a] shadow-[0.6cqw_0.8cqw_0_#5e1736,inset_-0.8cqw_-0.8cqw_0_#7a2048] active:translate-y-[0.4cqw] active:shadow-[0.2cqw_0.3cqw_0_#5e1736]"
       />
-      <span className="absolute -bottom-[6cqw] left-1/2 -translate-x-1/2 text-[2.8cqw] font-bold text-[#2c3e8f] italic">
-        {label}
+      <span className="absolute top-full left-1/2 mt-[1.5cqw] flex -translate-x-1/2 flex-col items-center">
+        <span className="text-[2.8cqw] font-bold text-[#2c3e8f] italic">
+          {label}
+        </span>
+        <KeyHint>{hint}</KeyHint>
       </span>
     </div>
   )

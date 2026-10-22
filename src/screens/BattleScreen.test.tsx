@@ -194,10 +194,13 @@ describe('BattleScreen', () => {
     expect(screen.getByRole('button', { name: 'Battle again' })).toHaveFocus()
     await userEvent.click(control('ArrowRight'))
     expect(screen.getByRole('button', { name: 'Change team' })).toHaveFocus()
-    await userEvent.click(control('ArrowDown'))
-    expect(screen.getByRole('link', { name: 'Back to explorer' })).toHaveFocus()
-    await userEvent.click(control('ArrowLeft'))
+    await userEvent.click(control('ArrowDown')) // last in the row: stays
     expect(screen.getByRole('button', { name: 'Change team' })).toHaveFocus()
+    await userEvent.click(control('ArrowLeft'))
+    expect(screen.getByRole('button', { name: 'Battle again' })).toHaveFocus()
+    expect(
+      screen.queryByRole('link', { name: 'Back to explorer' })
+    ).not.toBeInTheDocument()
   })
 
   it('offers full screen only where the browser supports it', async () => {

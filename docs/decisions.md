@@ -504,5 +504,9 @@ no separate plan document).
   D-pad did nothing there. Rows marked `data-arrow-nav` now step through their buttons and links with the arrows.
   Their buttons also show the focus ring on any focus (`globals.css`), since after a mouse click Chrome focused them
   without `:focus-visible` and the selection was invisible.
+- **Follow-up (owner):** the selection is filled yellow (accent) with the focus ring, in the menus and the end
+  screen's buttons. The shell prints the keyboard keys under its controls (Arrow keys, A Enter, B Esc) and the
+  D-pad arrows are brighter. START has no key, so it has no hint. The end screen drops "Back to explorer": the Home
+  link beside the console already leaves the battle.
 - **Rejected:** a selection index kept in React state per menu. Focus already is the selection; tracking it twice
   could drift.
