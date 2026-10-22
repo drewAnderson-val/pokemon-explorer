@@ -56,6 +56,17 @@ export function newMember(
 export const removeMember = (team: TeamMember[], uid: string) =>
   team.filter(member => member.uid !== uid)
 
+// Swaps a member with its neighbour (step -1: earlier, 1: later); a move past
+// either end leaves the team as it is.
+export function moveMember(team: TeamMember[], uid: string, step: -1 | 1) {
+  const from = team.findIndex(member => member.uid === uid)
+  const to = from + step
+  if (from < 0 || to < 0 || to >= team.length) return team
+  const next = [...team]
+  ;[next[from], next[to]] = [next[to], next[from]]
+  return next
+}
+
 export const restAll = (team: TeamMember[]) =>
   team.map(member => (member.hp === null ? member : { ...member, hp: null }))
 

@@ -601,3 +601,12 @@ server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles
   friend…") moved off the handheld's screen into the side column under the settings and Home link (above the
   console on narrow screens). It's rendered through a portal, since the match state lives inside the console.
 - **Why:** the link is for the player, not part of the game; on the screen it crowded the team picker.
+
+## 2026-10-22: Team order you can see and change
+
+- **What:** in the explorer's team bar, pointing at (or tabbing to) ▶ Battle fills the card of the creature that
+  will go out first in yellow and tags it "Goes first": the first member on file that hasn't fainted, the same rule
+  as `createBattle`. Each card gets ◀ ▶ buttons that swap it with its neighbour (`moveMember` in
+  `src/lib/team/team.ts`).
+- **Rejected:** drag and drop. It needs a library or a lot of pointer and keyboard code to be accessible; two
+  buttons per card do the same job for a team of six. A permanent "lead" badge: the owner asked for it on hover.

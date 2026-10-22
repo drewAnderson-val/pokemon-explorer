@@ -8,6 +8,7 @@ import {
   hasCreature,
   leadWith,
   memberHp,
+  moveMember,
   newMember,
   parseTeam,
   removeMember,
@@ -157,5 +158,21 @@ describe('parseTeam', () => {
     const team = parseTeam(raw)
     expect(team[0]).toEqual(good)
     expect(team).toHaveLength(MAX_TEAM)
+  })
+})
+
+describe('moveMember', () => {
+  const team = [member('a'), member('b'), member('c')]
+  const uids = (members: TeamMember[]) => members.map(m => m.uid)
+
+  it('swaps a member with its neighbour', () => {
+    expect(uids(moveMember(team, 'b', -1))).toEqual(['b', 'a', 'c'])
+    expect(uids(moveMember(team, 'b', 1))).toEqual(['a', 'c', 'b'])
+  })
+
+  it('leaves the team alone past either end or for an unknown uid', () => {
+    expect(moveMember(team, 'a', -1)).toBe(team)
+    expect(moveMember(team, 'c', 1)).toBe(team)
+    expect(moveMember(team, 'zz', 1)).toBe(team)
   })
 })
