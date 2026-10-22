@@ -47,7 +47,16 @@ export function BattleScreen({
         <h1 className="text-heading font-bold uppercase">Battle</h1>
         <div className="flex flex-wrap items-center gap-3 lg:flex-col lg:items-start">
           <SettingsToggles fullscreen={fullscreen} />
-          <HomeLink />
+          <div className="flex flex-wrap items-center gap-3">
+            <HomeLink />
+            <a
+              className="inline-flex h-11 items-center gap-1 text-label font-bold uppercase focus-visible:focus-ring"
+              href="/battle/vs"
+            >
+              Battle a friend
+              <span aria-hidden>▶</span>
+            </a>
+          </div>
         </div>
       </header>
       <div className="battle-stage" ref={stageRef}>

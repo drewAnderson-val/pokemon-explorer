@@ -2,7 +2,8 @@ import { screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import App from './App'
-import { stubFetch } from './test/fake-api'
+import { apiResponse, stubFetch } from './test/fake-api'
+import { stubEventSource } from './test/fake-event-source'
 import { renderWithClient } from './test/render'
 
 afterEach(() => window.history.pushState({}, '', '/'))
@@ -30,6 +31,26 @@ describe('App', () => {
       ).not.toBeInTheDocument()
     }
   )
+
+  it('renders the friend battle at /battle/vs/<id>, the wild battle at /battle', () => {
+    stubEventSource()
+    stubFetch(url =>
+      url.pathname.endsWith('/join')
+        ? Response.json({ error: 'full' }, { status: 409 })
+        : apiResponse(url)
+    )
+    window.history.pushState({}, '', '/battle/vs/abcd2345')
+    const { unmount } = renderWithClient(<App />)
+    expect(screen.getByText('Connecting…')).toBeInTheDocument()
+    unmount()
+
+    window.history.pushState({}, '', '/battle')
+    renderWithClient(<App />)
+    expect(screen.getByRole('heading', { name: 'Battle' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Battle a friend' })
+    ).toHaveAttribute('href', '/battle/vs')
+  })
 
   it('renders the landing page everywhere else', () => {
     stubFetch()
