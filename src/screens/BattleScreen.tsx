@@ -209,7 +209,7 @@ function BattleLoader({
             Your team is full, so {pick.data?.name} can't join. Make room, or
             battle with your team.
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3" data-arrow-nav>
             <Button onClick={() => setOwnTeam(true)}>
               Battle with my team
             </Button>
@@ -255,7 +255,7 @@ function BattleLoader({
           <p className="text-body-lg">
             Your team is too tired to battle. Rest first!
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3" data-arrow-nav>
             <Button onClick={() => setTeam(restAll)}>Rest</Button>
             <Button onClick={changeTeam} variant="secondary">
               Change team

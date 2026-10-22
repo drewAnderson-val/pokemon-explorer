@@ -33,12 +33,16 @@ export function Handheld({
   const shell = useMediaQuery('(min-width: 48rem)')
   const glassRef = useRef<HTMLDivElement>(null)
   const zoom = useFitZoom(glassRef, shell)
+  // Where the cursor last was, so the buttons can bring it back after a click
+  // elsewhere on the page took focus off the screen.
+  const lastFocusRef = useRef<HTMLElement | null>(null)
 
   // Keep focus in the battle when a button is clicked; the shell's buttons
   // duplicate the keyboard, so they stay out of the tab order and a11y tree.
   const control = (key: HandheldKey) => ({
     'data-control': key,
-    onClick: () => pressHandheldKey(glassRef.current, key),
+    onClick: () =>
+      pressHandheldKey(glassRef.current, key, lastFocusRef.current),
     onPointerDown: (event: React.PointerEvent) => event.preventDefault(),
     tabIndex: -1,
     type: 'button' as const
@@ -68,6 +72,10 @@ export function Handheld({
               classic && '[filter:url(#four-greens)]'
             )}
             data-classic={classic || undefined}
+            onFocus={event => {
+              lastFocusRef.current = event.target
+            }}
+            onKeyDown={moveInButtonRow}
             ref={glassRef}
           >
             <div
@@ -98,8 +106,8 @@ export function Handheld({
         >
           <DPad control={control} />
           <div className="mr-[2cqw] flex -rotate-[25deg] items-center gap-[4cqw] rounded-full bg-[#bab5b0] px-[2.5cqw] py-[2cqw] shadow-[inset_0.6cqw_0.6cqw_0_#a8a39d]">
-            <RoundButton control={control('B')} label="B" />
-            <RoundButton control={control('A')} label="A" />
+            <RoundButton control={control('B')} hint="Esc" label="B" />
+            <RoundButton control={control('A')} hint="Enter" label="A" />
           </div>
         </div>
 
@@ -122,17 +130,31 @@ export function Handheld({
 // battle has focused, so the battle keeps one set of controls. A presses the
 // focused control (or Enter, which advances a message when nothing is
 // focused); B is Escape (back); the D-pad is the arrow keys; START presses
-// the screen's `data-start` button.
-export function pressHandheldKey(screen: HTMLElement | null, key: HandheldKey) {
+// the screen's `data-start` button. If focus has left the screen, the first
+// arrow brings the cursor back to where it was instead of going nowhere.
+export function pressHandheldKey(
+  screen: HTMLElement | null,
+  key: HandheldKey,
+  lastFocus: HTMLElement | null = null
+) {
   const active = document.activeElement
-  const target =
-    screen && active instanceof HTMLElement && screen.contains(active)
-      ? active
-      : document.body
+  const onScreen = (el: Element | null): el is HTMLElement =>
+    !!screen && el instanceof HTMLElement && screen.contains(el)
   if (key === 'Start') {
     screen?.querySelector<HTMLButtonElement>('[data-start]:enabled')?.click()
     return
   }
+  if (
+    !onScreen(active) &&
+    key !== 'B' &&
+    onScreen(lastFocus) &&
+    !(lastFocus as HTMLButtonElement).disabled
+  ) {
+    lastFocus.focus()
+    if (key !== 'A') return
+  }
+  const focused = document.activeElement
+  const target = onScreen(focused) ? focused : document.body
   if (key === 'A' && target !== document.body) {
     target.click()
     return
@@ -184,6 +206,28 @@ function Lines({ className }: { className: string }) {
   )
 }
 
+// Plain button rows on the screen (the end of a battle, messages) have no
+// menu of their own: arrows step through a `data-arrow-nav` row in order.
+function moveInButtonRow(event: React.KeyboardEvent<HTMLElement>) {
+  const step =
+    event.key === 'ArrowLeft' || event.key === 'ArrowUp'
+      ? -1
+      : event.key === 'ArrowRight' || event.key === 'ArrowDown'
+        ? 1
+        : 0
+  if (step === 0 || event.defaultPrevented) return
+  if (!(event.target instanceof HTMLElement)) return
+  const row = event.target.closest('[data-arrow-nav]')
+  if (!row) return
+  const items = Array.from(
+    row.querySelectorAll<HTMLElement>('button:enabled, a[href]')
+  )
+  const index = items.indexOf(event.target)
+  if (index < 0) return
+  event.preventDefault()
+  items[Math.max(0, Math.min(items.length - 1, index + step))]?.focus()
+}
+
 // The two thin lines across the top of the bezel, broken by a caption.
 function Stripes() {
   return (
@@ -219,12 +263,12 @@ function useFitZoom(
 }
 
 const arm =
-  'flex items-center justify-center bg-[#2b2b2b] text-[2.4cqw] text-[#6b6762] active:bg-black active:text-[#b0aba5]'
+  'flex items-center justify-center bg-[#2b2b2b] text-[3.4cqw] text-[#d8d5d2] active:bg-black active:text-white'
 
 // A cross in a round recess, with a dimple in the middle.
 function DPad({ control }: { control: Control }) {
   return (
-    <div className="ml-[1cqw] rounded-full bg-[#bab5b0] p-[2.4cqw] shadow-[inset_0.6cqw_0.6cqw_0_#a8a39d]">
+    <div className="relative ml-[1cqw] rounded-full bg-[#bab5b0] p-[2.4cqw] shadow-[inset_0.6cqw_0.6cqw_0_#a8a39d]">
       <div className="grid size-[27cqw] grid-cols-3 grid-rows-3 drop-shadow-[0.6cqw_0.6cqw_0_#8f8a84]">
         <button
           {...control('ArrowUp')}
@@ -254,7 +298,30 @@ function DPad({ control }: { control: Control }) {
           ▼
         </button>
       </div>
+      <KeyHint className="absolute -bottom-[5cqw] left-1/2 -translate-x-1/2">
+        Arrow keys
+      </KeyHint>
     </div>
+  )
+}
+
+// The keyboard key a control stands for, printed under it on the shell.
+function KeyHint({
+  children,
+  className
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <span
+      className={cn(
+        'text-[2cqw] font-bold tracking-[0.08em] whitespace-nowrap text-[#2c3e8f] uppercase',
+        className
+      )}
+    >
+      {children}
+    </span>
   )
 }
 
@@ -287,9 +354,11 @@ function Pill({
 
 function RoundButton({
   control,
+  hint,
   label
 }: {
   control: Record<string, unknown>
+  hint: string
   label: string
 }) {
   return (
@@ -298,8 +367,11 @@ function RoundButton({
         {...control}
         className="block size-[13cqw] rounded-full bg-[#9b2a5a] shadow-[0.6cqw_0.8cqw_0_#5e1736,inset_-0.8cqw_-0.8cqw_0_#7a2048] active:translate-y-[0.4cqw] active:shadow-[0.2cqw_0.3cqw_0_#5e1736]"
       />
-      <span className="absolute -bottom-[6cqw] left-1/2 -translate-x-1/2 text-[2.8cqw] font-bold text-[#2c3e8f] italic">
-        {label}
+      <span className="absolute top-full left-1/2 mt-[1.5cqw] flex -translate-x-1/2 flex-col items-center">
+        <span className="text-[2.8cqw] font-bold text-[#2c3e8f] italic">
+          {label}
+        </span>
+        <KeyHint>{hint}</KeyHint>
       </span>
     </div>
   )

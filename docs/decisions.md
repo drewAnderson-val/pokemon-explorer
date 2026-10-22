@@ -568,6 +568,27 @@ server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles
 - Seat tokens fall back to memory when `sessionStorage` is blocked, so the tab keeps its seat until a reload.
 - The Timing toggle is shown disabled ("Always on in friend battles") on the friend battle screen, since it does
   nothing there.
+
+## 2026-10-22: A highlight instead of the ▶ cursor
+
+- **What:** the battle menus and the console's team picker drop the ▶ cursor. The selected option is highlighted
+  instead (filled background plus the focus ring) on any focus, not only `:focus-visible`, at the owner's request:
+  one look whether you got there by mouse, keyboard or D-pad. Before, a mouse click focused the next menu without
+  `:focus-visible`, so nothing showed and the D-pad looked dead; and keyboard focus showed both ▶ and a ring.
+- **D-pad after a click elsewhere:** the handheld remembers the last focused control on its screen. If focus has
+  left the screen, the first arrow brings the selection back there and A presses it, instead of sending keys to
+  `<body>`. B and START are unchanged.
+- **Button rows:** the end of a battle and the full-team / tired messages are plain buttons, not a menu, so the
+  D-pad did nothing there. Rows marked `data-arrow-nav` now step through their buttons and links with the arrows.
+  Their buttons also show the focus ring on any focus (`globals.css`), since after a mouse click Chrome focused them
+  without `:focus-visible` and the selection was invisible.
+- **Follow-up (owner):** the selection is filled yellow (accent) with the focus ring, in the menus and the end
+  screen's buttons. The shell prints the keyboard keys under its controls (Arrow keys, A Enter, B Esc) and the
+  D-pad arrows are brighter. START has no key, so it has no hint. The end screen drops "Back to explorer": the Home
+  link beside the console already leaves the battle.
+- **Rejected:** a selection index kept in React state per menu. Focus already is the selection; tracking it twice
+  could drift.
+
 ## 2026-10-22: Landing page drops the top-right links
 
 - **What:** at the owner's request the landing header keeps only the `Explorer` logo link; the Battle, Create and
