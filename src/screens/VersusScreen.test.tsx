@@ -1,8 +1,9 @@
-import { act, fireEvent, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
+import { serializeTeam } from '@/lib/team/team'
 import { loadToken, type MatchView, tokenKey } from '@/lib/versus-api'
 import { apiResponse, stubFetch } from '@/test/fake-api'
 import { FakeEventSource, stubEventSource } from '@/test/fake-event-source'
@@ -152,6 +153,39 @@ describe('VersusScreen', () => {
         })
       })
       expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(before)
+    })
+
+    it('leaves Creature Lab members of the saved team out', async () => {
+      const saved = (uid: string, creatureId: number) => ({
+        creatureId,
+        hp: null,
+        level: 5,
+        uid,
+        xp: 0
+      })
+      localStorage.setItem(
+        TEAM_STORAGE_KEY,
+        serializeTeam([saved('a', 1001), saved('b', 2)])
+      )
+      const fetchMock = await renderPicking()
+      expect(
+        await screen.findByRole('tab', { name: 'Team 1/6' })
+      ).toBeInTheDocument()
+      expect(
+        await screen.findByRole('button', { name: /Britney/ })
+      ).toBeInTheDocument()
+      expect(
+        within(screen.getByRole('tabpanel')).getAllByRole('button')
+      ).toHaveLength(1)
+      await userEvent.click(screen.getByRole('button', { name: 'Start' }))
+      await waitFor(() => {
+        const call = fetchMock.mock.calls.find(([url]) =>
+          String(url).endsWith(`/api/matches/${ID}/actions`)
+        )
+        expect(JSON.parse(String(call?.[1]?.body)).action.creatureIds).toEqual([
+          2
+        ])
+      })
     })
 
     it('waits for the friend once your team is locked in', async () => {

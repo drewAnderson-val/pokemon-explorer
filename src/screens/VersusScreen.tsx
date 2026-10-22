@@ -12,6 +12,7 @@ import { useFullscreen } from '@/hooks/useFullscreen'
 import { useMatch } from '@/hooks/useMatch'
 import { useSettings } from '@/hooks/useSettings'
 import { useTeam } from '@/hooks/useTeam'
+import { isCustomId } from '@/lib/creature'
 import {
   addMember,
   hasCreature,
@@ -107,10 +108,12 @@ function Create({ onCreated }: { onCreated: (matchId: string) => void }) {
 
 function Lobby({ matchId }: { matchId: string }) {
   const { retry, send, status, view } = useMatch(matchId)
-  // The friend match's own team: seeded from the saved one, never written
-  // back to it.
+  // The friend match's own team: seeded from the saved one (minus Creature
+  // Lab creatures, which the server can't know), never written back to it.
   const [saved] = useTeam()
-  const [team, setTeam] = useState<TeamMember[]>(saved)
+  const [team, setTeam] = useState<TeamMember[]>(() =>
+    saved.filter(member => !isCustomId(member.creatureId))
+  )
   const [sendError, setSendError] = useState(false)
 
   if (status === 'connecting' || (status === 'live' && !view)) {
