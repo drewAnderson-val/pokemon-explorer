@@ -5,6 +5,7 @@ import { FloatingQuestion } from '@/components/battle/FloatingQuestion'
 import { Handheld } from '@/components/battle/Handheld'
 import { SettingsToggles } from '@/components/battle/SettingsToggles'
 import { TeamPicker } from '@/components/battle/TeamPicker'
+import { VersusArena } from '@/components/battle/VersusArena'
 import { DialogBox } from '@/components/DialogBox'
 import { HomeLink } from '@/components/HomeLink'
 import { Button, buttonClass } from '@/components/ui/button'
@@ -163,16 +164,13 @@ function Lobby({ matchId }: { matchId: string }) {
     )
   }
 
-  // Until Task 7's arena: the battle itself isn't drawn yet.
-  if (view.phase === 'battle' || view.phase === 'over') {
+  if ((view.phase === 'battle' || view.phase === 'over') && view.battle) {
     return (
-      <ConsoleScreen>
-        <DialogBox className="text-center">
-          <p className="text-body-lg" role="status">
-            The battle is starting…
-          </p>
-        </DialogBox>
-      </ConsoleScreen>
+      <VersusArena
+        onNewMatch={() => window.location.assign('/battle/vs')}
+        send={send}
+        view={view}
+      />
     )
   }
 

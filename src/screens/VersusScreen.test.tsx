@@ -2,7 +2,11 @@ import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { Pokemon } from '@/lib/pokemon'
+
+import pokemon from '@/data/pokemon.json'
 import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
+import { battleViewFor, createVersusTeam } from '@/lib/battle/versus'
 import { serializeTeam } from '@/lib/team/team'
 import { loadToken, type MatchView, tokenKey } from '@/lib/versus-api'
 import { apiResponse, stubFetch } from '@/test/fake-api'
@@ -12,6 +16,7 @@ import { renderWithClient } from '@/test/render'
 import { parseMatchId, VersusScreen } from './VersusScreen'
 
 const ID = 'abcd2345'
+const creature = (id: number) => (pokemon as Pokemon[]).find(p => p.id === id)!
 
 const view = (extra: Partial<MatchView> = {}): MatchView => ({
   acted: false,
@@ -201,6 +206,29 @@ describe('VersusScreen', () => {
         screen.queryByRole('group', { name: 'Choose your team' })
       ).toBeNull()
     })
+  })
+
+  it('hands a started battle to the arena', async () => {
+    stubFetch(matchApi)
+    sessionStorage.setItem(tokenKey(ID), 'tok')
+    renderWithClient(<VersusScreen matchId={ID} />)
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+    const state = {
+      guest: createVersusTeam([creature(2)], 'guest'),
+      host: createVersusTeam([creature(1)], 'host'),
+      winner: null
+    }
+    emit(
+      view({
+        battle: battleViewFor(state, 'host'),
+        phase: 'battle',
+        ready: true,
+        turn: 1
+      })
+    )
+    expect(
+      await screen.findByRole('region', { name: 'Battle' })
+    ).toHaveTextContent('Your friend sent out Britney!')
   })
 
   it('says the match is full when joining answers 409', async () => {

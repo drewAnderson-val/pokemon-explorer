@@ -39,7 +39,7 @@ export type Outcome = 'caught' | 'lost' | 'ran' | 'won'
 export type Phase = 'end' | 'menu' | 'messages' | 'moves' | 'switch' | 'team'
 
 // Phases from which a resolved turn (or a send-out) is accepted.
-const ACTING: readonly Phase[] = ['menu', 'moves', 'switch', 'team']
+export const ACTING: readonly Phase[] = ['menu', 'moves', 'switch', 'team']
 
 export function currentStep(state: FlowState): Step | undefined {
   return state.phase === 'messages' ? state.steps[state.index] : undefined
