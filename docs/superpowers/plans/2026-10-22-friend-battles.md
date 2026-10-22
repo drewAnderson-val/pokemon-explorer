@@ -20,7 +20,7 @@ by `POST`. The client renders views with the existing scene, script and flow red
 - Every creature in a friend match fights at **Lv50**, full HP. Nothing from a match is written to the saved team.
 - Teams: **1–6** creature IDs from `src/data/pokemon.json`. Creature Lab (custom) creatures can't be used.
 - Timing multiplier is clamped server side to **1–1.25**; non-numbers count as 1. Reduced motion sends **1.125**.
-- In a friend match the timing bar runs whatever the Timing setting says (reduced motion excepted).
+- In a friend match the timing bar runs regardless of the Timing setting (reduced motion excepted).
 - Disconnect forfeit: **60 s**, battle phase only. Unstarted matches expire **30 min** after creation; finished ones
   are dropped **10 min** after ending.
 - Match creation: **20/hour** per client (`createWindowLimiter`), at most **500** matches held at once.

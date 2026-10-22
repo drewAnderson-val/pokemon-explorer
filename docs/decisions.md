@@ -502,14 +502,14 @@ server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles
 - Each player sees the same handheld mirrored: their creature at the bottom with the menu, the opponent's at the top.
 - Each player picks their own team of up to 6 ("choose your explorer"). The opponent's team stays hidden until the
   battle starts; while picking, their spot shows a floating question mark.
-- Both reviewers testing with two tabs and real friends on two devices must work.
+- Reviewers testing with two tabs, and real friends on two devices: both must work.
 
 **Claude's calls** (the owner said "pick your choice"; each is open to pushback)
 
 - **Turns:** both players choose, then the server resolves the turn: switches first, then moves in speed order
   (tie = coin flip). Rejected: alternating turns, which are unlike the games and halve the pace.
 - **Timing bar:** kept; each player stops their own bar and the server clamps the multiplier to 1-1.25. It runs
-  whatever the Timing setting says; reduced motion sends a fixed 1.125 instead. Rejected: dropping it (it is the
+  even with the Timing setting off (reduced motion gets a fixed ×1.125 instead). Rejected: dropping it (it is the
   battle's signature), a server-timed bar (needs latency compensation), and honouring the setting (turning it off
   would cost up to 25% damage).
 - **Levels:** everyone fights at Lv50, full HP, and nothing is written to the saved team. Rejected: saved levels (a
@@ -550,3 +550,21 @@ server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles
 - The wild battle's hit/crit/damage step became a shared helper used by both engines (same random draw order); the
   arena's focus, sound and keyboard effects became hooks shared by both arenas.
 - Route tests mount the matches router on a fresh app per test, so the rate-limit test can't disturb the flow tests.
+
+**Calls from the final review** (Claude's)
+
+- Cloud Run request concurrency goes from the default 80 to 1000 (`infra/index.ts`): every player holds an idle SSE
+  stream, so 80 would cap the single instance at about 40 battles. Rejected: more instances (matches live in memory).
+- A dropped stream is shown to the opponent only after 5 s away (`AWAY_GRACE_MS`, checked by the 5 s sweep), so a
+  reload doesn't flicker "disconnected". The 60 s forfeit still counts from the drop.
+- Forfeit needs a second tap ("Forfeit? Tap again"; any other action or phase change cancels it), and stays available
+  while waiting for the friend, so a stalled opponent can always be left.
+- The end screen stays after the server drops the finished match, instead of switching to "This match has ended or
+  expired."
+- A stream replaced by a newer one with the same token gets a `replaced` event and says "This match is open in another
+  tab." Rejected: reusing `gone`, which told the older tab the match was over.
+- An `EventSource` the browser gives up on (an error status on reconnect) shows "Couldn't reach the server." with Try
+  again, which reconnects with the saved token. Errors it is still retrying are left to it.
+- Seat tokens fall back to memory when `sessionStorage` is blocked, so the tab keeps its seat until a reload.
+- The Timing toggle is shown disabled ("Always on in friend battles") on the friend battle screen, since it does
+  nothing there.
