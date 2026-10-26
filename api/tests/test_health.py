@@ -1,5 +1,6 @@
 import time
 
+import psycopg
 from fastapi.testclient import TestClient
 
 from app.config import Settings
@@ -22,3 +23,13 @@ def test_health_is_503_when_database_is_down() -> None:
     assert response.status_code == 503
     assert response.json() == {"status": "database unavailable"}
     assert time.monotonic() - started < 3
+
+
+def test_startup_runs_migrations(test_database_url: str, reset_db: None) -> None:
+    app = create_app(Settings(test_database_url, "unused"))
+    with TestClient(app):
+        pass
+
+    with psycopg.connect(test_database_url) as conn:
+        names = conn.execute("SELECT name FROM schema_migrations").fetchall()
+    assert names == [("0001_schema_migrations_rls.sql",)]

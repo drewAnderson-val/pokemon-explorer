@@ -1,5 +1,5 @@
 import os
-from collections.abc import Iterator
+from collections.abc import AsyncIterator, Iterator
 from urllib.parse import urlparse
 
 import psycopg
@@ -39,3 +39,9 @@ def client(test_database_url: str, reset_db: None) -> Iterator[TestClient]:
     # Used as a context manager so the app's startup and shutdown (the lifespan) run.
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture
+async def conn(test_database_url: str, reset_db: None) -> AsyncIterator[psycopg.AsyncConnection]:
+    async with await psycopg.AsyncConnection.connect(test_database_url, autocommit=True) as conn:
+        yield conn
