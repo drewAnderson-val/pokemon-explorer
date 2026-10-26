@@ -42,3 +42,12 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# --- api (Python) ---
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+# Plan-execution scratch (superpowers ledger)
+.superpowers/
