@@ -74,6 +74,7 @@ jobs:
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     outputs:
       url: ${{ steps.pulumi.outputs.url }}
+      api-url: ${{ steps.pulumi.outputs.apiUrl }}
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -106,7 +107,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       URL: ${{ needs.deploy.outputs.url }}
+      API_URL: ${{ needs.deploy.outputs.api-url }}
     steps:
+      - name: API health check (FastAPI, reaches the database)
+        run: |
+          curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$API_URL/api/health" \
+            | jq -e '.status == "ok"' >/dev/null
       - name: Health check
         run: curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$URL/api/health"
       - name: SPA shell is served

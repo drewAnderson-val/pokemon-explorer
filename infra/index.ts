@@ -119,3 +119,73 @@ new gcp.cloudrunv2.ServiceIamMember('public', {
 
 export const url = service.uri
 export const imageRef = image.ref
+
+// The FastAPI service (api/), prod only: PR previews would share the prod
+// database, so a PR's migrations would change prod. Its runtime account and
+// secrets come from the bootstrap stack.
+export const apiUrl = isProd ? deployApi().uri : undefined
+
+function deployApi() {
+  const apiImageName = `${registryHost}/${project}/${appName}/api`
+  const apiImage = new dockerBuild.Image(
+    'api-image',
+    {
+      context: { location: '../api' },
+      platforms: ['linux/amd64'],
+      push: true,
+      registries: [
+        {
+          address: registryHost,
+          password: gcp.organizations
+            .getClientConfigOutput()
+            .apply(c => pulumi.secret(c.accessToken)),
+          username: 'oauth2accesstoken'
+        }
+      ],
+      tags: [`${apiImageName}:latest`]
+    },
+    { dependsOn: shared }
+  )
+
+  const secretEnv = (name: string, secret: string) => ({
+    name,
+    valueSource: { secretKeyRef: { secret, version: 'latest' } }
+  })
+
+  const apiService = new gcp.cloudrunv2.Service('api-service', {
+    deletionProtection: false,
+    ingress: 'INGRESS_TRAFFIC_ALL',
+    location: region,
+    name: 'pokemon-api',
+    template: {
+      containers: [
+        {
+          envs: [
+            secretEnv('DATABASE_URL', 'api-database-url'),
+            secretEnv('JWT_SECRET', 'api-jwt-secret')
+          ],
+          image: pulumi.interpolate`${apiImageName}@${apiImage.digest}`,
+          resources: { cpuIdle: true, limits: { cpu: '1', memory: '512Mi' } },
+          // Startup runs migrations, then /api/health checks the database.
+          startupProbe: {
+            failureThreshold: 10,
+            httpGet: { path: '/api/health' },
+            periodSeconds: 2,
+            timeoutSeconds: 3
+          }
+        }
+      ],
+      scaling: { maxInstanceCount: 2, minInstanceCount: 0 },
+      serviceAccount: `pokemon-api-run@${project}.iam.gserviceaccount.com`
+    }
+  })
+
+  new gcp.cloudrunv2.ServiceIamMember('api-public', {
+    location: region,
+    member: 'allUsers',
+    name: apiService.name,
+    role: 'roles/run.invoker'
+  })
+
+  return apiService
+}
