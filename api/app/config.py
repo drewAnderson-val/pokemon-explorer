@@ -18,7 +18,8 @@ class Settings:
 
 
 def _require(name: str) -> str:
-    value = os.environ.get(name)
+    # Strip: a value pasted or piped into Secret Manager keeps its trailing newline.
+    value = os.environ.get(name, "").strip()
     if not value:
         raise RuntimeError(f"Missing environment variable {name}")
     return value

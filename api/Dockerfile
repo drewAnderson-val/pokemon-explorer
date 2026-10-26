@@ -10,5 +10,6 @@ COPY app ./app
 RUN useradd --create-home api
 USER api
 ENV PATH="/app/.venv/bin:$PATH"
-# Cloud Run sets PORT.
-CMD ["sh", "-c", "uvicorn app.asgi:app --host 0.0.0.0 --port ${PORT:-8080}"]
+# Cloud Run sets PORT. exec replaces the shell, so uvicorn receives SIGTERM and
+# shuts down cleanly (closing its database connections) instead of being killed.
+CMD ["sh", "-c", "exec uvicorn app.asgi:app --host 0.0.0.0 --port ${PORT:-8080}"]

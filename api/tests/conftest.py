@@ -1,10 +1,10 @@
 import os
 from collections.abc import AsyncIterator, Iterator
-from urllib.parse import urlparse
 
 import psycopg
 import pytest
 from fastapi.testclient import TestClient
+from psycopg.conninfo import conninfo_to_dict
 
 from app.config import Settings
 from app.main import create_app
@@ -14,9 +14,12 @@ DEFAULT_TEST_DATABASE_URL = "postgresql://postgres:postgres@localhost:54329/post
 
 def assert_local(url: str) -> None:
     # reset_db wipes the whole schema, so never let it near a real database.
-    host = urlparse(url).hostname
-    if host not in ("localhost", "127.0.0.1"):
-        raise RuntimeError(f"Tests only run against localhost, not {host}")
+    # Parsed the way libpq reads it: ?host= and ?hostaddr= override the URL's host.
+    params = conninfo_to_dict(url)
+    host = params.get("host")
+    hostaddr = params.get("hostaddr") or os.environ.get("PGHOSTADDR")
+    if host not in ("localhost", "127.0.0.1") or hostaddr not in (None, "127.0.0.1", "::1"):
+        raise RuntimeError(f"Tests only run against localhost, not {hostaddr or host}")
 
 
 @pytest.fixture(scope="session")
