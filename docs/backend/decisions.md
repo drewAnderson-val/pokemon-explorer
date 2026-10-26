@@ -109,10 +109,11 @@ Template:
 - **What:** the new API deploys to its own Cloud Run service from the first slice, and each slice goes live as it
   merges. Postgres runs on Supabase's free tier; only the database is used, not Supabase Auth or its Data API.
 - **Why:** `main` deploys on every push, so a frontend that expects the new API must have it live. Shipping per slice
-  keeps production matching `main` and always leaves a working URL. Supabase is free at this size and already
-  familiar.
-- **Rejected:** a long-lived `rebuild` branch merged at the end (one big-bang merge); Cloud SQL (stays inside GCP, but
-  costs money even when idle); Neon (equivalent, less familiar).
+  keeps production matching `main` and always leaves a working URL. Supabase is chosen for one reason: its free tier.
+  This is a demo, and Cloud SQL bills for an always-on instance even when nobody is using it.
+- **Rejected:** a long-lived `rebuild` branch merged at the end (one big-bang merge); Cloud SQL (the right choice if
+  this were a real product on GCP: private networking to Cloud Run, same region, IAM database auth, one bill; rejected
+  on cost alone); Neon (also free; no strong reason either way).
 - **Trade-off:** the database is outside GCP, so every query crosses the internet (a few ms). Supabase's Data API
   exposes `public` tables unless RLS is on, so every table enables RLS. `LISTEN/NOTIFY` needs a direct connection
   rather than the transaction pooler.
