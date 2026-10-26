@@ -30,6 +30,7 @@ def test_startup_runs_migrations(test_database_url: str, reset_db: None) -> None
     with TestClient(app):
         pass
 
+    # No migrations exist yet; the runner still creates its bookkeeping table.
     with psycopg.connect(test_database_url) as conn:
         names = conn.execute("SELECT name FROM schema_migrations").fetchall()
-    assert names == [("0001_schema_migrations_rls.sql",)]
+    assert names == []

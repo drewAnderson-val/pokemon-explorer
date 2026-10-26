@@ -121,12 +121,13 @@ export const url = service.uri
 export const imageRef = image.ref
 
 // The FastAPI service (api/), prod only: PR previews would share the prod
-// database, so a PR's migrations would change prod. Its runtime account and
-// secrets come from the bootstrap stack.
+// database, so a PR's migrations would change prod. Its Cloud SQL instance,
+// runtime account and secrets come from the bootstrap stack.
 export const apiUrl = isProd ? deployApi().uri : undefined
 
 function deployApi() {
   const apiImageName = `${registryHost}/${project}/${appName}/api`
+  const apiDbConnectionName = `${project}:${region}:pokemon-db`
   const apiImage = new dockerBuild.Image(
     'api-image',
     {
@@ -166,19 +167,30 @@ function deployApi() {
           ],
           image: pulumi.interpolate`${apiImageName}@${apiImage.digest}`,
           resources: { cpuIdle: true, limits: { cpu: '1', memory: '512Mi' } },
-          // Startup runs migrations, then /api/health checks the database.
+          // Startup runs migrations, then /api/health checks the database: ~30s
+          // budget. Cloud Run requires timeoutSeconds <= periodSeconds.
           startupProbe: {
             failureThreshold: 10,
             httpGet: { path: '/api/health' },
-            periodSeconds: 2,
+            periodSeconds: 3,
             timeoutSeconds: 3
-          }
+          },
+          volumeMounts: [{ mountPath: '/cloudsql', name: 'cloudsql' }]
         }
       ],
       scaling: { maxInstanceCount: 2, minInstanceCount: 0 },
-      serviceAccount: `pokemon-api-run@${project}.iam.gserviceaccount.com`
+      serviceAccount: `pokemon-api-run@${project}.iam.gserviceaccount.com`,
+      // Cloud Run's built-in Cloud SQL connector: a Unix socket under /cloudsql,
+      // which DATABASE_URL points at (?host=/cloudsql/<connection name>).
+      volumes: [
+        {
+          cloudSqlInstance: { instances: [apiDbConnectionName] },
+          name: 'cloudsql'
+        }
+      ]
     }
   })
+
 
   new gcp.cloudrunv2.ServiceIamMember('api-public', {
     location: region,

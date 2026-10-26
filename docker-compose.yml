@@ -1,4 +1,4 @@
-# Local Postgres for the API's development and tests. Supabase runs Postgres 17 in prod.
+# Local Postgres for the API's development and tests. Prod is Cloud SQL, Postgres 17.
 services:
   db:
     image: postgres:17

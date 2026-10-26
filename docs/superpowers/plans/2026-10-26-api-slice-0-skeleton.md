@@ -2,6 +2,10 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Amended 2026-10-26:** prod Postgres is Cloud SQL, not Supabase. The RLS migration and test were dropped (nothing
+> auto-exposes tables on Cloud SQL), and Task 5 below was rewritten. Earlier task text mentioning Supabase or RLS is
+> historical.
+
 **Goal:** A FastAPI service in `api/` that connects to Postgres, runs SQL migrations, answers `GET /api/health`, is
 checked in CI and runs live on its own Cloud Run service against Supabase. Nothing user-visible. The Vite proxy the
 spec lists under slice 0 moves to slice 1, the first slice with an endpoint for it to forward.
@@ -265,31 +269,36 @@ Expected: `{"status":"ok"}`; container logs show the migration applied (or none 
 
 ---
 
-### Task 5: Supabase and secrets (owner-run steps, with Claude preparing the code)
+### Task 5: Cloud SQL and secrets (owner-run steps, with Claude preparing the code)
+
+*Amended 2026-10-26: Postgres moved from Supabase to Cloud SQL (see `docs/backend/decisions.md`).*
 
 **Files:**
 - Modify: `infra/bootstrap/index.ts`
 
-Bootstrap changes: add `secretmanager.googleapis.com` to `apis`; create `gcp.secretmanager.Secret`s `api-database-url`
-and `api-jwt-secret` (automatic replication, no versions in code); grant
-`roles/secretmanager.secretAccessor` on each to `serviceAccount:pokemon-api-run@${project}.iam.gserviceaccount.com`
-(created by the app stack in Task 6, same pattern as `runtime-aiplatform-user`).
+Bootstrap changes: enable `secretmanager` and `sqladmin`; Cloud SQL instance `pokemon-db` (Postgres 17, `db-f1-micro`,
+Enterprise edition, public IP with no authorized networks, backups on) and database `pokemon`; runtime account
+`pokemon-api-run` with `roles/cloudsql.client`; secrets `api-database-url` and `api-jwt-secret` with
+`secretAccessor` for that account. Instance, database, account and secrets are `protect`ed.
 
 - [ ] **Step 1: Typecheck** — `cd infra && pnpm install && pnpm types` — Expected: clean.
 
-- [ ] **Step 2 (owner): Create the Supabase project.** Free tier, region `us-east-1` or nearest to `us-central1`.
-  Claude may do this with the Supabase connector only after the owner confirms. Then in Supabase settings, turn the
-  Data API off (RLS stays on as the second lock).
-
-- [ ] **Step 3 (owner): Preview, then apply the bootstrap stack** —
+- [ ] **Step 2 (owner): Preview, then apply the bootstrap stack** —
   `cd infra/bootstrap && PULUMI_CONFIG_PASSPHRASE= pulumi preview --stack prod --diff`, then `pulumi up --stack prod`.
-  Expected: 1 API enabled, 2 secrets, 2 IAM members; nothing replaced or deleted.
+  Expected: creates 2 API enablements, the instance, the database, a service account, 2 secrets and 3 IAM members;
+  nothing replaced or deleted. The instance takes about 10 minutes.
 
-- [ ] **Step 4 (owner): Add secret values** without them touching the shell history or the repo:
-  the **session pooler** connection string (port 5432 on the `pooler.supabase.com` host; Cloud Run has no IPv6 egress
-  for Supabase's direct host, and session mode keeps `LISTEN/NOTIFY` working) via
-  `gcloud secrets versions add api-database-url --data-file=-` (paste, then Ctrl-D), and a JWT secret via
-  `openssl rand -base64 48 | gcloud secrets versions add api-jwt-secret --data-file=-`.
+- [ ] **Step 3 (owner): Create the database user and add the secret values**, so the password exists only in Cloud
+  SQL and Secret Manager (hex, so it needs no URL-encoding; `printf %s`, so no trailing newline):
+  ```bash
+  PW=$(openssl rand -hex 24)
+  gcloud sql users create api --instance=pokemon-db --password="$PW"
+  printf %s "postgresql://api:$PW@/pokemon?host=/cloudsql/finny-take-home:us-central1:pokemon-db" \
+    | gcloud secrets versions add api-database-url --data-file=-
+  unset PW
+  openssl rand -hex 32 | tr -d '\n' | gcloud secrets versions add api-jwt-secret --data-file=-
+  ```
+  Both secrets need a version before merge, or the first deploy fails.
 
 - [ ] **Step 5: Commit** — `git commit -m "Add Secret Manager secrets for the API"`
 
@@ -320,7 +329,7 @@ binding. PR stacks don't get an API (they would share the prod database); record
   additions.
 
 - [ ] **Step 4 (owner): Merge.** Expected: deploy and smoke test green; `curl <apiUrl>/api/health` returns
-  `{"status":"ok"}`; Supabase shows `schema_migrations` with one row. If the deploy fails, paste the job output.
+  `{"status":"ok"}`. If the deploy fails, paste the job output.
 
 ---
 

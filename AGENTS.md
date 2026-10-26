@@ -31,7 +31,7 @@ decision, using its template); `docs/decisions.md` keeps the Express app's histo
   CORS.
 - **Every battle runs on the server**, wild included: the engine is ported to Python and the client only plays back
   events.
-- **Postgres is on Supabase** (database only: no Supabase Auth, every table has RLS on). The frontend and API deploy
+- **Postgres is Cloud SQL** (`pokemon-db`, owner-run bootstrap stack, reached through Cloud Run's built-in connector). The frontend and API deploy
   separately, and **each slice ships live**: the API has its own Cloud Run service from slice 0.
 - **Plan:** `docs/superpowers/specs/2026-10-26-fastapi-backend-design.md` (slices, tables, endpoints). Until slice 8,
   the Express code below still serves the React build and any endpoints not yet moved.

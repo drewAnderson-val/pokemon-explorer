@@ -40,7 +40,8 @@ more than one instance shares.
   ships live**: the API is deployed from slice 0, and production always matches `main`. Until the last slice, the
   existing Express container keeps serving the React build and any endpoints not yet moved; the frontend calls the
   new API for the ones that have.
-- Postgres runs on **Supabase** (free tier). Only its Postgres is used, not Supabase Auth or its auto-generated APIs.
+- Postgres runs on **Cloud SQL** (`db-f1-micro`, Postgres 17), paid from GCP credits. It's defined in the owner-run
+  bootstrap stack and protected, so CI can never delete it.
 - Hosting is GCP (Cloud Run, project `finny-take-home`), managed with Pulumi in `infra/`.
 - The data in `src/data/pokemon.json` is the source for the catalog. Never regenerate it (see `AGENTS.md`).
 - Repo conventions in `AGENTS.md` apply: decisions logged, PRs per slice, failures reported with output.
@@ -57,11 +58,10 @@ Browser ── static files (React build, own host)
 
 - **Frontend and API deploy separately.** In development the Vite dev server proxies `/api` to FastAPI on localhost,
   so dev has one origin and no CORS. In prod the API allows the frontend's origin explicitly.
-- **Supabase specifics.** Supabase auto-exposes tables in the `public` schema through its Data API to anyone with the
-  project's public key. We don't use that API, so every table gets row-level security enabled with no policies (or the
-  Data API is switched off), which closes that door; a migration test checks it. Normal queries go through Supabase's
-  connection pooler, but `LISTEN/NOTIFY` needs a long-lived session, so the API connects through the session-mode
-  pooler (IPv4, one connection per client), not the transaction pooler or the IPv6-only direct host. `SELECT … FOR UPDATE` works through the pooler because it lives inside one transaction.
+- **Cloud SQL connection.** Cloud Run's built-in connector mounts a Unix socket under `/cloudsql/`; `DATABASE_URL`
+  points at it (`postgresql://api:<password>@/pokemon?host=/cloudsql/<connection name>`). The instance has a public IP
+  with no authorized networks, so only the connector (IAM checked via `roles/cloudsql.client`, encrypted) can reach it.
+  Connections are direct, so `LISTEN/NOTIFY` and session advisory locks work without pooler caveats.
 - **PR previews have no API.** They would share the prod database; only `prod` deploys the API.
 - **One API service, stateless instances.** Anything that must survive a restart or be seen by another instance lives
   in Postgres. Live match updates reach players connected to any instance through Postgres `LISTEN/NOTIFY`.
@@ -228,7 +228,7 @@ Each slice is one PR (or a few), merged and working before the next starts, and 
 moving on. The API is live from slice 0; Express is retired in slice 8.
 
 0. **Skeleton, deployed:** `api/` project, docker-compose Postgres, migration runner, `GET /api/health`, pytest in CI,
-   Vite proxy. The Supabase project, and Pulumi plus CI for the API's own Cloud Run service with the database URL and
+   Vite proxy. The Cloud SQL instance, and Pulumi plus CI for the API's own Cloud Run service with the database URL and
    JWT secret as secrets; the deploy smoke test checks the new health route too. Nothing user-visible.
 1. **Pokémon:** `pokemon` table, seed from `pokemon.json`, `GET /api/pokemon` and `/api/pokemon/{id}` with today's
    behavior (ported `server/query.test.ts` cases pass). The frontend calls the new API (`VITE_API_URL`), so CORS for

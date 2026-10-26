@@ -171,3 +171,31 @@ Template:
 - **Rejected:** per-PR databases (Supabase branching is paid); the transaction pooler (breaks `LISTEN/NOTIFY`).
 - **Trade-off:** API changes can't be tried on a preview URL before merge; the session pooler limits connections per
   client to the pool size.
+
+## 2026-10-26: Postgres moves from Supabase to Cloud SQL (reverses two entries above)
+
+- **What:** prod Postgres is a Cloud SQL instance (`pokemon-db`, Postgres 17, `db-f1-micro`) in the owner-run bootstrap
+  stack, `protect`ed with its database, the API's runtime account and the two secrets. Cloud Run reaches it through
+  its built-in connector (a Unix socket under `/cloudsql/`). This replaces "Ship each slice live; Postgres on Supabase"
+  (the Supabase half) and the session-pooler part of "The API is deployed from prod only".
+- **Why:** Supabase was chosen only because it was free. The project has GCP credits, which removes that reason, and
+  keeping everything in GCP removes a list of things to explain and get right: Supabase's Data API exposing `public`
+  tables (and the RLS workaround), pooler modes and which one breaks `LISTEN/NOTIFY`, the IPv6-only direct host, and
+  queries crossing the internet to another provider. Nothing had been deployed yet, so the switch cost one PR's
+  rework. The RLS migration and its test were dropped: nothing auto-exposes tables on Cloud SQL.
+- **Rejected:** staying on Supabase (free, but more moving parts to defend); Cloud SQL with private IP and a VPC
+  connector (no public IP at all, but adds networking resources the demo doesn't need; the public IP has no authorized
+  networks, so only IAM-checked connector traffic gets in).
+- **Trade-off:** about $10/month, paid by credits; when they run out, stop the instance or move. The database user's
+  password is a secret (in the URL) rather than IAM database auth, which would avoid passwords but needs the Cloud SQL
+  Python connector or the Auth Proxy; noted under "what I'd add".
+
+## 2026-10-26: An API failure fails the deploy job, but never hides the Express checks
+
+- **What:** both services deploy in one `pulumi up`, so an API problem (a missing secret version, a failing migration)
+  turns the deploy job red. The API's smoke check runs last, after the Express checks.
+- **Why:** a red deploy is the signal that something in prod needs attention, whichever service it is. Running the API
+  check last means a broken API never prevents the Express app's own checks from reporting.
+- **Rejected:** a separate Pulumi stack or job for the API (isolates failures, but adds a second state and pipeline for
+  a temporary arrangement: Express is retired in slice 8).
+- **Trade-off:** until slice 8, an API failure can make an Express-only change look like a failed deploy.
