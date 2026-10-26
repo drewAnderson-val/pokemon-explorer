@@ -19,6 +19,7 @@ const apis = [
   'iam.googleapis.com',
   'iamcredentials.googleapis.com',
   'run.googleapis.com',
+  'secretmanager.googleapis.com',
   'sts.googleapis.com'
 ].map(
   api =>
@@ -77,6 +78,32 @@ new gcp.projects.IAMMember(
   },
   { dependsOn: apis }
 )
+
+// The FastAPI service's runtime identity and secrets. The account lives here,
+// not in the app stack, so these grants can exist before the first deploy. Secret
+// values are added by hand (gcloud secrets versions add), so they never pass
+// through code, Pulumi state or CI; the deployer can't read them.
+const apiRuntime = new gcp.serviceaccount.Account(
+  'api-runtime',
+  {
+    accountId: 'pokemon-api-run',
+    displayName: 'Pokemon Explorer API Cloud Run runtime'
+  },
+  { dependsOn: apis }
+)
+const apiRuntimeMember = pulumi.interpolate`serviceAccount:${apiRuntime.email}`
+for (const secretId of ['api-database-url', 'api-jwt-secret']) {
+  const secret = new gcp.secretmanager.Secret(
+    secretId,
+    { replication: { auto: {} }, secretId },
+    { dependsOn: apis }
+  )
+  new gcp.secretmanager.SecretIamMember(`${secretId}-accessor`, {
+    member: apiRuntimeMember,
+    role: 'roles/secretmanager.secretAccessor',
+    secretId: secret.id
+  })
+}
 
 new gcp.storage.BucketIAMMember('deployer-state', {
   bucket: stateBucket.name,
