@@ -16,6 +16,26 @@ The app lives at the repo root; `infra/AGENTS.md` adds rules for the deploy code
 - **Before changing UI**, read `docs/FINNY-requirements.md` (what to build, data gotchas) and `docs/DESIGN.md`
   (visual direction). `docs/brief.md` is FINNY's original brief; don't edit it.
 
+## Direction (from 2026-10-26)
+
+The Express backend is being rebuilt in **Python (FastAPI) on Postgres**. The React app stays and changes only where
+it meets the new API. Backend decisions and their reasons go in `docs/backend/decisions.md` (append one entry per
+decision, using its template); `docs/decisions.md` keeps the Express app's history.
+
+- **Auth is built in-house:** a users table, password hashing, signup and login routes, one 1-hour access token signed
+  with PyJWT. No refresh tokens, no Supabase Auth or Auth0. Keep it small.
+- **The owner must be able to explain every line.** Build in thin slices (data and `GET /api/pokemon` first, then
+  auth, then battles). Port from the existing TypeScript as the reference, and don't start the next slice until the
+  owner has walked through the current one. Prefer plain, explicit code over clever code or extra libraries.
+- **Frontend changes stay minimal:** fetch calls to the new API, loading and error states, the JWT on each request,
+  CORS.
+- **Every battle runs on the server**, wild included: the engine is ported to Python and the client only plays back
+  events.
+- **Postgres is on Supabase** (database only: no Supabase Auth, every table has RLS on). The frontend and API deploy
+  separately, and **each slice ships live**: the API has its own Cloud Run service from slice 0.
+- **Plan:** `docs/superpowers/specs/2026-10-26-fastapi-backend-design.md` (slices, tables, endpoints). Until slice 8,
+  the Express code below still serves the React build and any endpoints not yet moved.
+
 ## Layout
 
 | Path | What |

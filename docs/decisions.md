@@ -610,3 +610,8 @@ server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles
   `src/lib/team/team.ts`).
 - **Rejected:** drag and drop. It needs a library or a lot of pointer and keyboard code to be accessible; two
   buttons per card do the same job for a team of six. A permanent "lead" badge: the owner asked for it on hover.
+
+## 2026-10-26: Backend rebuild decisions get their own log
+
+- **What:** decisions for the Python (FastAPI) and Postgres backend live in `docs/backend/decisions.md`, one entry
+  per decision with what was rejected and the trade-off accepted. This file keeps the history of the Express app.
