@@ -42,6 +42,8 @@ decision, using its template); `docs/decisions.md` keeps the Express app's histo
 | --- | --- |
 | `src/` | React 19 + Vite 8 SPA (`@/` aliases `src/`; shadcn/ui primitives in `src/components/ui/`) |
 | `server/` | Express 5 API (`app.ts`) and prod entry (`index.ts`); one container in prod |
+| `api/` | FastAPI service (Python 3.13, uv): `app/` code, `app/db/migrations/` numbered SQL, `tests/` (pytest, real Postgres) |
+| `docker-compose.yml` | Local Postgres 17 on port 54329 for the API's dev and tests |
 | `infra/` | Pulumi (TypeScript): app stack (CI-run) and `bootstrap/` stack (owner-run). Own `package.json` |
 | `.github/review/rules.md` | AI reviewer's custom rules; add a rule to teach it |
 | `docs/` | Decision log, requirements, design notes, specs and plans, `ai-usage.md` |
@@ -74,6 +76,8 @@ pnpm install && pnpm lint && pnpm test && pnpm build   # lint, tests, typecheck,
 pnpm start                                             # prod server on :3000
 curl -fsS localhost:3000/api/health && curl -fsS 'localhost:3000/api/pokemon?limit=1'
 cd infra && pnpm install && pnpm types                 # Pulumi typecheck
+docker compose up -d --wait db                        # Postgres for the API
+cd api && uv sync && uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest
 ```
 
 pnpm is pinned via `packageManager` (11.x). pnpm 11 ignores `pnpm.*` build settings in `package.json`; build-script

@@ -60,8 +60,9 @@ Browser ── static files (React build, own host)
 - **Supabase specifics.** Supabase auto-exposes tables in the `public` schema through its Data API to anyone with the
   project's public key. We don't use that API, so every table gets row-level security enabled with no policies (or the
   Data API is switched off), which closes that door; a migration test checks it. Normal queries go through Supabase's
-  connection pooler, but `LISTEN/NOTIFY` needs a long-lived session, so the listener uses a direct (or session-mode)
-  connection. `SELECT … FOR UPDATE` works through the pooler because it lives inside one transaction.
+  connection pooler, but `LISTEN/NOTIFY` needs a long-lived session, so the API connects through the session-mode
+  pooler (IPv4, one connection per client), not the transaction pooler or the IPv6-only direct host. `SELECT … FOR UPDATE` works through the pooler because it lives inside one transaction.
+- **PR previews have no API.** They would share the prod database; only `prod` deploys the API.
 - **One API service, stateless instances.** Anything that must survive a restart or be seen by another instance lives
   in Postgres. Live match updates reach players connected to any instance through Postgres `LISTEN/NOTIFY`.
 

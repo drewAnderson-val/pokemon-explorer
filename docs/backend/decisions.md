@@ -130,3 +130,44 @@ Template:
   revocation (more realistic, but another table and flow for little gain in a demo).
 - **Trade-off:** a stolen token works until it expires, and logout can't revoke it. Users log in again every hour.
   Refresh tokens are listed under "what I'd add at scale."
+
+## 2026-10-26: Async database access (psycopg 3, async pool)
+
+- **What:** routes use `psycopg`'s async connection pool.
+- **Why:** later slices hold live connections open (SSE streams for friend matches, a `LISTEN` connection). With
+  async, a waiting stream costs almost nothing; with sync routes each one would hold a worker thread.
+- **Rejected:** sync `psycopg` (a little simpler to read; FastAPI runs sync routes in a thread pool, which caps how
+  many streams can wait at once).
+- **Trade-off:** `async`/`await` everywhere, and a blocking call by mistake stalls every request on that instance.
+
+## 2026-10-26: Migrations run on startup, under an advisory lock
+
+- **What:** numbered `.sql` files in `api/app/db/migrations/` are applied when the API starts, each in its own
+  transaction together with its row in `schema_migrations`. The whole run holds `pg_advisory_lock`.
+- **Why:** two instances can start at once (a deploy, a scale-up). Without the lock both try to apply the same file;
+  the test for it fails with a duplicate-key error when the lock is removed. A failed migration rolls back, the
+  instance fails its startup probe, and Cloud Run keeps serving the previous revision.
+- **Rejected:** a CI step that runs migrations before deploy (GitHub would need the database password); Alembic (a
+  framework for something a 50-line runner does visibly).
+- **Trade-off:** a slow migration delays startup and can exceed the probe budget (about 20 s); a big one would need to
+  run separately.
+
+## 2026-10-26: Health checks the database
+
+- **What:** `/api/health` runs `SELECT 1` with a 2-second limit and answers 503 `database unavailable` on failure.
+- **Why:** a health route that always says ok would let a deploy with a broken connection string go live.
+- **Rejected:** a static 200.
+- **Trade-off:** a database outage makes new revisions fail their startup probe (old ones keep serving).
+
+## 2026-10-26: The API is deployed from prod only; Supabase via its session pooler
+
+- **What:** only the `prod` Pulumi stack creates the API service. Its runtime account and two secrets
+  (`api-database-url`, `api-jwt-secret`) live in the owner-run bootstrap stack; secret values are added with `gcloud`
+  and never touch the repo or Pulumi state. The database URL is Supabase's session pooler.
+- **Why:** PR previews would share the prod database, so a PR's migration would change prod. The runtime account must
+  exist before secrets can be granted to it, and only the owner can grant IAM roles. Supabase's direct host is
+  IPv6-only, which Cloud Run can't reach without extra networking; the session pooler is IPv4 and, unlike the
+  transaction pooler, keeps one connection per client, so `LISTEN/NOTIFY` works.
+- **Rejected:** per-PR databases (Supabase branching is paid); the transaction pooler (breaks `LISTEN/NOTIFY`).
+- **Trade-off:** API changes can't be tried on a preview URL before merge; the session pooler limits connections per
+  client to the pool size.
