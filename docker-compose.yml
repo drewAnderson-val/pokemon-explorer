@@ -1,0 +1,13 @@
+# Local Postgres for the API's development and tests. Supabase runs Postgres 17 in prod.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '54329:5432'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+      interval: 2s
+      timeout: 2s
+      retries: 15
