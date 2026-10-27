@@ -9,7 +9,17 @@ import { defineConfig } from 'vite'
 import app from './server/app'
 
 // API routes served by the FastAPI service (api/) instead of Express.
-const FASTAPI_PREFIX = '/api/pokemon'
+const FASTAPI_ROUTES = ['/api/pokemon', '/api/auth', '/api/me']
+
+// Whole path segments only: /api/pokemon/7 and /api/pokemon?x go to FastAPI,
+// /api/pokemonX doesn't.
+const isFastApi = (url = '') =>
+  FASTAPI_ROUTES.some(
+    route =>
+      url === route ||
+      url.startsWith(`${route}/`) ||
+      url.startsWith(`${route}?`)
+  )
 
 export default defineConfig({
   plugins: [
@@ -19,7 +29,7 @@ export default defineConfig({
       configureServer(server) {
         // Routes already moved to FastAPI fall through to the proxy below.
         server.middlewares.use((req, res, next) => {
-          if (req.url?.startsWith(FASTAPI_PREFIX)) next()
+          if (isFastApi(req.url)) next()
           // Express upgrades Node's request and response objects itself.
           else app(req as Request, res as Response, next)
         })
@@ -34,7 +44,9 @@ export default defineConfig({
   },
   server: {
     // `pnpm dev:api` runs FastAPI here.
-    proxy: { [FASTAPI_PREFIX]: 'http://localhost:8000' }
+    proxy: Object.fromEntries(
+      FASTAPI_ROUTES.map(route => [route, 'http://localhost:8000'])
+    )
   },
   test: {
     environment: 'jsdom',
