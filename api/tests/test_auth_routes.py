@@ -101,18 +101,47 @@ def test_password_is_never_returned_or_stored(client: TestClient, test_database_
     assert row and "correct horse" not in row[0]
 
 
-def test_logins_do_not_block_each_other(client: TestClient) -> None:
+def test_logins_do_not_block_each_other(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
     signup(client)
-    login(client)  # warm up
-    started = time.monotonic()
-    login(client)
-    one = time.monotonic() - started
 
+    # Every verify now takes a fixed 200 ms, so timing doesn't depend on how fast
+    # this machine hashes. On the event loop, 4 logins would take 4 x 200 ms.
+    def slow_verify(password_hash: str, password: str) -> bool:
+        time.sleep(0.2)
+        return verify_password(password_hash, password)
+
+    monkeypatch.setattr("app.routes.auth.verify_password", slow_verify)
     started = time.monotonic()
     with ThreadPoolExecutor(4) as pool:
         results = list(pool.map(lambda _: login(client), range(4)))
-    four = time.monotonic() - started
+    elapsed = time.monotonic() - started
 
     assert all(r.status_code == 200 for r in results)
-    # Hashing on the event loop would run them one after another (about 4x).
-    assert four < one * 2.5
+    assert elapsed < 0.6
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"username": "a\x00b"},  # Postgres can't hold NUL in text
+        {"username": "x" * 5000},
+        {"password": "x" * 200_000},  # never hashed
+    ],
+)
+def test_login_with_impossible_input_is_the_generic_401(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, overrides: dict[str, str]
+) -> None:
+    checked: list[int] = []
+
+    def spy(password_hash: str, password: str) -> bool:
+        checked.append(len(password))
+        return verify_password(password_hash, password)
+
+    monkeypatch.setattr("app.routes.auth.verify_password", spy)
+    response = login(client, **overrides)
+    assert response.status_code == 401
+    assert response.json() == {"error": "Wrong username or password"}
+    # Still one verify, so it takes as long as any failed login; never the huge input.
+    assert len(checked) == 1 and checked[0] <= 128

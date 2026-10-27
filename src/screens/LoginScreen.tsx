@@ -97,11 +97,19 @@ export function LoginScreen({ next }: { next: null | string }) {
   )
 }
 
-// Where to go after signing in. Only a path on this site: `//evil.com` and
-// `/\evil.com` are read by browsers as other sites, so they fall back to home.
+// Where to go after signing in: only somewhere on this site. Parsed the way the
+// browser will parse it, rather than checking prefixes: browsers drop tabs and
+// newlines inside URLs, so a prefix check passes "/\t/evil.com", which the
+// browser then reads as //evil.com, another site.
 export function safeNext(raw: null | string): string {
-  if (!raw?.startsWith('/') || raw.startsWith('//') || raw.startsWith('/\\')) {
-    return '/'
+  if (!raw) return '/'
+  try {
+    const url = new URL(raw, window.location.origin)
+    if (url.origin === window.location.origin) {
+      return url.pathname + url.search + url.hash
+    }
+  } catch {
+    // Not a URL at all.
   }
-  return raw
+  return '/'
 }

@@ -27,6 +27,13 @@ class Credentials(BaseModel):
     password: str
 
 
+def valid(credentials: Credentials) -> bool:
+    """Whether these could belong to an account: the same rules signup enforces."""
+    return bool(USERNAME.fullmatch(credentials.username)) and (
+        len(credentials.password) in PASSWORD_LENGTH
+    )
+
+
 def session(request: Request, user: User, status_code: int = 200) -> JSONResponse:
     token, expires = issue_token(user.id, request.app.state.settings.jwt_secret)
     body: dict[str, Any] = {
@@ -60,6 +67,13 @@ async def signup(credentials: Credentials, request: Request, conn: Conn) -> JSON
 
 @router.post("/api/auth/login")
 async def login(credentials: Credentials, request: Request, conn: Conn) -> JSONResponse:
+    if not valid(credentials):
+        # No account can match. Still one verify (of a short fixed password, never the
+        # submitted one, which could be megabytes) so this answer takes as long as any
+        # other failed login. Also keeps a NUL byte away from Postgres, which rejects it.
+        await run_in_threadpool(verify_password, DUMMY_HASH, "not-a-real-password")
+        return error("Wrong username or password", 401)
+
     found = await find_login(conn, credentials.username)
     # An unknown username is checked against a dummy hash, so it takes as long as
     # a wrong password and gets the same answer: neither reveals who has an account.

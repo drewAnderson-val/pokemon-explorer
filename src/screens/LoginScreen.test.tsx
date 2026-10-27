@@ -78,6 +78,10 @@ describe('safeNext', () => {
     ['https://evil.com', '/'],
     ['//evil.com', '/'],
     ['/\\evil.com', '/'],
+    // Browsers drop tabs and newlines inside URLs, so these become //evil.com.
+    ['/\t/evil.com', '/'],
+    ['/\n/evil.com', '/'],
+    ['/\t\\evil.com', '/'],
     ['javascript:alert(1)', '/'],
     [null, '/']
   ])('%s → %s', (raw, expected) => {

@@ -44,7 +44,8 @@ def create_app(settings: Settings) -> FastAPI:
     app.include_router(pokemon.router)
     app.include_router(auth.router)
 
-    # Every error is {"error": ...}, including the 401s and 404s FastAPI raises.
+    # Errors routes raise (like current_user's 401) come out as {"error": ...}. Routing
+    # errors (unknown path, wrong method) are raised by Starlette and keep {"detail"}.
     @app.exception_handler(HTTPException)
     async def http_error(_: Request, exc: HTTPException) -> JSONResponse:
         return JSONResponse({"error": exc.detail}, status_code=exc.status_code, headers=exc.headers)
