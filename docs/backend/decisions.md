@@ -332,3 +332,33 @@ Template:
   stored, and slice 5 reuses it from another route.
 - **Trade-off:** the TS engine now clamps wild timing too, so the two stay identical; its own timing bar never produced
   values outside 1–1.25, so nothing changes for players.
+
+## 2026-10-28: The server owns a team's levels, XP and HP
+
+- **What:** `PUT /api/team` reads only `uid` and `creatureId` per member. An existing member (same uid *and* same
+  creature) keeps its stats in its new position; anything else joins fresh at level 5. Only battle results change
+  stats. Extra fields like `level: 100` are ignored.
+- **Why:** once the server is the source of truth, any field the client can set is a field anyone can set with curl.
+  The uid has to match the creature too, or a strong member's stats could be moved onto another creature.
+- **Rejected:** accepting the whole member and validating ranges (a valid level-100 is still a cheat).
+- **Trade-off:** local progress from before accounts doesn't carry over: a new account starts at level 5.
+
+## 2026-10-28: Wild turns: a turn number, under row locks, with the team saved in the same transaction
+
+- **What:** each action names the turn it's for. The route locks the user's row, then the battle row
+  (`SELECT … FOR UPDATE`), rejects a turn that isn't current with 409, runs the engine, stores the new state and
+  `turn + 1`, and writes HP/XP/levels/catches back to the team, all in one transaction. Team edits and battle starts
+  take the same user lock first, so one user's team changes happen one at a time.
+- **Why:** a double click or a retried request must not play a move twice. A test sends the same turn twice at once:
+  one 200, one 409. With the locks removed (turn check kept) that test failed 5 out of 5 runs: both requests read
+  turn 0 before either saved. The turn check needs the lock to be safe. Saving the team in the same transaction means
+  the battle and the team can never disagree.
+- **Rejected:** idempotency keys (they replay the stored answer to a retry; worth it for friend matches in slice 5,
+  where two players' requests interleave, but a turn number says the same thing here with no extra table).
+- **Trade-off:** a client that lost a response must re-read the battle (`GET`) to learn the current turn.
+
+## 2026-10-28: Custom creatures can't join a server team until Creature Lab moves (slice 6)
+
+- **What:** teams reference `pokemon` rows, and custom creatures still live only in the browser.
+- **Trade-off:** a temporary step back in slice 4b ("Add to team" disabled for custom creatures), accepted by the
+  owner to keep battles first.
