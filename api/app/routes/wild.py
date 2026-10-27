@@ -7,14 +7,14 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, StrictInt
 from psycopg import AsyncConnection
 from psycopg.types.json import Jsonb
+from pydantic import BaseModel, StrictInt
 
 from app.auth.deps import CurrentUser
+from app.battles.write_back import write_back
 from app.db.pool import get_conn
 from app.engine.types import Fighter, Rng
-from app.battles.write_back import write_back
 from app.engine.wild import create_battle, create_fighter, resolve_turn, send_out, wild_level
 from app.pokemon.queries import find_many
 from app.teams.store import load_team, lock_user, save_members

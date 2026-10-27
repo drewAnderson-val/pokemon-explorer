@@ -83,7 +83,10 @@ def test_timing_is_capped(client: TestClient) -> None:
         events = act(client, h, 0, {"index": 0, "timing": timing, "type": "move"}, HIT).json()[
             "events"
         ]
-        return next(e["amount"] for e in events if e["type"] == "damage" and e["target"] == "enemy")
+        amount: int = next(
+            e["amount"] for e in events if e["type"] == "damage" and e["target"] == "enemy"
+        )
+        return amount
 
     assert player_hit(100) == player_hit(1.25)
 
