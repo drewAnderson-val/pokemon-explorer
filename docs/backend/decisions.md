@@ -247,3 +247,49 @@ Template:
 - **Why:** the deploy smoke test and existing Express tests still use it, and removing it now would mean changing the
   Express image twice.
 - **Trade-off:** two copies of the same behavior for a few slices; the golden file keeps them equal.
+
+## 2026-10-27: Passwords are hashed with argon2id at 19 MiB, 2 passes, 1 lane
+
+- **What:** `argon2-cffi` with `time_cost=2, memory_cost=19 MiB, parallelism=1`, OWASP's recommended minimum. The
+  parameters are stored in each hash, so they can be raised later without breaking existing passwords. Hashing and
+  verifying run in the thread pool.
+- **Why:** argon2id is slow and memory-hard on purpose, so a stolen hash is expensive to guess against. The library's
+  default (64 MiB) would let a burst of logins exhaust a 512 MiB Cloud Run instance. In an `async` route the ~25 ms of
+  CPU would stall every other request on the instance; a test fails when verify runs on the event loop.
+- **Rejected:** bcrypt (older, and silently truncates passwords at 72 bytes); the 64 MiB default.
+- **Trade-off:** each login costs ~25 ms of CPU and 19 MiB briefly. Passwords are capped at 128 characters so a huge
+  one can't cost more.
+
+## 2026-10-27: Tokens are HS256 with the algorithm pinned, and a 32-byte minimum secret
+
+- **What:** PyJWT signs `{sub, iat, exp}` with HMAC-SHA256. Verification only accepts HS256 and requires all three
+  claims. The API refuses to start with a `JWT_SECRET` under 32 bytes (prod uses 64 hex characters).
+- **Why:** one service signs and verifies, so a shared secret is enough. Pinning the algorithm stops a forged token
+  from naming `none` (no signature) in its own header; a test sends one. A short secret can be brute-forced offline
+  from any single token.
+- **Rejected:** RS256 (a key pair, worth it only when other services verify tokens they can't sign).
+- **Trade-off:** rotating the secret signs everyone out.
+
+## 2026-10-27: Unknown usernames get the same answer and the same work
+
+- **What:** login returns `401 Wrong username or password` for both an unknown username and a wrong password, and
+  for an unknown username still runs one argon2 verify (against a dummy hash).
+- **Why:** a different message, or a faster answer because hashing was skipped, would tell anyone which usernames
+  exist. A test fails if the dummy verify is removed.
+- **Trade-off:** signup still says "That username is taken", which reveals the same thing; that's the usual
+  compromise, since people need to know why signup failed. A rate limit would close it; see below.
+
+## 2026-10-27: Usernames are unique ignoring case; the index decides
+
+- **What:** a unique index on `lower(username)`; signup inserts and turns the unique violation into 409, with no
+  "does it exist?" query first.
+- **Why:** `Drew` and `drew` as two accounts would confuse people and enable impersonation. Checking first and then
+  inserting has a race: two signups can both pass the check. The index can't be raced.
+
+## 2026-10-27: Sign-in exists, but nothing requires it yet
+
+- **What:** accounts, the token and `current_user` ship now; no screen or route is gated.
+- **Why:** teams and battles still run in the browser until slice 4. Requiring sign-in before anything is stored per
+  user would block features without protecting anything. Slice 4 adds the gating together with the routes that need it.
+- **Rejected (for now):** login rate limiting and lockout. Named in "what I'd add at scale": per-IP and per-username
+  limits in Postgres or Redis.

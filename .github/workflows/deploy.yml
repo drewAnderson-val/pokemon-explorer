@@ -130,6 +130,15 @@ jobs:
         run: |
           curl -fsS "$API_URL/api/pokemon?search=fire&limit=50" \
             | jq -e '.data | length > 0 and all(.[]; (.types | index("Fire")) or (.name + .description | test("fire"; "i")))' >/dev/null
+      # No smoke test creates a user: it would add a row to the prod database on every deploy.
+      - name: API login rejects unknown users with the generic message
+        run: |
+          code=$(curl -sS -o /tmp/login.json -w '%{http_code}' -X POST "$API_URL/api/auth/login" \
+            -H 'content-type: application/json' -d '{"username":"smoke_nobody","password":"not-a-password"}')
+          test "$code" = 401
+          jq -e '.error == "Wrong username or password"' /tmp/login.json >/dev/null
+      - name: API /api/me needs a token
+        run: test "$(curl -sS -o /dev/null -w '%{http_code}' "$API_URL/api/me")" = 401
       - name: API allows the frontend origin (CORS)
         run: |
           curl -fsS -o /dev/null -D - -H "Origin: $URL" "$API_URL/api/health" \
