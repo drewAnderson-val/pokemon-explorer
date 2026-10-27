@@ -1,7 +1,7 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -42,6 +42,11 @@ def create_app(settings: Settings) -> FastAPI:
         )
     app.include_router(health.router)
     app.include_router(pokemon.router)
+
+    # Every error is {"error": ...}, including the 401s and 404s FastAPI raises.
+    @app.exception_handler(HTTPException)
+    async def http_error(_: Request, exc: HTTPException) -> JSONResponse:
+        return JSONResponse({"error": exc.detail}, status_code=exc.status_code, headers=exc.headers)
 
     # FastAPI answers bad path or body values with 422 and its own shape; this API
     # answers every bad request with 400 {"error": ...}, like the Express one.

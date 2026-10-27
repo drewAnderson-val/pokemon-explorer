@@ -43,6 +43,6 @@ def test_other_origins_get_no_header(cors_client: TestClient, origin: str) -> No
 
 def test_cors_env_var_is_read(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("DATABASE_URL", "postgresql://u:p@localhost/db")
-    monkeypatch.setenv("JWT_SECRET", "s")
+    monkeypatch.setenv("JWT_SECRET", "s" * 32)
     monkeypatch.setenv("CORS_ORIGIN_REGEX", CORS_REGEX)
     assert Settings.from_env().cors_origin_regex == CORS_REGEX

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:api": "cd api && DATABASE_URL=postgresql://postgres:postgres@localhost:54329/pokemon JWT_SECRET=dev uv run uvicorn app.asgi:app --reload --port 8000",
+    "dev:api": "cd api && DATABASE_URL=postgresql://postgres:postgres@localhost:54329/pokemon JWT_SECRET=dev-only-secret-not-for-production-use uv run uvicorn app.asgi:app --reload --port 8000",
     "build": "tsc -b && vite build && vite build --ssr server/index.ts --outDir dist-server",
     "start": "node dist-server/index.js",
     "server": "pnpm build && pnpm start",

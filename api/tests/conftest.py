@@ -9,6 +9,7 @@ from psycopg.conninfo import conninfo_to_dict
 from app.config import Settings
 from app.main import create_app
 
+TEST_JWT_SECRET = "test-secret-at-least-32-bytes-long"
 DEFAULT_TEST_DATABASE_URL = "postgresql://postgres:postgres@localhost:54329/postgres"
 
 
@@ -38,7 +39,7 @@ def reset_db(test_database_url: str) -> None:
 
 @pytest.fixture
 def client(test_database_url: str, reset_db: None) -> Iterator[TestClient]:
-    app = create_app(Settings(test_database_url, "test-secret"))
+    app = create_app(Settings(test_database_url, TEST_JWT_SECRET))
     # Used as a context manager so the app's startup and shutdown (the lifespan) run.
     with TestClient(app) as client:
         yield client
