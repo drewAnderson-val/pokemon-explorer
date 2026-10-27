@@ -199,3 +199,51 @@ Template:
 - **Rejected:** a separate Pulumi stack or job for the API (isolates failures, but adds a second state and pipeline for
   a temporary arrangement: Express is retired in slice 8).
 - **Trade-off:** until slice 8, an API failure can make an Express-only change look like a failed deploy.
+
+## 2026-10-27: The catalog is seeded by a generated migration
+
+- **What:** `api/scripts/generate_seed.py` turns `src/data/pokemon.json` into `0002_seed_pokemon.sql`, one `INSERT` of
+  1,000 rows, committed. A test fails if the file no longer matches the JSON, and another checks every record reads
+  back unchanged (floats, type order, which records have `isLegendary`).
+- **Why:** the seed then runs exactly once, under the same lock and transaction as every other migration, and the API
+  image needs neither the JSON nor a seed step.
+- **Rejected:** a seed step on startup (runs on every start, needs its own "already seeded?" check); copying the JSON
+  into the API image and loading it in Python (a second copy of the data to keep in sync).
+- **Trade-off:** a 230 KB generated file in the repo. Changing the data means regenerating it in a new migration, not
+  editing this one.
+
+## 2026-10-27: Parity with Express is proven by a shared golden file
+
+- **What:** `server/golden.test.ts` runs 21 requests through the Express query code and writes the answers to
+  `api/tests/golden/pokemon_queries.json`. The TypeScript suite checks Express still matches it; the Python suite
+  checks FastAPI returns the same status and body for each.
+- **Why:** "ported the tests" only proves the cases someone thought of. Running both implementations on the same
+  inputs and comparing whole responses catches differences nobody wrote a test for (sort ties, escaping, page math).
+- **Rejected:** porting `server/query.test.ts` alone (kept for the parser, but weaker for responses).
+- **Trade-off:** the golden file is only as good as its 21 cases. When Express is deleted, the file stays as the
+  record of the expected behavior.
+
+## 2026-10-27: Search uses LIKE with escaping, backed by trigram indexes
+
+- **What:** search lowercases the term, escapes `\`, `%` and `_`, and matches `lower(name)`, `lower(description)` and
+  each type with `LIKE '%term%'`. GIN trigram indexes exist on `lower(name)` and `lower(description)`.
+- **Why:** Express matched a literal substring. In SQL, `%` and `_` are wildcards, so an unescaped `search=%` would
+  return all 1,000 records (the golden tests fail when the escaping is removed). A leading `%` can't use a B-tree
+  index; a trigram index can.
+- **Rejected:** `ILIKE` without escaping (wrong results); full-text search (matches whole words, not substrings, so
+  `fir` wouldn't find `fire`).
+- **Trade-off:** at 1,000 rows Postgres still chooses a sequential scan (cheaper at this size); the indexes pay off as
+  the table grows, and cost a little on every insert.
+
+## 2026-10-27: Dev and test databases are separate
+
+- **What:** docker compose creates `pokemon` for dev (`pnpm dev:api`); tests use `postgres` and drop its schema.
+- **Why:** running the tests would otherwise wipe the database the dev server is using.
+- **Trade-off:** none worth noting.
+
+## 2026-10-27: Two /api/pokemon implementations until the cutover
+
+- **What:** the frontend calls FastAPI's `/api/pokemon`; Express keeps its own until slice 8.
+- **Why:** the deploy smoke test and existing Express tests still use it, and removing it now would mean changing the
+  Express image twice.
+- **Trade-off:** two copies of the same behavior for a few slices; the golden file keeps them equal.
