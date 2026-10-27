@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:api": "cd api && DATABASE_URL=postgresql://postgres:postgres@localhost:54329/pokemon JWT_SECRET=dev uv run uvicorn app.asgi:app --reload --port 8000",
+    "dev:api": "cd api && DATABASE_URL=postgresql://postgres:postgres@localhost:54329/pokemon JWT_SECRET=dev-only-secret-not-for-production-use uv run uvicorn app.asgi:app --reload --port 8000",
     "db:log-sql": "docker compose exec db psql -U postgres -qc \"ALTER SYSTEM SET log_statement = 'all'\" -c 'SELECT pg_reload_conf()' && docker compose logs -f --since 1s db",
     "db:quiet": "docker compose exec db psql -U postgres -qc 'ALTER SYSTEM RESET log_statement' -c 'SELECT pg_reload_conf()'",
     "build": "tsc -b && vite build && vite build --ssr server/index.ts --outDir dist-server",
