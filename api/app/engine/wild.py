@@ -41,9 +41,32 @@ STAB = 1.5
 WILD_LEVEL_SPREAD = 2
 MIN_WILD_LEVEL = 2
 
+MAX_TIMING = 1.25
+
 # A player action, as the client sends it: {"type": "move", "index", "timing"?},
-# {"type": "switch", "to"} or {"type": "catch"}.
+# {"type": "switch", "to"} or {"type": "catch"}. It comes from the browser, so
+# anything else is a ValueError (a 400), never a crash or a different action.
 PlayerAction = dict[str, object]
+
+
+def clamp_timing(value: object) -> float:
+    """The timing-bar bonus, held to 1–1.25; anything that isn't a number counts as 1.
+    The server can't trust the browser's value: unclamped, 1000 would one-shot
+    anything. A bool isn't a number here (Python's True is an int; JS's isn't)."""
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return 1
+    if isinstance(value, float) and math.isnan(value):
+        return 1
+    return min(MAX_TIMING, max(1, value))
+
+
+def int_field(value: object) -> int:
+    """An index from the client. Rejects bools, floats, strings and missing values;
+    range checks happen where the list is known (a negative index would otherwise
+    quietly mean "from the end" in Python)."""
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ValueError(f"Expected an integer, got {value!r}")
+    return value
 
 
 def js_round(x: float) -> int:
@@ -176,23 +199,25 @@ def resolve_turn(state: BattleState, action: PlayerAction, rng: Rng) -> TurnResu
     nxt = _draft(state)
     events: list[BattleEvent] = []
 
-    if action["type"] == "move":
+    kind = action.get("type")
+    if kind not in ("move", "switch", "catch"):
+        raise ValueError("Unknown action")
+    if kind == "move":
         enemy_move = choose_enemy_move(nxt["enemy"], active_fighter(nxt), rng)
         order = turn_order(
             active_fighter(nxt)["stats"]["speed"], nxt["enemy"]["stats"]["speed"], rng
         )
         for side in order:
             if side == "player":
-                timing = action.get("timing")
-                bonus = float(timing) if isinstance(timing, int | float) else 1
-                _attack(nxt, side, _int(action["index"]), rng, events, bonus)
+                index = int_field(action.get("index"))
+                _attack(nxt, side, index, rng, events, clamp_timing(action.get("timing")))
             else:
                 _attack(nxt, side, enemy_move, rng, events)
             if nxt["winner"] or nxt["mustSwitch"]:
                 break
     else:
-        if action["type"] == "switch":
-            _switch_to(nxt, _int(action["to"]), events)
+        if kind == "switch":
+            _switch_to(nxt, int_field(action.get("to")), events)
         else:
             _throw_ball(nxt, rng, events)
         if not nxt["winner"]:
@@ -208,7 +233,7 @@ def send_out(state: BattleState, to: int) -> TurnResult:
         return {"events": [], "state": state}
     nxt = _draft(state)
     events: list[BattleEvent] = []
-    _switch_to(nxt, to, events)
+    _switch_to(nxt, int_field(to), events)
     return {"events": events, "state": nxt}
 
 
@@ -242,12 +267,6 @@ def strike(
         }
     )
     return True
-
-
-def _int(value: object) -> int:
-    if not isinstance(value, int) or isinstance(value, bool):
-        raise ValueError(f"Expected an integer, got {value!r}")
-    return value
 
 
 def _attack(

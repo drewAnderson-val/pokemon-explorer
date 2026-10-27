@@ -1,10 +1,12 @@
 """Friend battles: a port of src/lib/battle/versus.ts.
 
+`clamp_timing` and `MAX_TIMING` live in wild.py (both battle kinds use them) and
+are re-exported here.
+
 Pure two-team rules. Events are written from the host's side (host = "player",
 guest = "enemy"); `events_for` flips them for the guest.
 """
 
-import math
 
 from app.engine.types import (
     BattleEvent,
@@ -18,11 +20,12 @@ from app.engine.types import (
     VersusTeam,
     VersusTurnResult,
 )
-from app.engine.wild import create_fighter, strike, turn_order
+from app.engine.wild import MAX_TIMING as MAX_TIMING
+from app.engine.wild import clamp_timing as clamp_timing
+from app.engine.wild import create_fighter, int_field, strike, turn_order
 
 VERSUS_LEVEL = 50
 NO_BAR_BONUS = 1.125
-MAX_TIMING = 1.25
 
 # {"type": "move", "index", "timing"} or {"type": "switch", "to"}.
 VersusAction = dict[str, object]
@@ -38,14 +41,6 @@ def _side_of(seat: Seat) -> Side:
 
 def _active_of(team: VersusTeam) -> Fighter:
     return team["party"][team["active"]]
-
-
-def clamp_timing(value: object) -> float:
-    """Non-numbers count as 1; anything else is held to 1–1.25. A bool isn't a
-    number here (Python's True is an int; JS's typeof true is "boolean")."""
-    if isinstance(value, bool) or not isinstance(value, int | float) or math.isnan(value):
-        return 1
-    return min(MAX_TIMING, max(1, value))
 
 
 def create_versus_team(creatures: list[Pokemon], seat: Seat) -> VersusTeam:
@@ -103,14 +98,18 @@ def resolve_versus_turn(
     speed order. The turn stops when someone faints."""
     if state["winner"] or state["host"]["mustSwitch"] or state["guest"]["mustSwitch"]:
         return {"events": [], "state": state}
+    seats: tuple[Seat, Seat] = ("host", "guest")
+    # Both actions come from browsers: each must be a move or a switch.
+    for seat in seats:
+        if seat not in actions or actions[seat].get("type") not in ("move", "switch"):
+            raise ValueError("Unknown action")
     nxt = _draft(state)
     events: list[BattleEvent] = []
 
-    seats: tuple[Seat, Seat] = ("host", "guest")
     for seat in seats:
         action = actions[seat]
         if action["type"] == "switch":
-            _switch_to(nxt, seat, _int(action["to"]), events)
+            _switch_to(nxt, seat, int_field(action.get("to")), events)
 
     movers = [seat for seat in seats if actions[seat]["type"] == "move"]
     if len(movers) == 2:
@@ -136,14 +135,8 @@ def versus_send_out(state: VersusState, seat: Seat, to: int) -> VersusTurnResult
         return {"events": [], "state": state}
     nxt = _draft(state)
     events: list[BattleEvent] = []
-    _switch_to(nxt, seat, to, events)
+    _switch_to(nxt, seat, int_field(to), events)
     return {"events": events, "state": nxt}
-
-
-def _int(value: object) -> int:
-    if not isinstance(value, int) or isinstance(value, bool):
-        raise ValueError(f"Expected an integer, got {value!r}")
-    return value
 
 
 def _attack(
@@ -152,7 +145,7 @@ def _attack(
     target_seat = other_seat(seat)
     attacker = _active_of(state[seat])
     defender = _active_of(state[target_seat])
-    index = _int(action["index"])
+    index = int_field(action.get("index"))
     if not 0 <= index < len(attacker["moves"]):
         raise ValueError(f"No move {index} for {seat}")
     struck = strike(

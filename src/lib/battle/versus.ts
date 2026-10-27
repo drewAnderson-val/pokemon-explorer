@@ -3,6 +3,7 @@ import type { Pokemon } from '../pokemon'
 import {
   type BattleEvent,
   type BattleState,
+  clampTiming,
   createFighter,
   type Fighter,
   type Rng,
@@ -31,11 +32,13 @@ export type VersusTeam = {
 
 type TurnResult = { events: BattleEvent[]; state: VersusState }
 
+// Shared with wild battles; kept importable from here for the match server.
+export { clampTiming, MAX_TIMING } from './engine'
+
 // Pure two-team rules for friend matches. Events are written from the host's
 // side (host = 'player', guest = 'enemy'); `eventsFor` flips them per seat.
 export const VERSUS_LEVEL = 50
 export const NO_BAR_BONUS = 1.125
-export const MAX_TIMING = 1.25
 
 export const otherSeat = (seat: Seat): Seat =>
   seat === 'host' ? 'guest' : 'host'
@@ -43,12 +46,6 @@ export const otherSeat = (seat: Seat): Seat =>
 const sideOf = (seat: Seat): Side => (seat === 'host' ? 'player' : 'enemy')
 
 const activeOf = (team: VersusTeam) => team.party[team.active]
-
-// Non-numbers count as 1; anything else is held to 1–1.25.
-export function clampTiming(value: unknown): number {
-  if (typeof value !== 'number' || Number.isNaN(value)) return 1
-  return Math.min(MAX_TIMING, Math.max(1, value))
-}
 
 export function createVersusTeam(creatures: Pokemon[], seat: Seat): VersusTeam {
   return {

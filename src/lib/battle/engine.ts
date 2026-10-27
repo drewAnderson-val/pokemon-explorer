@@ -86,6 +86,7 @@ type DamageInput = {
 type TurnResult = { events: BattleEvent[]; state: BattleState }
 
 export const MAX_TEAM = 6
+export const MAX_TIMING = 1.25
 export const MIN_ROLL = 0.85
 export const ENEMY_BEST_MOVE_CHANCE = 0.7
 export const CRIT_CHANCE = 1 / 24
@@ -93,6 +94,13 @@ const CRIT_MULTIPLIER = 1.5
 const STAB = 1.5
 const WILD_LEVEL_SPREAD = 2
 const MIN_WILD_LEVEL = 2
+
+// The timing-bar bonus, held to 1–1.25; non-numbers count as 1. Applied to wild
+// battles too: once the server plays them it can't trust the browser's value.
+export function clampTiming(value: unknown): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) return 1
+  return Math.min(MAX_TIMING, Math.max(1, value))
+}
 
 export const opponentOf = (side: Side): Side =>
   side === 'player' ? 'enemy' : 'player'
@@ -256,7 +264,14 @@ export function resolveTurn(
     )
     for (const side of order) {
       if (side === 'player') {
-        attack(next, side, action.index, rng, events, action.timing)
+        attack(
+          next,
+          side,
+          action.index,
+          rng,
+          events,
+          clampTiming(action.timing)
+        )
       } else attack(next, side, enemyMove, rng, events)
       if (next.winner || next.mustSwitch) break
     }
