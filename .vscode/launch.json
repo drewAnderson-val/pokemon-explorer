@@ -1,0 +1,24 @@
+{
+  // Run the FastAPI service under the debugger, for stepping through requests.
+  // Stop `pnpm dev:api` first: both use port 8000. `pnpm dev` (Vite) still
+  // proxies /api/pokemon here.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API: FastAPI (debug)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      // No --reload: the reloader runs the app in a child process the
+      // debugger doesn't attach to, so breakpoints wouldn't stop.
+      "args": ["app.asgi:app", "--port", "8000"],
+      "cwd": "${workspaceFolder}/api",
+      "python": "${workspaceFolder}/api/.venv/bin/python",
+      "env": {
+        "DATABASE_URL": "postgresql://postgres:postgres@localhost:54329/pokemon",
+        "JWT_SECRET": "dev-only-secret-not-for-production-use"
+      },
+      "justMyCode": true
+    }
+  ]
+}

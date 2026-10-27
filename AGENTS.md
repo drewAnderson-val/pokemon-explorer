@@ -79,6 +79,9 @@ pnpm dev:api                     # FastAPI on :8000 (runs migrations on start)
 pnpm dev                         # Vite on :5173; proxies /api/pokemon to :8000
 ```
 
+To step through API requests, use VS Code's **API: FastAPI (debug)** launch config (`.vscode/launch.json`) instead of
+`pnpm dev:api`. `pnpm db:log-sql` streams every statement Postgres runs; `pnpm db:quiet` turns that off.
+
 ## Verify before you say it works
 
 ```bash
