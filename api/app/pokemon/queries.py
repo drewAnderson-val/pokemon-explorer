@@ -95,6 +95,12 @@ async def find_by_id(conn: AsyncConnection, pokemon_id: int) -> dict[str, Any] |
     return to_json(row) if row else None
 
 
+async def find_many(conn: AsyncConnection, ids: list[int]) -> dict[int, dict[str, Any]]:
+    """Several records by id, in one query."""
+    cursor = await conn.execute(f"SELECT {COLUMNS} FROM pokemon WHERE id = ANY(%s)", (ids,))
+    return {row[0]: to_json(row) for row in await cursor.fetchall()}
+
+
 def to_json(row: tuple[Any, ...]) -> dict[str, Any]:
     """A row in the API's camelCase shape; isLegendary only when the record has it."""
     (id_, name, types, height, weight, hp, attack, defense, special_attack, special_defense,

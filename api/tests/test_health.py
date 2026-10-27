@@ -32,4 +32,9 @@ def test_startup_runs_migrations(test_database_url: str, reset_db: None) -> None
 
     with psycopg.connect(test_database_url) as conn:
         names = conn.execute("SELECT name FROM schema_migrations ORDER BY name").fetchall()
-    assert names == [("0001_pokemon.sql",), ("0002_seed_pokemon.sql",), ("0003_users.sql",)]
+    assert names == [
+        ("0001_pokemon.sql",),
+        ("0002_seed_pokemon.sql",),
+        ("0003_users.sql",),
+        ("0004_teams_and_wild_battles.sql",),
+    ]

@@ -7,7 +7,6 @@ Pure two-team rules. Events are written from the host's side (host = "player",
 guest = "enemy"); `events_for` flips them for the guest.
 """
 
-
 from app.engine.types import (
     BattleEvent,
     BattleState,
