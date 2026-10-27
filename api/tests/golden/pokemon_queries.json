@@ -1,0 +1,5968 @@
+[
+  {
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "name": "Geovanni",
+          "types": [
+            "Flying"
+          ],
+          "height": 11.570127311360618,
+          "weight": 6.723623131928173,
+          "hp": 28,
+          "attack": 128,
+          "defense": 162,
+          "specialAttack": 193,
+          "specialDefense": 140,
+          "speed": 132,
+          "description": "Victus universe demoror paens speciosus patior ocer vinco aggero callide.",
+          "imageUrl": "https://loremflickr.com/3266/1298?lock=2718838203017904",
+          "generation": 8
+        },
+        {
+          "id": 2,
+          "name": "Britney",
+          "types": [
+            "Fighting"
+          ],
+          "height": 12.682239423545507,
+          "weight": 969.2196606406716,
+          "hp": 181,
+          "attack": 7,
+          "defense": 216,
+          "specialAttack": 175,
+          "specialDefense": 173,
+          "speed": 178,
+          "description": "Harum torqueo cicuta saepe speciosus vis tergo torrens combibo.",
+          "imageUrl": "https://loremflickr.com/77/2039?lock=5064093778437473",
+          "generation": 7
+        },
+        {
+          "id": 3,
+          "name": "Hershel",
+          "types": [
+            "Fairy",
+            "Fighting"
+          ],
+          "height": 9.612142123503638,
+          "weight": 834.9245000240522,
+          "hp": 92,
+          "attack": 109,
+          "defense": 196,
+          "specialAttack": 42,
+          "specialDefense": 119,
+          "speed": 148,
+          "description": "Tenax quae auctor.",
+          "imageUrl": "https://loremflickr.com/1557/1352?lock=6527493554262662",
+          "generation": 4
+        },
+        {
+          "id": 4,
+          "name": "Rasheed",
+          "types": [
+            "Dark"
+          ],
+          "height": 14.873855722761645,
+          "weight": 408.88342923794715,
+          "hp": 168,
+          "attack": 107,
+          "defense": 7,
+          "specialAttack": 168,
+          "specialDefense": 133,
+          "speed": 135,
+          "description": "Vetus totidem saepe.",
+          "imageUrl": "https://picsum.photos/seed/Sg0khOc/2174/2575",
+          "generation": 6
+        },
+        {
+          "id": 5,
+          "name": "Sophia",
+          "types": [
+            "Steel",
+            "Fairy"
+          ],
+          "height": 6.042054517089631,
+          "weight": 857.2321519918422,
+          "hp": 204,
+          "attack": 57,
+          "defense": 38,
+          "specialAttack": 53,
+          "specialDefense": 196,
+          "speed": 64,
+          "description": "Porro tumultus audax est fuga somnus tantum.",
+          "imageUrl": "https://loremflickr.com/1148/2435?lock=2070055301194142",
+          "generation": 7
+        },
+        {
+          "id": 6,
+          "name": "Anthony",
+          "types": [
+            "Bug",
+            "Steel"
+          ],
+          "height": 17.473226211180968,
+          "weight": 753.3758996432969,
+          "hp": 30,
+          "attack": 77,
+          "defense": 37,
+          "specialAttack": 147,
+          "specialDefense": 35,
+          "speed": 182,
+          "description": "Venio caute tempus tibi.",
+          "imageUrl": "https://loremflickr.com/2745/3795?lock=8295763301752628",
+          "generation": 1
+        },
+        {
+          "id": 7,
+          "name": "Devon",
+          "types": [
+            "Fire"
+          ],
+          "height": 15.90433676412755,
+          "weight": 703.5305233535402,
+          "hp": 50,
+          "attack": 99,
+          "defense": 11,
+          "specialAttack": 167,
+          "specialDefense": 109,
+          "speed": 66,
+          "description": "Ancilla saepe desidero clam corrigo.",
+          "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+          "generation": 3
+        },
+        {
+          "id": 8,
+          "name": "Jordane",
+          "types": [
+            "Fighting",
+            "Ice"
+          ],
+          "height": 11.311548837733033,
+          "weight": 462.35475533396016,
+          "hp": 28,
+          "attack": 124,
+          "defense": 224,
+          "specialAttack": 35,
+          "specialDefense": 220,
+          "speed": 112,
+          "description": "Cruentus votum colo.",
+          "imageUrl": "https://loremflickr.com/2855/3439?lock=4840418693235406",
+          "generation": 2
+        },
+        {
+          "id": 9,
+          "name": "Samson",
+          "types": [
+            "Dark",
+            "Fire"
+          ],
+          "height": 2.083234183122287,
+          "weight": 491.3491746010558,
+          "hp": 200,
+          "attack": 189,
+          "defense": 177,
+          "specialAttack": 29,
+          "specialDefense": 225,
+          "speed": 45,
+          "description": "Timidus ante conspergo ante.",
+          "imageUrl": "https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8",
+          "generation": 8
+        },
+        {
+          "id": 10,
+          "name": "Arnoldo",
+          "types": [
+            "Fighting",
+            "Water"
+          ],
+          "height": 14.355692762819112,
+          "weight": 606.2905361567018,
+          "hp": 232,
+          "attack": 173,
+          "defense": 130,
+          "specialAttack": 30,
+          "specialDefense": 221,
+          "speed": 54,
+          "description": "Degenero magnam vomica condico desino tempus arceo suscipit omnis.",
+          "imageUrl": "https://picsum.photos/seed/DCDstq/3972/205?grayscale&blur=8",
+          "generation": 5
+        },
+        {
+          "id": 11,
+          "name": "Melvin",
+          "types": [
+            "Ice"
+          ],
+          "height": 19.534134338268164,
+          "weight": 834.4916547315063,
+          "hp": 178,
+          "attack": 185,
+          "defense": 59,
+          "specialAttack": 69,
+          "specialDefense": 95,
+          "speed": 54,
+          "description": "Concido nam aro creator trans.",
+          "imageUrl": "https://loremflickr.com/236/3840?lock=1252156794727560",
+          "generation": 5
+        },
+        {
+          "id": 12,
+          "name": "Madaline",
+          "types": [
+            "Steel"
+          ],
+          "height": 1.980259930937172,
+          "weight": 953.7884136380419,
+          "hp": 240,
+          "attack": 111,
+          "defense": 119,
+          "specialAttack": 153,
+          "specialDefense": 114,
+          "speed": 71,
+          "description": "Comburo conicio turpis angulus auxilium absque desidero.",
+          "imageUrl": "https://loremflickr.com/3654/3605?lock=6333735098178881",
+          "generation": 2
+        },
+        {
+          "id": 13,
+          "name": "Jakayla",
+          "types": [
+            "Electric"
+          ],
+          "height": 7.549998082613933,
+          "weight": 426.72079524062104,
+          "hp": 46,
+          "attack": 174,
+          "defense": 210,
+          "specialAttack": 123,
+          "specialDefense": 65,
+          "speed": 112,
+          "description": "Minima crepusculum cubo turbo dignissimos vomer videlicet tantillus amplexus clementia.",
+          "imageUrl": "https://loremflickr.com/704/3869?lock=3497972580036283",
+          "generation": 4
+        },
+        {
+          "id": 14,
+          "name": "Jalyn",
+          "types": [
+            "Dragon",
+            "Ground"
+          ],
+          "height": 19.829495056411687,
+          "weight": 601.6201659878734,
+          "hp": 168,
+          "attack": 14,
+          "defense": 148,
+          "specialAttack": 161,
+          "specialDefense": 17,
+          "speed": 127,
+          "description": "Tandem depono acidus aeternus laborum vestrum.",
+          "imageUrl": "https://picsum.photos/seed/TKrCn/2757/2103?grayscale&blur=6",
+          "generation": 4
+        },
+        {
+          "id": 15,
+          "name": "Bonita",
+          "types": [
+            "Normal",
+            "Bug"
+          ],
+          "height": 0.5019428684451768,
+          "weight": 797.7995141469279,
+          "hp": 27,
+          "attack": 103,
+          "defense": 95,
+          "specialAttack": 93,
+          "specialDefense": 129,
+          "speed": 109,
+          "description": "Cognomen dedecor comptus veniam consuasor molestiae capitulus umquam.",
+          "imageUrl": "https://loremflickr.com/506/3837?lock=1304739405063893",
+          "generation": 9
+        },
+        {
+          "id": 16,
+          "name": "Tre",
+          "types": [
+            "Steel"
+          ],
+          "height": 16.259124957064852,
+          "weight": 26.127706335148584,
+          "hp": 30,
+          "attack": 68,
+          "defense": 83,
+          "specialAttack": 167,
+          "specialDefense": 115,
+          "speed": 118,
+          "description": "Sustineo statim paulatim acervus adhaero.",
+          "imageUrl": "https://picsum.photos/seed/kVzUucBfe/1024/501?grayscale&blur=4",
+          "generation": 6
+        },
+        {
+          "id": 17,
+          "name": "Jovan",
+          "types": [
+            "Ground"
+          ],
+          "height": 15.700022574729198,
+          "weight": 732.1608006722223,
+          "hp": 196,
+          "attack": 176,
+          "defense": 131,
+          "specialAttack": 44,
+          "specialDefense": 142,
+          "speed": 121,
+          "description": "Comprehendo corroboro coniuratio.",
+          "imageUrl": "https://loremflickr.com/2256/2549?lock=1907486016647445",
+          "generation": 1
+        },
+        {
+          "id": 18,
+          "name": "Morton",
+          "types": [
+            "Normal"
+          ],
+          "height": 12.995980120279485,
+          "weight": 901.3987738819023,
+          "hp": 242,
+          "attack": 36,
+          "defense": 74,
+          "specialAttack": 119,
+          "specialDefense": 84,
+          "speed": 44,
+          "description": "Vulpes centum canto tres.",
+          "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+          "generation": 3
+        },
+        {
+          "id": 19,
+          "name": "Greta",
+          "types": [
+            "Ghost"
+          ],
+          "height": 3.5034945267883897,
+          "weight": 553.6211978693028,
+          "hp": 217,
+          "attack": 40,
+          "defense": 69,
+          "specialAttack": 183,
+          "specialDefense": 225,
+          "speed": 107,
+          "description": "Ancilla astrum solio civitas.",
+          "imageUrl": "https://loremflickr.com/852/2642?lock=3291191604857675",
+          "generation": 2
+        },
+        {
+          "id": 20,
+          "name": "Maryse",
+          "types": [
+            "Steel"
+          ],
+          "height": 4.156596581400002,
+          "weight": 479.7549098523476,
+          "hp": 138,
+          "attack": 137,
+          "defense": 89,
+          "specialAttack": 73,
+          "specialDefense": 104,
+          "speed": 78,
+          "description": "Usus pectus vacuus unus.",
+          "imageUrl": "https://loremflickr.com/930/1251?lock=2759401287104050",
+          "generation": 2
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 1000,
+        "totalPages": 50
+      }
+    },
+    "query": {},
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 21,
+          "name": "Ansel",
+          "types": [
+            "Normal"
+          ],
+          "height": 7.058872575976571,
+          "weight": 137.4749509087704,
+          "hp": 83,
+          "attack": 47,
+          "defense": 208,
+          "specialAttack": 49,
+          "specialDefense": 85,
+          "speed": 186,
+          "description": "Vorago similique cultura maiores suasoria cruciamentum aiunt.",
+          "imageUrl": "https://loremflickr.com/2640/2884?lock=6386354580126778",
+          "generation": 1
+        },
+        {
+          "id": 22,
+          "name": "Emmie",
+          "types": [
+            "Water"
+          ],
+          "height": 8.977714233908856,
+          "weight": 251.61685471036765,
+          "hp": 130,
+          "attack": 40,
+          "defense": 29,
+          "specialAttack": 64,
+          "specialDefense": 42,
+          "speed": 80,
+          "description": "Tabella decipio deleniti incidunt basium cras.",
+          "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+          "generation": 2
+        },
+        {
+          "id": 23,
+          "name": "Houston",
+          "types": [
+            "Ghost"
+          ],
+          "height": 5.15837068395718,
+          "weight": 44.73541400217904,
+          "hp": 46,
+          "attack": 135,
+          "defense": 206,
+          "specialAttack": 48,
+          "specialDefense": 64,
+          "speed": 87,
+          "description": "Velum tabernus ante undique varietas benevolentia.",
+          "imageUrl": "https://loremflickr.com/917/2415?lock=3676082205843388",
+          "generation": 6
+        },
+        {
+          "id": 24,
+          "name": "Anais",
+          "types": [
+            "Dark"
+          ],
+          "height": 2.127454668128789,
+          "weight": 478.28866019742253,
+          "hp": 29,
+          "attack": 42,
+          "defense": 78,
+          "specialAttack": 89,
+          "specialDefense": 23,
+          "speed": 68,
+          "description": "Auditor triumphus cupio volaticus.",
+          "imageUrl": "https://loremflickr.com/2038/1347?lock=5359117153340617",
+          "generation": 1
+        },
+        {
+          "id": 25,
+          "name": "Ward",
+          "types": [
+            "Psychic"
+          ],
+          "height": 16.211797403693165,
+          "weight": 758.6623877012039,
+          "hp": 189,
+          "attack": 115,
+          "defense": 86,
+          "specialAttack": 20,
+          "specialDefense": 188,
+          "speed": 134,
+          "description": "Civitas uberrime sonitus tametsi ancilla ater contabesco vis spero.",
+          "imageUrl": "https://loremflickr.com/349/1526?lock=3268292158866819",
+          "generation": 7
+        },
+        {
+          "id": 26,
+          "name": "Mavis",
+          "types": [
+            "Ground"
+          ],
+          "height": 10.280949027613184,
+          "weight": 939.87329307809,
+          "hp": 226,
+          "attack": 102,
+          "defense": 34,
+          "specialAttack": 75,
+          "specialDefense": 205,
+          "speed": 17,
+          "description": "Tempore bene vos agnosco vivo demoror cursim videlicet atqui vorax.",
+          "imageUrl": "https://picsum.photos/seed/Sc0zQw3/3225/2640?blur=2",
+          "generation": 7
+        },
+        {
+          "id": 27,
+          "name": "Leslie",
+          "types": [
+            "Fire"
+          ],
+          "height": 19.54681233837112,
+          "weight": 11.364907771056133,
+          "hp": 61,
+          "attack": 126,
+          "defense": 146,
+          "specialAttack": 142,
+          "specialDefense": 124,
+          "speed": 175,
+          "description": "Nobis dignissimos adstringo verumtamen nisi.",
+          "imageUrl": "https://picsum.photos/seed/WCeu4r6XX/1629/2240",
+          "generation": 3
+        },
+        {
+          "id": 28,
+          "name": "Rhianna",
+          "types": [
+            "Water"
+          ],
+          "height": 1.981391088918285,
+          "weight": 721.8606503885451,
+          "hp": 194,
+          "attack": 69,
+          "defense": 13,
+          "specialAttack": 48,
+          "specialDefense": 155,
+          "speed": 75,
+          "description": "Depraedor victus virtus.",
+          "imageUrl": "https://picsum.photos/seed/jRZhQasR/2459/2474",
+          "generation": 2
+        },
+        {
+          "id": 29,
+          "name": "Dane",
+          "types": [
+            "Water"
+          ],
+          "height": 11.108480647769605,
+          "weight": 636.8997201935715,
+          "hp": 76,
+          "attack": 178,
+          "defense": 78,
+          "specialAttack": 182,
+          "specialDefense": 78,
+          "speed": 148,
+          "description": "Vilicus clibanus talis.",
+          "imageUrl": "https://loremflickr.com/3310/544?lock=4019302161733663",
+          "generation": 7
+        },
+        {
+          "id": 30,
+          "name": "Natasha",
+          "types": [
+            "Steel"
+          ],
+          "height": 1.4609986815957763,
+          "weight": 684.6809175592056,
+          "hp": 136,
+          "attack": 152,
+          "defense": 54,
+          "specialAttack": 62,
+          "specialDefense": 19,
+          "speed": 5,
+          "description": "Currus curo comedo canonicus aspicio solitudo sed theca demonstro vehemens.",
+          "imageUrl": "https://loremflickr.com/1742/2354?lock=3156139547129955",
+          "generation": 4
+        },
+        {
+          "id": 31,
+          "name": "Cletus",
+          "types": [
+            "Steel"
+          ],
+          "height": 14.3672381110015,
+          "weight": 770.2055083161749,
+          "hp": 195,
+          "attack": 112,
+          "defense": 99,
+          "specialAttack": 167,
+          "specialDefense": 29,
+          "speed": 142,
+          "description": "Curiositas accusator tum.",
+          "imageUrl": "https://picsum.photos/seed/JrRi7A/1779/3641?grayscale&blur=3",
+          "generation": 1
+        },
+        {
+          "id": 32,
+          "name": "Carmela",
+          "types": [
+            "Electric"
+          ],
+          "height": 4.643430042370056,
+          "weight": 130.16602190531515,
+          "hp": 111,
+          "attack": 46,
+          "defense": 182,
+          "specialAttack": 101,
+          "specialDefense": 159,
+          "speed": 148,
+          "description": "Degenero audio doloremque sopor antiquus adhaero confugo iure supplanto.",
+          "imageUrl": "https://loremflickr.com/1019/971?lock=8664955551538874",
+          "generation": 8
+        },
+        {
+          "id": 33,
+          "name": "Estevan",
+          "types": [
+            "Bug",
+            "Ice"
+          ],
+          "height": 17.559488211293164,
+          "weight": 22.76208102618817,
+          "hp": 27,
+          "attack": 44,
+          "defense": 207,
+          "specialAttack": 130,
+          "specialDefense": 204,
+          "speed": 198,
+          "description": "Somnus amiculum cariosus.",
+          "imageUrl": "https://picsum.photos/seed/7KX5uK/1030/425",
+          "generation": 7
+        },
+        {
+          "id": 34,
+          "name": "Celestine",
+          "types": [
+            "Electric",
+            "Rock"
+          ],
+          "height": 13.914567996091366,
+          "weight": 589.7380157390083,
+          "hp": 31,
+          "attack": 19,
+          "defense": 94,
+          "specialAttack": 133,
+          "specialDefense": 218,
+          "speed": 152,
+          "description": "Aliquid video ventus quos quis vinco utrimque amicitia nam.",
+          "imageUrl": "https://loremflickr.com/1747/2563?lock=4362250038330514",
+          "generation": 3
+        },
+        {
+          "id": 35,
+          "name": "Sofia",
+          "types": [
+            "Bug"
+          ],
+          "height": 13.720704170349366,
+          "weight": 361.547830004443,
+          "hp": 103,
+          "attack": 74,
+          "defense": 225,
+          "specialAttack": 186,
+          "specialDefense": 152,
+          "speed": 164,
+          "description": "Collum depereo subseco corrupti.",
+          "imageUrl": "https://loremflickr.com/1582/3972?lock=8896985382734461",
+          "generation": 8
+        },
+        {
+          "id": 36,
+          "name": "Ebony",
+          "types": [
+            "Dragon"
+          ],
+          "height": 4.034245135272938,
+          "weight": 935.9384238556406,
+          "hp": 23,
+          "attack": 98,
+          "defense": 121,
+          "specialAttack": 100,
+          "specialDefense": 179,
+          "speed": 49,
+          "description": "Vulticulus ullam virgo amitto error eligendi caelum clamo tamisium.",
+          "imageUrl": "https://loremflickr.com/3645/1788?lock=1135055080227882",
+          "generation": 4
+        },
+        {
+          "id": 37,
+          "name": "Heaven",
+          "types": [
+            "Fighting"
+          ],
+          "height": 12.043232086421845,
+          "weight": 995.8659802772123,
+          "hp": 218,
+          "attack": 27,
+          "defense": 97,
+          "specialAttack": 114,
+          "specialDefense": 96,
+          "speed": 64,
+          "description": "Arcus careo verecundia tandem natus coaegresco amor valde alioqui ustilo.",
+          "imageUrl": "https://loremflickr.com/2356/515?lock=4901324552155848",
+          "generation": 5
+        },
+        {
+          "id": 38,
+          "name": "Trent",
+          "types": [
+            "Psychic",
+            "Fire"
+          ],
+          "height": 19.559399326478832,
+          "weight": 987.8978389886076,
+          "hp": 36,
+          "attack": 42,
+          "defense": 190,
+          "specialAttack": 161,
+          "specialDefense": 49,
+          "speed": 66,
+          "description": "Capio thalassinus crudelis celo summopere.",
+          "imageUrl": "https://picsum.photos/seed/B03dHmCfd/3744/46?grayscale&blur=6",
+          "generation": 6
+        },
+        {
+          "id": 39,
+          "name": "Kennith",
+          "types": [
+            "Ground",
+            "Bug"
+          ],
+          "height": 8.981769248216844,
+          "weight": 921.070780016064,
+          "hp": 226,
+          "attack": 98,
+          "defense": 79,
+          "specialAttack": 135,
+          "specialDefense": 194,
+          "speed": 186,
+          "description": "Iusto taceo tero.",
+          "imageUrl": "https://loremflickr.com/3571/1681?lock=2647036839663552",
+          "generation": 7
+        },
+        {
+          "id": 40,
+          "name": "Darrion",
+          "types": [
+            "Flying"
+          ],
+          "height": 2.9012110433504796,
+          "weight": 7.892595777461858,
+          "hp": 214,
+          "attack": 182,
+          "defense": 7,
+          "specialAttack": 185,
+          "specialDefense": 33,
+          "speed": 61,
+          "description": "Socius admitto caveo aequus audeo crinis.",
+          "imageUrl": "https://picsum.photos/seed/2jd8BU/3757/127?blur=10",
+          "generation": 4
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": true,
+        "limit": 20,
+        "page": 2,
+        "total": 1000,
+        "totalPages": 50
+      }
+    },
+    "query": {
+      "page": "2"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [],
+      "pagination": {
+        "hasNext": false,
+        "hasPrev": true,
+        "limit": 20,
+        "page": 51,
+        "total": 1000,
+        "totalPages": 50
+      }
+    },
+    "query": {
+      "page": "51"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 1,
+          "name": "Geovanni",
+          "types": [
+            "Flying"
+          ],
+          "height": 11.570127311360618,
+          "weight": 6.723623131928173,
+          "hp": 28,
+          "attack": 128,
+          "defense": 162,
+          "specialAttack": 193,
+          "specialDefense": 140,
+          "speed": 132,
+          "description": "Victus universe demoror paens speciosus patior ocer vinco aggero callide.",
+          "imageUrl": "https://loremflickr.com/3266/1298?lock=2718838203017904",
+          "generation": 8
+        },
+        {
+          "id": 2,
+          "name": "Britney",
+          "types": [
+            "Fighting"
+          ],
+          "height": 12.682239423545507,
+          "weight": 969.2196606406716,
+          "hp": 181,
+          "attack": 7,
+          "defense": 216,
+          "specialAttack": 175,
+          "specialDefense": 173,
+          "speed": 178,
+          "description": "Harum torqueo cicuta saepe speciosus vis tergo torrens combibo.",
+          "imageUrl": "https://loremflickr.com/77/2039?lock=5064093778437473",
+          "generation": 7
+        },
+        {
+          "id": 3,
+          "name": "Hershel",
+          "types": [
+            "Fairy",
+            "Fighting"
+          ],
+          "height": 9.612142123503638,
+          "weight": 834.9245000240522,
+          "hp": 92,
+          "attack": 109,
+          "defense": 196,
+          "specialAttack": 42,
+          "specialDefense": 119,
+          "speed": 148,
+          "description": "Tenax quae auctor.",
+          "imageUrl": "https://loremflickr.com/1557/1352?lock=6527493554262662",
+          "generation": 4
+        },
+        {
+          "id": 4,
+          "name": "Rasheed",
+          "types": [
+            "Dark"
+          ],
+          "height": 14.873855722761645,
+          "weight": 408.88342923794715,
+          "hp": 168,
+          "attack": 107,
+          "defense": 7,
+          "specialAttack": 168,
+          "specialDefense": 133,
+          "speed": 135,
+          "description": "Vetus totidem saepe.",
+          "imageUrl": "https://picsum.photos/seed/Sg0khOc/2174/2575",
+          "generation": 6
+        },
+        {
+          "id": 5,
+          "name": "Sophia",
+          "types": [
+            "Steel",
+            "Fairy"
+          ],
+          "height": 6.042054517089631,
+          "weight": 857.2321519918422,
+          "hp": 204,
+          "attack": 57,
+          "defense": 38,
+          "specialAttack": 53,
+          "specialDefense": 196,
+          "speed": 64,
+          "description": "Porro tumultus audax est fuga somnus tantum.",
+          "imageUrl": "https://loremflickr.com/1148/2435?lock=2070055301194142",
+          "generation": 7
+        },
+        {
+          "id": 6,
+          "name": "Anthony",
+          "types": [
+            "Bug",
+            "Steel"
+          ],
+          "height": 17.473226211180968,
+          "weight": 753.3758996432969,
+          "hp": 30,
+          "attack": 77,
+          "defense": 37,
+          "specialAttack": 147,
+          "specialDefense": 35,
+          "speed": 182,
+          "description": "Venio caute tempus tibi.",
+          "imageUrl": "https://loremflickr.com/2745/3795?lock=8295763301752628",
+          "generation": 1
+        },
+        {
+          "id": 7,
+          "name": "Devon",
+          "types": [
+            "Fire"
+          ],
+          "height": 15.90433676412755,
+          "weight": 703.5305233535402,
+          "hp": 50,
+          "attack": 99,
+          "defense": 11,
+          "specialAttack": 167,
+          "specialDefense": 109,
+          "speed": 66,
+          "description": "Ancilla saepe desidero clam corrigo.",
+          "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+          "generation": 3
+        },
+        {
+          "id": 8,
+          "name": "Jordane",
+          "types": [
+            "Fighting",
+            "Ice"
+          ],
+          "height": 11.311548837733033,
+          "weight": 462.35475533396016,
+          "hp": 28,
+          "attack": 124,
+          "defense": 224,
+          "specialAttack": 35,
+          "specialDefense": 220,
+          "speed": 112,
+          "description": "Cruentus votum colo.",
+          "imageUrl": "https://loremflickr.com/2855/3439?lock=4840418693235406",
+          "generation": 2
+        },
+        {
+          "id": 9,
+          "name": "Samson",
+          "types": [
+            "Dark",
+            "Fire"
+          ],
+          "height": 2.083234183122287,
+          "weight": 491.3491746010558,
+          "hp": 200,
+          "attack": 189,
+          "defense": 177,
+          "specialAttack": 29,
+          "specialDefense": 225,
+          "speed": 45,
+          "description": "Timidus ante conspergo ante.",
+          "imageUrl": "https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8",
+          "generation": 8
+        },
+        {
+          "id": 10,
+          "name": "Arnoldo",
+          "types": [
+            "Fighting",
+            "Water"
+          ],
+          "height": 14.355692762819112,
+          "weight": 606.2905361567018,
+          "hp": 232,
+          "attack": 173,
+          "defense": 130,
+          "specialAttack": 30,
+          "specialDefense": 221,
+          "speed": 54,
+          "description": "Degenero magnam vomica condico desino tempus arceo suscipit omnis.",
+          "imageUrl": "https://picsum.photos/seed/DCDstq/3972/205?grayscale&blur=8",
+          "generation": 5
+        },
+        {
+          "id": 11,
+          "name": "Melvin",
+          "types": [
+            "Ice"
+          ],
+          "height": 19.534134338268164,
+          "weight": 834.4916547315063,
+          "hp": 178,
+          "attack": 185,
+          "defense": 59,
+          "specialAttack": 69,
+          "specialDefense": 95,
+          "speed": 54,
+          "description": "Concido nam aro creator trans.",
+          "imageUrl": "https://loremflickr.com/236/3840?lock=1252156794727560",
+          "generation": 5
+        },
+        {
+          "id": 12,
+          "name": "Madaline",
+          "types": [
+            "Steel"
+          ],
+          "height": 1.980259930937172,
+          "weight": 953.7884136380419,
+          "hp": 240,
+          "attack": 111,
+          "defense": 119,
+          "specialAttack": 153,
+          "specialDefense": 114,
+          "speed": 71,
+          "description": "Comburo conicio turpis angulus auxilium absque desidero.",
+          "imageUrl": "https://loremflickr.com/3654/3605?lock=6333735098178881",
+          "generation": 2
+        },
+        {
+          "id": 13,
+          "name": "Jakayla",
+          "types": [
+            "Electric"
+          ],
+          "height": 7.549998082613933,
+          "weight": 426.72079524062104,
+          "hp": 46,
+          "attack": 174,
+          "defense": 210,
+          "specialAttack": 123,
+          "specialDefense": 65,
+          "speed": 112,
+          "description": "Minima crepusculum cubo turbo dignissimos vomer videlicet tantillus amplexus clementia.",
+          "imageUrl": "https://loremflickr.com/704/3869?lock=3497972580036283",
+          "generation": 4
+        },
+        {
+          "id": 14,
+          "name": "Jalyn",
+          "types": [
+            "Dragon",
+            "Ground"
+          ],
+          "height": 19.829495056411687,
+          "weight": 601.6201659878734,
+          "hp": 168,
+          "attack": 14,
+          "defense": 148,
+          "specialAttack": 161,
+          "specialDefense": 17,
+          "speed": 127,
+          "description": "Tandem depono acidus aeternus laborum vestrum.",
+          "imageUrl": "https://picsum.photos/seed/TKrCn/2757/2103?grayscale&blur=6",
+          "generation": 4
+        },
+        {
+          "id": 15,
+          "name": "Bonita",
+          "types": [
+            "Normal",
+            "Bug"
+          ],
+          "height": 0.5019428684451768,
+          "weight": 797.7995141469279,
+          "hp": 27,
+          "attack": 103,
+          "defense": 95,
+          "specialAttack": 93,
+          "specialDefense": 129,
+          "speed": 109,
+          "description": "Cognomen dedecor comptus veniam consuasor molestiae capitulus umquam.",
+          "imageUrl": "https://loremflickr.com/506/3837?lock=1304739405063893",
+          "generation": 9
+        },
+        {
+          "id": 16,
+          "name": "Tre",
+          "types": [
+            "Steel"
+          ],
+          "height": 16.259124957064852,
+          "weight": 26.127706335148584,
+          "hp": 30,
+          "attack": 68,
+          "defense": 83,
+          "specialAttack": 167,
+          "specialDefense": 115,
+          "speed": 118,
+          "description": "Sustineo statim paulatim acervus adhaero.",
+          "imageUrl": "https://picsum.photos/seed/kVzUucBfe/1024/501?grayscale&blur=4",
+          "generation": 6
+        },
+        {
+          "id": 17,
+          "name": "Jovan",
+          "types": [
+            "Ground"
+          ],
+          "height": 15.700022574729198,
+          "weight": 732.1608006722223,
+          "hp": 196,
+          "attack": 176,
+          "defense": 131,
+          "specialAttack": 44,
+          "specialDefense": 142,
+          "speed": 121,
+          "description": "Comprehendo corroboro coniuratio.",
+          "imageUrl": "https://loremflickr.com/2256/2549?lock=1907486016647445",
+          "generation": 1
+        },
+        {
+          "id": 18,
+          "name": "Morton",
+          "types": [
+            "Normal"
+          ],
+          "height": 12.995980120279485,
+          "weight": 901.3987738819023,
+          "hp": 242,
+          "attack": 36,
+          "defense": 74,
+          "specialAttack": 119,
+          "specialDefense": 84,
+          "speed": 44,
+          "description": "Vulpes centum canto tres.",
+          "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+          "generation": 3
+        },
+        {
+          "id": 19,
+          "name": "Greta",
+          "types": [
+            "Ghost"
+          ],
+          "height": 3.5034945267883897,
+          "weight": 553.6211978693028,
+          "hp": 217,
+          "attack": 40,
+          "defense": 69,
+          "specialAttack": 183,
+          "specialDefense": 225,
+          "speed": 107,
+          "description": "Ancilla astrum solio civitas.",
+          "imageUrl": "https://loremflickr.com/852/2642?lock=3291191604857675",
+          "generation": 2
+        },
+        {
+          "id": 20,
+          "name": "Maryse",
+          "types": [
+            "Steel"
+          ],
+          "height": 4.156596581400002,
+          "weight": 479.7549098523476,
+          "hp": 138,
+          "attack": 137,
+          "defense": 89,
+          "specialAttack": 73,
+          "specialDefense": 104,
+          "speed": 78,
+          "description": "Usus pectus vacuus unus.",
+          "imageUrl": "https://loremflickr.com/930/1251?lock=2759401287104050",
+          "generation": 2
+        },
+        {
+          "id": 21,
+          "name": "Ansel",
+          "types": [
+            "Normal"
+          ],
+          "height": 7.058872575976571,
+          "weight": 137.4749509087704,
+          "hp": 83,
+          "attack": 47,
+          "defense": 208,
+          "specialAttack": 49,
+          "specialDefense": 85,
+          "speed": 186,
+          "description": "Vorago similique cultura maiores suasoria cruciamentum aiunt.",
+          "imageUrl": "https://loremflickr.com/2640/2884?lock=6386354580126778",
+          "generation": 1
+        },
+        {
+          "id": 22,
+          "name": "Emmie",
+          "types": [
+            "Water"
+          ],
+          "height": 8.977714233908856,
+          "weight": 251.61685471036765,
+          "hp": 130,
+          "attack": 40,
+          "defense": 29,
+          "specialAttack": 64,
+          "specialDefense": 42,
+          "speed": 80,
+          "description": "Tabella decipio deleniti incidunt basium cras.",
+          "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+          "generation": 2
+        },
+        {
+          "id": 23,
+          "name": "Houston",
+          "types": [
+            "Ghost"
+          ],
+          "height": 5.15837068395718,
+          "weight": 44.73541400217904,
+          "hp": 46,
+          "attack": 135,
+          "defense": 206,
+          "specialAttack": 48,
+          "specialDefense": 64,
+          "speed": 87,
+          "description": "Velum tabernus ante undique varietas benevolentia.",
+          "imageUrl": "https://loremflickr.com/917/2415?lock=3676082205843388",
+          "generation": 6
+        },
+        {
+          "id": 24,
+          "name": "Anais",
+          "types": [
+            "Dark"
+          ],
+          "height": 2.127454668128789,
+          "weight": 478.28866019742253,
+          "hp": 29,
+          "attack": 42,
+          "defense": 78,
+          "specialAttack": 89,
+          "specialDefense": 23,
+          "speed": 68,
+          "description": "Auditor triumphus cupio volaticus.",
+          "imageUrl": "https://loremflickr.com/2038/1347?lock=5359117153340617",
+          "generation": 1
+        },
+        {
+          "id": 25,
+          "name": "Ward",
+          "types": [
+            "Psychic"
+          ],
+          "height": 16.211797403693165,
+          "weight": 758.6623877012039,
+          "hp": 189,
+          "attack": 115,
+          "defense": 86,
+          "specialAttack": 20,
+          "specialDefense": 188,
+          "speed": 134,
+          "description": "Civitas uberrime sonitus tametsi ancilla ater contabesco vis spero.",
+          "imageUrl": "https://loremflickr.com/349/1526?lock=3268292158866819",
+          "generation": 7
+        },
+        {
+          "id": 26,
+          "name": "Mavis",
+          "types": [
+            "Ground"
+          ],
+          "height": 10.280949027613184,
+          "weight": 939.87329307809,
+          "hp": 226,
+          "attack": 102,
+          "defense": 34,
+          "specialAttack": 75,
+          "specialDefense": 205,
+          "speed": 17,
+          "description": "Tempore bene vos agnosco vivo demoror cursim videlicet atqui vorax.",
+          "imageUrl": "https://picsum.photos/seed/Sc0zQw3/3225/2640?blur=2",
+          "generation": 7
+        },
+        {
+          "id": 27,
+          "name": "Leslie",
+          "types": [
+            "Fire"
+          ],
+          "height": 19.54681233837112,
+          "weight": 11.364907771056133,
+          "hp": 61,
+          "attack": 126,
+          "defense": 146,
+          "specialAttack": 142,
+          "specialDefense": 124,
+          "speed": 175,
+          "description": "Nobis dignissimos adstringo verumtamen nisi.",
+          "imageUrl": "https://picsum.photos/seed/WCeu4r6XX/1629/2240",
+          "generation": 3
+        },
+        {
+          "id": 28,
+          "name": "Rhianna",
+          "types": [
+            "Water"
+          ],
+          "height": 1.981391088918285,
+          "weight": 721.8606503885451,
+          "hp": 194,
+          "attack": 69,
+          "defense": 13,
+          "specialAttack": 48,
+          "specialDefense": 155,
+          "speed": 75,
+          "description": "Depraedor victus virtus.",
+          "imageUrl": "https://picsum.photos/seed/jRZhQasR/2459/2474",
+          "generation": 2
+        },
+        {
+          "id": 29,
+          "name": "Dane",
+          "types": [
+            "Water"
+          ],
+          "height": 11.108480647769605,
+          "weight": 636.8997201935715,
+          "hp": 76,
+          "attack": 178,
+          "defense": 78,
+          "specialAttack": 182,
+          "specialDefense": 78,
+          "speed": 148,
+          "description": "Vilicus clibanus talis.",
+          "imageUrl": "https://loremflickr.com/3310/544?lock=4019302161733663",
+          "generation": 7
+        },
+        {
+          "id": 30,
+          "name": "Natasha",
+          "types": [
+            "Steel"
+          ],
+          "height": 1.4609986815957763,
+          "weight": 684.6809175592056,
+          "hp": 136,
+          "attack": 152,
+          "defense": 54,
+          "specialAttack": 62,
+          "specialDefense": 19,
+          "speed": 5,
+          "description": "Currus curo comedo canonicus aspicio solitudo sed theca demonstro vehemens.",
+          "imageUrl": "https://loremflickr.com/1742/2354?lock=3156139547129955",
+          "generation": 4
+        },
+        {
+          "id": 31,
+          "name": "Cletus",
+          "types": [
+            "Steel"
+          ],
+          "height": 14.3672381110015,
+          "weight": 770.2055083161749,
+          "hp": 195,
+          "attack": 112,
+          "defense": 99,
+          "specialAttack": 167,
+          "specialDefense": 29,
+          "speed": 142,
+          "description": "Curiositas accusator tum.",
+          "imageUrl": "https://picsum.photos/seed/JrRi7A/1779/3641?grayscale&blur=3",
+          "generation": 1
+        },
+        {
+          "id": 32,
+          "name": "Carmela",
+          "types": [
+            "Electric"
+          ],
+          "height": 4.643430042370056,
+          "weight": 130.16602190531515,
+          "hp": 111,
+          "attack": 46,
+          "defense": 182,
+          "specialAttack": 101,
+          "specialDefense": 159,
+          "speed": 148,
+          "description": "Degenero audio doloremque sopor antiquus adhaero confugo iure supplanto.",
+          "imageUrl": "https://loremflickr.com/1019/971?lock=8664955551538874",
+          "generation": 8
+        },
+        {
+          "id": 33,
+          "name": "Estevan",
+          "types": [
+            "Bug",
+            "Ice"
+          ],
+          "height": 17.559488211293164,
+          "weight": 22.76208102618817,
+          "hp": 27,
+          "attack": 44,
+          "defense": 207,
+          "specialAttack": 130,
+          "specialDefense": 204,
+          "speed": 198,
+          "description": "Somnus amiculum cariosus.",
+          "imageUrl": "https://picsum.photos/seed/7KX5uK/1030/425",
+          "generation": 7
+        },
+        {
+          "id": 34,
+          "name": "Celestine",
+          "types": [
+            "Electric",
+            "Rock"
+          ],
+          "height": 13.914567996091366,
+          "weight": 589.7380157390083,
+          "hp": 31,
+          "attack": 19,
+          "defense": 94,
+          "specialAttack": 133,
+          "specialDefense": 218,
+          "speed": 152,
+          "description": "Aliquid video ventus quos quis vinco utrimque amicitia nam.",
+          "imageUrl": "https://loremflickr.com/1747/2563?lock=4362250038330514",
+          "generation": 3
+        },
+        {
+          "id": 35,
+          "name": "Sofia",
+          "types": [
+            "Bug"
+          ],
+          "height": 13.720704170349366,
+          "weight": 361.547830004443,
+          "hp": 103,
+          "attack": 74,
+          "defense": 225,
+          "specialAttack": 186,
+          "specialDefense": 152,
+          "speed": 164,
+          "description": "Collum depereo subseco corrupti.",
+          "imageUrl": "https://loremflickr.com/1582/3972?lock=8896985382734461",
+          "generation": 8
+        },
+        {
+          "id": 36,
+          "name": "Ebony",
+          "types": [
+            "Dragon"
+          ],
+          "height": 4.034245135272938,
+          "weight": 935.9384238556406,
+          "hp": 23,
+          "attack": 98,
+          "defense": 121,
+          "specialAttack": 100,
+          "specialDefense": 179,
+          "speed": 49,
+          "description": "Vulticulus ullam virgo amitto error eligendi caelum clamo tamisium.",
+          "imageUrl": "https://loremflickr.com/3645/1788?lock=1135055080227882",
+          "generation": 4
+        },
+        {
+          "id": 37,
+          "name": "Heaven",
+          "types": [
+            "Fighting"
+          ],
+          "height": 12.043232086421845,
+          "weight": 995.8659802772123,
+          "hp": 218,
+          "attack": 27,
+          "defense": 97,
+          "specialAttack": 114,
+          "specialDefense": 96,
+          "speed": 64,
+          "description": "Arcus careo verecundia tandem natus coaegresco amor valde alioqui ustilo.",
+          "imageUrl": "https://loremflickr.com/2356/515?lock=4901324552155848",
+          "generation": 5
+        },
+        {
+          "id": 38,
+          "name": "Trent",
+          "types": [
+            "Psychic",
+            "Fire"
+          ],
+          "height": 19.559399326478832,
+          "weight": 987.8978389886076,
+          "hp": 36,
+          "attack": 42,
+          "defense": 190,
+          "specialAttack": 161,
+          "specialDefense": 49,
+          "speed": 66,
+          "description": "Capio thalassinus crudelis celo summopere.",
+          "imageUrl": "https://picsum.photos/seed/B03dHmCfd/3744/46?grayscale&blur=6",
+          "generation": 6
+        },
+        {
+          "id": 39,
+          "name": "Kennith",
+          "types": [
+            "Ground",
+            "Bug"
+          ],
+          "height": 8.981769248216844,
+          "weight": 921.070780016064,
+          "hp": 226,
+          "attack": 98,
+          "defense": 79,
+          "specialAttack": 135,
+          "specialDefense": 194,
+          "speed": 186,
+          "description": "Iusto taceo tero.",
+          "imageUrl": "https://loremflickr.com/3571/1681?lock=2647036839663552",
+          "generation": 7
+        },
+        {
+          "id": 40,
+          "name": "Darrion",
+          "types": [
+            "Flying"
+          ],
+          "height": 2.9012110433504796,
+          "weight": 7.892595777461858,
+          "hp": 214,
+          "attack": 182,
+          "defense": 7,
+          "specialAttack": 185,
+          "specialDefense": 33,
+          "speed": 61,
+          "description": "Socius admitto caveo aequus audeo crinis.",
+          "imageUrl": "https://picsum.photos/seed/2jd8BU/3757/127?blur=10",
+          "generation": 4
+        },
+        {
+          "id": 41,
+          "name": "Willis",
+          "types": [
+            "Poison",
+            "Ghost"
+          ],
+          "height": 19.17768774271721,
+          "weight": 458.5744905903385,
+          "hp": 143,
+          "attack": 54,
+          "defense": 150,
+          "specialAttack": 172,
+          "specialDefense": 13,
+          "speed": 65,
+          "description": "Beatus aestivus patria crudelis clamo argentum.",
+          "imageUrl": "https://loremflickr.com/3879/808?lock=6968207665391613",
+          "generation": 7
+        },
+        {
+          "id": 42,
+          "name": "Rachelle",
+          "types": [
+            "Ice"
+          ],
+          "height": 6.306104959838395,
+          "weight": 275.40252948709104,
+          "hp": 151,
+          "attack": 119,
+          "defense": 229,
+          "specialAttack": 94,
+          "specialDefense": 119,
+          "speed": 161,
+          "description": "Patruus aestas sulum canonicus provident explicabo timor theca acervus vinculum.",
+          "imageUrl": "https://picsum.photos/seed/9BKhk/3806/1816?blur=8",
+          "generation": 1
+        },
+        {
+          "id": 43,
+          "name": "Virgil",
+          "types": [
+            "Normal"
+          ],
+          "height": 11.465296176566019,
+          "weight": 322.2775020292169,
+          "hp": 22,
+          "attack": 141,
+          "defense": 95,
+          "specialAttack": 36,
+          "specialDefense": 182,
+          "speed": 11,
+          "description": "Doloremque contabesco solium tepesco.",
+          "imageUrl": "https://picsum.photos/seed/vISReQwF/67/2652?blur=4",
+          "generation": 4
+        },
+        {
+          "id": 44,
+          "name": "Chaya",
+          "types": [
+            "Flying"
+          ],
+          "height": 1.1747245681776468,
+          "weight": 56.14743197331443,
+          "hp": 171,
+          "attack": 131,
+          "defense": 102,
+          "specialAttack": 17,
+          "specialDefense": 73,
+          "speed": 145,
+          "description": "Victus desipio denuo caecus.",
+          "imageUrl": "https://picsum.photos/seed/2O2Zn/2713/1080?blur=9",
+          "generation": 6
+        },
+        {
+          "id": 45,
+          "name": "Gino",
+          "types": [
+            "Dragon",
+            "Fairy"
+          ],
+          "height": 19.724741542694684,
+          "weight": 730.6325233462554,
+          "hp": 195,
+          "attack": 141,
+          "defense": 211,
+          "specialAttack": 162,
+          "specialDefense": 62,
+          "speed": 136,
+          "description": "Cunabula argumentum vaco claro tamisium abbas.",
+          "imageUrl": "https://picsum.photos/seed/WfYU6I/1447/3461",
+          "generation": 9
+        },
+        {
+          "id": 46,
+          "name": "Ewell",
+          "types": [
+            "Electric"
+          ],
+          "height": 13.043039569579431,
+          "weight": 536.1279331766631,
+          "hp": 190,
+          "attack": 92,
+          "defense": 86,
+          "specialAttack": 19,
+          "specialDefense": 191,
+          "speed": 173,
+          "description": "Avaritia omnis decretum cilicium stipes ago asporto.",
+          "imageUrl": "https://loremflickr.com/3018/2810?lock=6074533269735512",
+          "generation": 4
+        },
+        {
+          "id": 47,
+          "name": "Serenity",
+          "types": [
+            "Grass"
+          ],
+          "height": 13.833655122212855,
+          "weight": 17.088301417283727,
+          "hp": 30,
+          "attack": 184,
+          "defense": 94,
+          "specialAttack": 78,
+          "specialDefense": 26,
+          "speed": 55,
+          "description": "Summa volubilis tam cubo aliquam comedo stella.",
+          "imageUrl": "https://picsum.photos/seed/sn3o7d/3409/1859",
+          "generation": 4
+        },
+        {
+          "id": 48,
+          "name": "Marielle",
+          "types": [
+            "Fighting"
+          ],
+          "height": 1.6301684335170903,
+          "weight": 695.9899667494556,
+          "hp": 88,
+          "attack": 41,
+          "defense": 169,
+          "specialAttack": 129,
+          "specialDefense": 158,
+          "speed": 155,
+          "description": "Apud deludo admiratio.",
+          "imageUrl": "https://picsum.photos/seed/xLRgT6YByr/3660/1484",
+          "generation": 4
+        },
+        {
+          "id": 49,
+          "name": "Dora",
+          "types": [
+            "Psychic"
+          ],
+          "height": 18.976239236746558,
+          "weight": 415.6244771600033,
+          "hp": 219,
+          "attack": 23,
+          "defense": 62,
+          "specialAttack": 92,
+          "specialDefense": 227,
+          "speed": 112,
+          "description": "Timidus ocer vulnus degusto coepi aurum.",
+          "imageUrl": "https://loremflickr.com/62/2728?lock=4829979725393621",
+          "generation": 9
+        },
+        {
+          "id": 50,
+          "name": "Kaley",
+          "types": [
+            "Dark"
+          ],
+          "height": 9.268345241615485,
+          "weight": 136.95868379504046,
+          "hp": 73,
+          "attack": 81,
+          "defense": 21,
+          "specialAttack": 147,
+          "specialDefense": 91,
+          "speed": 6,
+          "description": "Atrox peior vir subvenio textor thema coniuratio.",
+          "imageUrl": "https://picsum.photos/seed/6m710/1720/2711?grayscale&blur=2",
+          "generation": 4
+        },
+        {
+          "id": 51,
+          "name": "Pierce",
+          "types": [
+            "Dark"
+          ],
+          "height": 9.139920407373657,
+          "weight": 647.7008612113317,
+          "hp": 69,
+          "attack": 142,
+          "defense": 47,
+          "specialAttack": 43,
+          "specialDefense": 38,
+          "speed": 107,
+          "description": "Valetudo dens vado abbas vesica theatrum voluntarius.",
+          "imageUrl": "https://picsum.photos/seed/dvqaBW/2955/2438?grayscale&blur=9",
+          "generation": 3
+        },
+        {
+          "id": 52,
+          "name": "Cheyenne",
+          "types": [
+            "Psychic"
+          ],
+          "height": 19.565672158888162,
+          "weight": 36.61846915454576,
+          "hp": 173,
+          "attack": 177,
+          "defense": 136,
+          "specialAttack": 69,
+          "specialDefense": 199,
+          "speed": 159,
+          "description": "Aetas absconditus thesaurus virtus voluptatum accendo cohors.",
+          "imageUrl": "https://picsum.photos/seed/Asxy3cOY/3990/1363",
+          "generation": 8
+        },
+        {
+          "id": 53,
+          "name": "Emile",
+          "types": [
+            "Poison"
+          ],
+          "height": 5.7940922853892625,
+          "weight": 210.41716765508775,
+          "hp": 131,
+          "attack": 174,
+          "defense": 216,
+          "specialAttack": 111,
+          "specialDefense": 38,
+          "speed": 89,
+          "description": "Aureus cum utroque asporto sapiente curatio error desino verumtamen demoror.",
+          "imageUrl": "https://picsum.photos/seed/fcCRlq/3258/3163",
+          "generation": 9
+        },
+        {
+          "id": 54,
+          "name": "Jaylen",
+          "types": [
+            "Poison",
+            "Dragon"
+          ],
+          "height": 12.81262768706321,
+          "weight": 862.4949840780546,
+          "hp": 167,
+          "attack": 89,
+          "defense": 143,
+          "specialAttack": 54,
+          "specialDefense": 125,
+          "speed": 42,
+          "description": "Corrigo curo cinis.",
+          "imageUrl": "https://loremflickr.com/2925/294?lock=529421763695942",
+          "generation": 6
+        },
+        {
+          "id": 55,
+          "name": "Titus",
+          "types": [
+            "Ghost"
+          ],
+          "height": 19.619985526565817,
+          "weight": 945.5445393428269,
+          "hp": 22,
+          "attack": 119,
+          "defense": 165,
+          "specialAttack": 167,
+          "specialDefense": 156,
+          "speed": 103,
+          "description": "Varius velit degero socius cognomen allatus arguo.",
+          "imageUrl": "https://picsum.photos/seed/C61jH4N4/976/2618",
+          "generation": 7
+        },
+        {
+          "id": 56,
+          "name": "Alyson",
+          "types": [
+            "Normal"
+          ],
+          "height": 7.015322683065242,
+          "weight": 401.5670867081226,
+          "hp": 235,
+          "attack": 169,
+          "defense": 64,
+          "specialAttack": 141,
+          "specialDefense": 59,
+          "speed": 178,
+          "description": "Abundans supplanto adstringo incidunt agnosco sapiente.",
+          "imageUrl": "https://picsum.photos/seed/KBeM40Ql/2154/1303?blur=6",
+          "generation": 3
+        },
+        {
+          "id": 57,
+          "name": "Daryl",
+          "types": [
+            "Flying"
+          ],
+          "height": 2.2229548647625794,
+          "weight": 414.6465688136516,
+          "hp": 242,
+          "attack": 57,
+          "defense": 50,
+          "specialAttack": 47,
+          "specialDefense": 217,
+          "speed": 154,
+          "description": "Decumbo traho totus curo tonsor odio vigor.",
+          "imageUrl": "https://picsum.photos/seed/QcA5prsQ/2250/3409?blur=8",
+          "generation": 5
+        },
+        {
+          "id": 58,
+          "name": "Nickolas",
+          "types": [
+            "Bug"
+          ],
+          "height": 7.948489399890416,
+          "weight": 259.90550577145723,
+          "hp": 235,
+          "attack": 28,
+          "defense": 76,
+          "specialAttack": 78,
+          "specialDefense": 214,
+          "speed": 34,
+          "description": "Quis congregatio in voco tardus trado cur.",
+          "imageUrl": "https://loremflickr.com/3203/1051?lock=5247428021283113",
+          "generation": 4
+        },
+        {
+          "id": 59,
+          "name": "Kory",
+          "types": [
+            "Dragon"
+          ],
+          "height": 15.602646795729394,
+          "weight": 870.9164645773939,
+          "hp": 222,
+          "attack": 65,
+          "defense": 227,
+          "specialAttack": 91,
+          "specialDefense": 88,
+          "speed": 140,
+          "description": "Mollitia curso sursum victoria abundans.",
+          "imageUrl": "https://picsum.photos/seed/mMWWpY/1573/2010?blur=10",
+          "generation": 6
+        },
+        {
+          "id": 60,
+          "name": "Adolf",
+          "types": [
+            "Bug",
+            "Flying"
+          ],
+          "height": 7.077939912328431,
+          "weight": 886.9465983403836,
+          "hp": 67,
+          "attack": 114,
+          "defense": 40,
+          "specialAttack": 135,
+          "specialDefense": 197,
+          "speed": 186,
+          "description": "Sunt avaritia tenax.",
+          "imageUrl": "https://loremflickr.com/768/3761?lock=758501047081043",
+          "generation": 8
+        },
+        {
+          "id": 61,
+          "name": "Elsa",
+          "types": [
+            "Bug",
+            "Grass"
+          ],
+          "height": 19.431218579416306,
+          "weight": 166.52626917223628,
+          "hp": 129,
+          "attack": 156,
+          "defense": 171,
+          "specialAttack": 110,
+          "specialDefense": 120,
+          "speed": 50,
+          "description": "Delectus conscendo amo perspiciatis veritas hic verbum.",
+          "imageUrl": "https://loremflickr.com/3409/1313?lock=4080794316404168",
+          "generation": 3
+        },
+        {
+          "id": 62,
+          "name": "Zion",
+          "types": [
+            "Flying"
+          ],
+          "height": 7.873618951975289,
+          "weight": 706.8386143589927,
+          "hp": 150,
+          "attack": 166,
+          "defense": 117,
+          "specialAttack": 48,
+          "specialDefense": 216,
+          "speed": 136,
+          "description": "Solum cupio adimpleo ambitus crudelis iste ventosus adopto.",
+          "imageUrl": "https://picsum.photos/seed/kob1BiOsIj/1372/810",
+          "generation": 6
+        },
+        {
+          "id": 63,
+          "name": "Eden",
+          "types": [
+            "Electric",
+            "Dark"
+          ],
+          "height": 2.49069783192053,
+          "weight": 153.32950759139467,
+          "hp": 234,
+          "attack": 181,
+          "defense": 117,
+          "specialAttack": 80,
+          "specialDefense": 225,
+          "speed": 9,
+          "description": "Tredecim patria ante ademptio urbs depono audentia absum soluta.",
+          "imageUrl": "https://picsum.photos/seed/u6KJeAj6/116/219",
+          "generation": 8
+        },
+        {
+          "id": 64,
+          "name": "Idella",
+          "types": [
+            "Fairy"
+          ],
+          "height": 12.43934937532743,
+          "weight": 486.70568261541246,
+          "hp": 243,
+          "attack": 106,
+          "defense": 8,
+          "specialAttack": 48,
+          "specialDefense": 27,
+          "speed": 155,
+          "description": "Utrimque depromo supra capto.",
+          "imageUrl": "https://loremflickr.com/3347/1347?lock=2615577089324573",
+          "generation": 5
+        },
+        {
+          "id": 65,
+          "name": "Mack",
+          "types": [
+            "Dark"
+          ],
+          "height": 1.8064492938998786,
+          "weight": 485.92521215527876,
+          "hp": 202,
+          "attack": 143,
+          "defense": 191,
+          "specialAttack": 172,
+          "specialDefense": 42,
+          "speed": 58,
+          "description": "Quae defero terebro asper.",
+          "imageUrl": "https://picsum.photos/seed/q6aSSQj/211/3205?grayscale&blur=5",
+          "generation": 5
+        },
+        {
+          "id": 66,
+          "name": "Cyrus",
+          "types": [
+            "Dark"
+          ],
+          "height": 7.573955940719266,
+          "weight": 959.9830599983104,
+          "hp": 151,
+          "attack": 77,
+          "defense": 193,
+          "specialAttack": 61,
+          "specialDefense": 140,
+          "speed": 8,
+          "description": "Consequuntur sublime cetera.",
+          "imageUrl": "https://picsum.photos/seed/YC1n6DkNT/3805/1444?grayscale&blur=7",
+          "generation": 5
+        },
+        {
+          "id": 67,
+          "name": "Breana",
+          "types": [
+            "Grass"
+          ],
+          "height": 4.410097868536427,
+          "weight": 259.7129860792597,
+          "hp": 182,
+          "attack": 123,
+          "defense": 61,
+          "specialAttack": 119,
+          "specialDefense": 171,
+          "speed": 142,
+          "description": "Ver modi apto dedico itaque argumentum tantillus sumo adsidue.",
+          "imageUrl": "https://loremflickr.com/3451/1157?lock=425904642742049",
+          "generation": 9
+        },
+        {
+          "id": 68,
+          "name": "Hulda",
+          "types": [
+            "Ground"
+          ],
+          "height": 0.3385177180936155,
+          "weight": 200.70716101944743,
+          "hp": 179,
+          "attack": 101,
+          "defense": 190,
+          "specialAttack": 86,
+          "specialDefense": 121,
+          "speed": 57,
+          "description": "Cauda cunctatio amplitudo volutabrum calco.",
+          "imageUrl": "https://loremflickr.com/994/132?lock=5239818409080594",
+          "generation": 5
+        },
+        {
+          "id": 69,
+          "name": "Stacey",
+          "types": [
+            "Poison"
+          ],
+          "height": 3.5886653718563437,
+          "weight": 776.3608871809613,
+          "hp": 106,
+          "attack": 170,
+          "defense": 227,
+          "specialAttack": 38,
+          "specialDefense": 144,
+          "speed": 50,
+          "description": "Sunt beneficium contra solvo vobis deprecator valde damnatio taceo voluptatem.",
+          "imageUrl": "https://picsum.photos/seed/mxKuxMJ/819/2318?blur=5",
+          "generation": 1
+        },
+        {
+          "id": 70,
+          "name": "Carol",
+          "types": [
+            "Fairy"
+          ],
+          "height": 12.049974866989258,
+          "weight": 64.88452549720697,
+          "hp": 116,
+          "attack": 20,
+          "defense": 18,
+          "specialAttack": 170,
+          "specialDefense": 57,
+          "speed": 188,
+          "description": "Timor non amor magnam depono.",
+          "imageUrl": "https://loremflickr.com/2545/1701?lock=7072800927462965",
+          "generation": 5
+        },
+        {
+          "id": 71,
+          "name": "Betsy",
+          "types": [
+            "Rock"
+          ],
+          "height": 1.6423022338167927,
+          "weight": 869.9837634948047,
+          "hp": 151,
+          "attack": 189,
+          "defense": 153,
+          "specialAttack": 163,
+          "specialDefense": 18,
+          "speed": 183,
+          "description": "Cupressus versus est tibi distinctio.",
+          "imageUrl": "https://loremflickr.com/2088/1112?lock=2524916497981683",
+          "generation": 1
+        },
+        {
+          "id": 72,
+          "name": "Lysanne",
+          "types": [
+            "Grass",
+            "Ice"
+          ],
+          "height": 12.420235650875712,
+          "weight": 572.2358171212388,
+          "hp": 164,
+          "attack": 72,
+          "defense": 7,
+          "specialAttack": 27,
+          "specialDefense": 220,
+          "speed": 143,
+          "description": "Dedico blanditiis auctor suspendo quibusdam.",
+          "imageUrl": "https://loremflickr.com/3238/2924?lock=2098271954564310",
+          "generation": 8
+        },
+        {
+          "id": 73,
+          "name": "Victoria",
+          "types": [
+            "Ice"
+          ],
+          "height": 5.2264316429633135,
+          "weight": 504.6213854969673,
+          "hp": 242,
+          "attack": 18,
+          "defense": 171,
+          "specialAttack": 112,
+          "specialDefense": 50,
+          "speed": 163,
+          "description": "Ventito charisma strenuus cito addo sublime vestrum a verumtamen.",
+          "imageUrl": "https://loremflickr.com/2606/3493?lock=4210328945324759",
+          "generation": 2
+        },
+        {
+          "id": 74,
+          "name": "Reggie",
+          "types": [
+            "Steel"
+          ],
+          "height": 6.756331865023941,
+          "weight": 911.5587226244888,
+          "hp": 39,
+          "attack": 143,
+          "defense": 118,
+          "specialAttack": 96,
+          "specialDefense": 162,
+          "speed": 128,
+          "description": "Alter anser claro adimpleo.",
+          "imageUrl": "https://loremflickr.com/3271/3831?lock=2912878466900242",
+          "generation": 1
+        },
+        {
+          "id": 75,
+          "name": "Dawn",
+          "types": [
+            "Flying",
+            "Steel"
+          ],
+          "height": 11.592737373655309,
+          "weight": 706.8254216346508,
+          "hp": 90,
+          "attack": 8,
+          "defense": 36,
+          "specialAttack": 94,
+          "specialDefense": 73,
+          "speed": 52,
+          "description": "Debilito capitulus crastinus speculum degusto decumbo.",
+          "imageUrl": "https://loremflickr.com/2876/2109?lock=3971900529913348",
+          "generation": 9
+        },
+        {
+          "id": 76,
+          "name": "Teagan",
+          "types": [
+            "Grass",
+            "Steel"
+          ],
+          "height": 5.793062559302798,
+          "weight": 260.02924352527435,
+          "hp": 166,
+          "attack": 128,
+          "defense": 33,
+          "specialAttack": 77,
+          "specialDefense": 63,
+          "speed": 171,
+          "description": "Universe reprehenderit laboriosam volva atrocitas cur thymum iure summopere.",
+          "imageUrl": "https://picsum.photos/seed/wHSD57tiU/3476/1432?blur=4",
+          "generation": 4
+        },
+        {
+          "id": 77,
+          "name": "Elbert",
+          "types": [
+            "Psychic"
+          ],
+          "height": 5.2404734480579265,
+          "weight": 685.6356999482778,
+          "hp": 243,
+          "attack": 46,
+          "defense": 73,
+          "specialAttack": 148,
+          "specialDefense": 43,
+          "speed": 60,
+          "description": "Articulus tumultus compono vorax adopto ager et beatae cura recusandae.",
+          "imageUrl": "https://loremflickr.com/2531/1606?lock=6839486361293457",
+          "generation": 4
+        },
+        {
+          "id": 78,
+          "name": "Jasmin",
+          "types": [
+            "Dragon"
+          ],
+          "height": 7.316995852950494,
+          "weight": 329.9870954419775,
+          "hp": 156,
+          "attack": 185,
+          "defense": 154,
+          "specialAttack": 128,
+          "specialDefense": 205,
+          "speed": 132,
+          "description": "Terra eaque audax correptius torrens cogito temporibus tepesco demergo terebro.",
+          "imageUrl": "https://picsum.photos/seed/1MGiT2WdP/510/2309",
+          "generation": 7
+        },
+        {
+          "id": 79,
+          "name": "Barry",
+          "types": [
+            "Dark",
+            "Psychic"
+          ],
+          "height": 10.298031073972556,
+          "weight": 192.73143282477187,
+          "hp": 25,
+          "attack": 111,
+          "defense": 120,
+          "specialAttack": 111,
+          "specialDefense": 161,
+          "speed": 29,
+          "description": "Vesica adamo ambulo commodi impedit ipsa maiores thermae.",
+          "imageUrl": "https://loremflickr.com/207/329?lock=6761806657853642",
+          "generation": 8
+        },
+        {
+          "id": 80,
+          "name": "Cristian",
+          "types": [
+            "Electric",
+            "Flying"
+          ],
+          "height": 11.071364624735859,
+          "weight": 674.5995570150685,
+          "hp": 35,
+          "attack": 87,
+          "defense": 9,
+          "specialAttack": 172,
+          "specialDefense": 89,
+          "speed": 159,
+          "description": "Vulnus aduro causa bellicus depereo solio.",
+          "imageUrl": "https://loremflickr.com/3076/119?lock=3731606299239005",
+          "generation": 9
+        },
+        {
+          "id": 81,
+          "name": "Elnora",
+          "types": [
+            "Steel"
+          ],
+          "height": 14.186763858538994,
+          "weight": 237.97767236848617,
+          "hp": 20,
+          "attack": 18,
+          "defense": 62,
+          "specialAttack": 19,
+          "specialDefense": 161,
+          "speed": 169,
+          "description": "Modi tripudio antepono saepe veritatis carmen audio.",
+          "imageUrl": "https://loremflickr.com/2392/2299?lock=1345159160073799",
+          "generation": 6
+        },
+        {
+          "id": 82,
+          "name": "Alfonzo",
+          "types": [
+            "Ghost",
+            "Flying"
+          ],
+          "height": 7.940660944987412,
+          "weight": 889.8030495947356,
+          "hp": 51,
+          "attack": 17,
+          "defense": 30,
+          "specialAttack": 121,
+          "specialDefense": 149,
+          "speed": 150,
+          "description": "Perspiciatis vero consequuntur substantia.",
+          "imageUrl": "https://picsum.photos/seed/nY3Cb/549/722?grayscale&blur=9",
+          "generation": 1
+        },
+        {
+          "id": 83,
+          "name": "Jackson",
+          "types": [
+            "Psychic",
+            "Rock"
+          ],
+          "height": 19.8996147581443,
+          "weight": 681.7583014202012,
+          "hp": 96,
+          "attack": 69,
+          "defense": 213,
+          "specialAttack": 166,
+          "specialDefense": 121,
+          "speed": 169,
+          "description": "Vulticulus thymbra cruciamentum theologus rerum tamisium caterva officia.",
+          "imageUrl": "https://picsum.photos/seed/ari2VD/1158/1323?blur=10",
+          "generation": 4
+        },
+        {
+          "id": 84,
+          "name": "Alberto",
+          "types": [
+            "Rock"
+          ],
+          "height": 16.631933851849563,
+          "weight": 63.09803256250263,
+          "hp": 187,
+          "attack": 151,
+          "defense": 55,
+          "specialAttack": 26,
+          "specialDefense": 40,
+          "speed": 78,
+          "description": "Adsum considero aeternus tot apostolus reiciendis ait advenio auxilium amitto.",
+          "imageUrl": "https://picsum.photos/seed/ylcyot/3555/2356",
+          "generation": 9
+        },
+        {
+          "id": 85,
+          "name": "Ena",
+          "types": [
+            "Dragon"
+          ],
+          "height": 15.456761439726556,
+          "weight": 602.5445689396136,
+          "hp": 117,
+          "attack": 51,
+          "defense": 165,
+          "specialAttack": 81,
+          "specialDefense": 165,
+          "speed": 138,
+          "description": "Avarus curia ante victoria audentia.",
+          "imageUrl": "https://picsum.photos/seed/IKKWFoX/3737/988?blur=10",
+          "generation": 2
+        },
+        {
+          "id": 86,
+          "name": "Edyth",
+          "types": [
+            "Grass"
+          ],
+          "height": 8.337943070228159,
+          "weight": 184.3019826134346,
+          "hp": 179,
+          "attack": 181,
+          "defense": 157,
+          "specialAttack": 148,
+          "specialDefense": 170,
+          "speed": 25,
+          "description": "Certus alioqui cicuta cometes.",
+          "imageUrl": "https://loremflickr.com/1825/1457?lock=5433502559660748",
+          "generation": 4
+        },
+        {
+          "id": 87,
+          "name": "Alvina",
+          "types": [
+            "Ice",
+            "Fairy"
+          ],
+          "height": 1.5988437503663502,
+          "weight": 640.1403826658482,
+          "hp": 103,
+          "attack": 145,
+          "defense": 138,
+          "specialAttack": 116,
+          "specialDefense": 204,
+          "speed": 34,
+          "description": "Sponte aufero tametsi ab ultio celer.",
+          "imageUrl": "https://loremflickr.com/2340/1479?lock=7036245270444124",
+          "generation": 6
+        },
+        {
+          "id": 88,
+          "name": "Kelvin",
+          "types": [
+            "Grass",
+            "Electric"
+          ],
+          "height": 15.015407238491928,
+          "weight": 407.56959967289424,
+          "hp": 254,
+          "attack": 147,
+          "defense": 24,
+          "specialAttack": 177,
+          "specialDefense": 25,
+          "speed": 64,
+          "description": "Carpo excepturi sint depono carpo.",
+          "imageUrl": "https://loremflickr.com/1289/3585?lock=2888685420055227",
+          "generation": 8
+        },
+        {
+          "id": 89,
+          "name": "Breana",
+          "types": [
+            "Rock",
+            "Steel"
+          ],
+          "height": 7.571214773673599,
+          "weight": 287.91729105777085,
+          "hp": 126,
+          "attack": 56,
+          "defense": 193,
+          "specialAttack": 180,
+          "specialDefense": 138,
+          "speed": 198,
+          "description": "Avarus ara attollo crudelis.",
+          "imageUrl": "https://picsum.photos/seed/lApVw0holm/1855/918?blur=4",
+          "generation": 5
+        },
+        {
+          "id": 90,
+          "name": "Hosea",
+          "types": [
+            "Grass"
+          ],
+          "height": 14.955440584935802,
+          "weight": 973.01974737813,
+          "hp": 53,
+          "attack": 90,
+          "defense": 176,
+          "specialAttack": 39,
+          "specialDefense": 98,
+          "speed": 163,
+          "description": "Vergo sequi confugo vilicus trans argentum curto.",
+          "imageUrl": "https://loremflickr.com/1898/3470?lock=4280823086406433",
+          "generation": 9
+        },
+        {
+          "id": 91,
+          "name": "Laurine",
+          "types": [
+            "Poison",
+            "Normal"
+          ],
+          "height": 6.983026217602452,
+          "weight": 937.8478172540196,
+          "hp": 243,
+          "attack": 94,
+          "defense": 146,
+          "specialAttack": 23,
+          "specialDefense": 80,
+          "speed": 70,
+          "description": "Temeritas aliquam spectaculum vinum desipio umquam.",
+          "imageUrl": "https://loremflickr.com/3750/3212?lock=5327373912820397",
+          "generation": 9
+        },
+        {
+          "id": 92,
+          "name": "Leann",
+          "types": [
+            "Ghost"
+          ],
+          "height": 16.83088238986193,
+          "weight": 99.78539842556698,
+          "hp": 189,
+          "attack": 103,
+          "defense": 138,
+          "specialAttack": 97,
+          "specialDefense": 189,
+          "speed": 121,
+          "description": "Suffoco totidem valetudo vilis cubo convoco conventus.",
+          "imageUrl": "https://loremflickr.com/434/2591?lock=6909671117544413",
+          "generation": 5
+        },
+        {
+          "id": 93,
+          "name": "Laurianne",
+          "types": [
+            "Dragon"
+          ],
+          "height": 6.88562850426027,
+          "weight": 801.0041055838262,
+          "hp": 103,
+          "attack": 50,
+          "defense": 106,
+          "specialAttack": 101,
+          "specialDefense": 134,
+          "speed": 148,
+          "description": "Curso succedo damnatio curo iste debeo crastinus abeo adsidue desidero.",
+          "imageUrl": "https://picsum.photos/seed/ETAzPXylBr/1739/218",
+          "generation": 4
+        },
+        {
+          "id": 94,
+          "name": "Golda",
+          "types": [
+            "Fairy",
+            "Grass"
+          ],
+          "height": 16.033133772947288,
+          "weight": 748.4870762072838,
+          "hp": 211,
+          "attack": 89,
+          "defense": 37,
+          "specialAttack": 72,
+          "specialDefense": 219,
+          "speed": 62,
+          "description": "Tenax denuncio urbanus.",
+          "imageUrl": "https://picsum.photos/seed/mWQ4bawteI/3051/573?blur=9",
+          "generation": 2
+        },
+        {
+          "id": 95,
+          "name": "Webster",
+          "types": [
+            "Dragon",
+            "Ground"
+          ],
+          "height": 4.3406324793563655,
+          "weight": 339.6740748183559,
+          "hp": 73,
+          "attack": 156,
+          "defense": 121,
+          "specialAttack": 71,
+          "specialDefense": 191,
+          "speed": 170,
+          "description": "Surgo tunc victoria succedo supplanto dedico talus.",
+          "imageUrl": "https://loremflickr.com/620/1827?lock=5169426343211385",
+          "generation": 7
+        },
+        {
+          "id": 96,
+          "name": "Myrna",
+          "types": [
+            "Ground"
+          ],
+          "height": 7.62044872412942,
+          "weight": 263.15738074926554,
+          "hp": 43,
+          "attack": 28,
+          "defense": 166,
+          "specialAttack": 91,
+          "specialDefense": 122,
+          "speed": 30,
+          "description": "Adicio excepturi basium.",
+          "imageUrl": "https://loremflickr.com/3661/1115?lock=6431786109716462",
+          "generation": 9
+        },
+        {
+          "id": 97,
+          "name": "Chase",
+          "types": [
+            "Ghost"
+          ],
+          "height": 6.620472718282838,
+          "weight": 877.5870176302401,
+          "hp": 54,
+          "attack": 90,
+          "defense": 85,
+          "specialAttack": 76,
+          "specialDefense": 195,
+          "speed": 128,
+          "description": "Tempora decet vomer in varius terebro terebro vesco viridis.",
+          "imageUrl": "https://loremflickr.com/447/791?lock=3749837333359497",
+          "generation": 6
+        },
+        {
+          "id": 98,
+          "name": "Ralph",
+          "types": [
+            "Bug"
+          ],
+          "height": 1.1562338082411203,
+          "weight": 846.2117729041823,
+          "hp": 231,
+          "attack": 184,
+          "defense": 225,
+          "specialAttack": 78,
+          "specialDefense": 130,
+          "speed": 101,
+          "description": "Nulla adsum dignissimos.",
+          "imageUrl": "https://loremflickr.com/3795/1586?lock=10726961340529",
+          "generation": 5
+        },
+        {
+          "id": 99,
+          "name": "Lambert",
+          "types": [
+            "Fairy",
+            "Ghost"
+          ],
+          "height": 2.4837127492472764,
+          "weight": 177.47910800845506,
+          "hp": 96,
+          "attack": 50,
+          "defense": 142,
+          "specialAttack": 57,
+          "specialDefense": 222,
+          "speed": 92,
+          "description": "Caput non speciosus colo tepesco vel.",
+          "imageUrl": "https://picsum.photos/seed/YI6P9U5wxI/2724/2704?blur=7",
+          "generation": 2
+        },
+        {
+          "id": 100,
+          "name": "Mia",
+          "types": [
+            "Ghost"
+          ],
+          "height": 19.250156871862806,
+          "weight": 30.277322214266032,
+          "hp": 156,
+          "attack": 27,
+          "defense": 15,
+          "specialAttack": 87,
+          "specialDefense": 143,
+          "speed": 124,
+          "description": "Thymum administratio magnam valeo curis altus sollicito minus adduco pel.",
+          "imageUrl": "https://picsum.photos/seed/RiiCsV/754/350?blur=4",
+          "generation": 1
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": false,
+        "limit": 100,
+        "page": 1,
+        "total": 1000,
+        "totalPages": 10
+      }
+    },
+    "query": {
+      "limit": "100"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 7,
+          "name": "Devon",
+          "types": [
+            "Fire"
+          ],
+          "height": 15.90433676412755,
+          "weight": 703.5305233535402,
+          "hp": 50,
+          "attack": 99,
+          "defense": 11,
+          "specialAttack": 167,
+          "specialDefense": 109,
+          "speed": 66,
+          "description": "Ancilla saepe desidero clam corrigo.",
+          "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+          "generation": 3
+        },
+        {
+          "id": 9,
+          "name": "Samson",
+          "types": [
+            "Dark",
+            "Fire"
+          ],
+          "height": 2.083234183122287,
+          "weight": 491.3491746010558,
+          "hp": 200,
+          "attack": 189,
+          "defense": 177,
+          "specialAttack": 29,
+          "specialDefense": 225,
+          "speed": 45,
+          "description": "Timidus ante conspergo ante.",
+          "imageUrl": "https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8",
+          "generation": 8
+        },
+        {
+          "id": 27,
+          "name": "Leslie",
+          "types": [
+            "Fire"
+          ],
+          "height": 19.54681233837112,
+          "weight": 11.364907771056133,
+          "hp": 61,
+          "attack": 126,
+          "defense": 146,
+          "specialAttack": 142,
+          "specialDefense": 124,
+          "speed": 175,
+          "description": "Nobis dignissimos adstringo verumtamen nisi.",
+          "imageUrl": "https://picsum.photos/seed/WCeu4r6XX/1629/2240",
+          "generation": 3
+        },
+        {
+          "id": 38,
+          "name": "Trent",
+          "types": [
+            "Psychic",
+            "Fire"
+          ],
+          "height": 19.559399326478832,
+          "weight": 987.8978389886076,
+          "hp": 36,
+          "attack": 42,
+          "defense": 190,
+          "specialAttack": 161,
+          "specialDefense": 49,
+          "speed": 66,
+          "description": "Capio thalassinus crudelis celo summopere.",
+          "imageUrl": "https://picsum.photos/seed/B03dHmCfd/3744/46?grayscale&blur=6",
+          "generation": 6
+        },
+        {
+          "id": 108,
+          "name": "Hardy",
+          "types": [
+            "Fire"
+          ],
+          "height": 5.1441717406247225,
+          "weight": 363.70589424306974,
+          "hp": 184,
+          "attack": 60,
+          "defense": 16,
+          "specialAttack": 47,
+          "specialDefense": 153,
+          "speed": 195,
+          "description": "Dapifer vita vitae.",
+          "imageUrl": "https://picsum.photos/seed/o3Gf7/3021/1089?blur=5",
+          "generation": 2
+        },
+        {
+          "id": 109,
+          "name": "Rick",
+          "types": [
+            "Fire",
+            "Fighting"
+          ],
+          "height": 13.511290110946176,
+          "weight": 122.41113013183947,
+          "hp": 68,
+          "attack": 45,
+          "defense": 109,
+          "specialAttack": 108,
+          "specialDefense": 122,
+          "speed": 114,
+          "description": "Quis vomer cohaero desipio comprehendo ultra talio carpo vado cilicium.",
+          "imageUrl": "https://picsum.photos/seed/RIxybgcdB/796/3632?blur=9",
+          "generation": 4
+        },
+        {
+          "id": 110,
+          "name": "Wendy",
+          "types": [
+            "Fire",
+            "Grass"
+          ],
+          "height": 6.311524071430888,
+          "weight": 606.2286420087638,
+          "hp": 59,
+          "attack": 9,
+          "defense": 116,
+          "specialAttack": 118,
+          "specialDefense": 70,
+          "speed": 148,
+          "description": "Vulariter cometes adicio.",
+          "imageUrl": "https://picsum.photos/seed/IQkkv/3617/3160?grayscale&blur=7",
+          "generation": 4
+        },
+        {
+          "id": 140,
+          "name": "Priscilla",
+          "types": [
+            "Flying",
+            "Fire"
+          ],
+          "height": 8.748797237276477,
+          "weight": 216.86731836878923,
+          "hp": 76,
+          "attack": 122,
+          "defense": 34,
+          "specialAttack": 123,
+          "specialDefense": 106,
+          "speed": 95,
+          "description": "Vesper adduco appono magni.",
+          "imageUrl": "https://loremflickr.com/1247/481?lock=8528216032434875",
+          "generation": 8
+        },
+        {
+          "id": 166,
+          "name": "Karl",
+          "types": [
+            "Fire"
+          ],
+          "height": 12.23973526301656,
+          "weight": 238.76577887752305,
+          "hp": 51,
+          "attack": 140,
+          "defense": 54,
+          "specialAttack": 176,
+          "specialDefense": 197,
+          "speed": 137,
+          "description": "Distinctio vorax tubineus cohors curiositas uterque coniuratio suppellex velociter.",
+          "imageUrl": "https://picsum.photos/seed/NqQOtHM3KJ/2464/2897",
+          "generation": 5
+        },
+        {
+          "id": 178,
+          "name": "Kayla",
+          "types": [
+            "Fire",
+            "Dragon"
+          ],
+          "height": 5.965601702790793,
+          "weight": 846.3987586262568,
+          "hp": 44,
+          "attack": 49,
+          "defense": 46,
+          "specialAttack": 15,
+          "specialDefense": 17,
+          "speed": 170,
+          "description": "Astrum assumenda derideo quod denique.",
+          "imageUrl": "https://picsum.photos/seed/KOOU8/840/1076?blur=7",
+          "generation": 8
+        },
+        {
+          "id": 180,
+          "name": "Aditya",
+          "types": [
+            "Fire"
+          ],
+          "height": 3.3824462494529035,
+          "weight": 256.81746593697557,
+          "hp": 152,
+          "attack": 114,
+          "defense": 73,
+          "specialAttack": 47,
+          "specialDefense": 131,
+          "speed": 164,
+          "description": "Cena argentum usitas commemoro vesica abeo.",
+          "imageUrl": "https://loremflickr.com/2844/2087?lock=7308412090131432",
+          "generation": 9
+        },
+        {
+          "id": 185,
+          "name": "Rocky",
+          "types": [
+            "Fire"
+          ],
+          "height": 17.01172138858092,
+          "weight": 788.1651585276225,
+          "hp": 119,
+          "attack": 118,
+          "defense": 95,
+          "specialAttack": 87,
+          "specialDefense": 99,
+          "speed": 38,
+          "description": "Rerum tres quae vulgus.",
+          "imageUrl": "https://loremflickr.com/2865/638?lock=5488476325411371",
+          "generation": 5
+        },
+        {
+          "id": 197,
+          "name": "Conner",
+          "types": [
+            "Fire"
+          ],
+          "height": 19.14737822652222,
+          "weight": 814.8962062425164,
+          "hp": 28,
+          "attack": 29,
+          "defense": 117,
+          "specialAttack": 113,
+          "specialDefense": 188,
+          "speed": 75,
+          "description": "Temptatio tristis testimonium cruciamentum quibusdam decet culpo unde desidero argumentum.",
+          "imageUrl": "https://loremflickr.com/3805/2993?lock=5874460467253955",
+          "generation": 6
+        },
+        {
+          "id": 211,
+          "name": "Fredrick",
+          "types": [
+            "Ground",
+            "Fire"
+          ],
+          "height": 7.689434343932913,
+          "weight": 815.4363752850694,
+          "hp": 104,
+          "attack": 111,
+          "defense": 140,
+          "specialAttack": 27,
+          "specialDefense": 181,
+          "speed": 142,
+          "description": "Sol aveho aggero coadunatio accusator titulus.",
+          "imageUrl": "https://loremflickr.com/85/1759?lock=8300446297845105",
+          "generation": 3
+        },
+        {
+          "id": 218,
+          "name": "Jennie",
+          "types": [
+            "Fire"
+          ],
+          "height": 14.46495819096705,
+          "weight": 286.61563833779746,
+          "hp": 101,
+          "attack": 29,
+          "defense": 163,
+          "specialAttack": 158,
+          "specialDefense": 145,
+          "speed": 191,
+          "description": "Timor thalassinus terebro aestus stillicidium sum velit voluptatum adsum chirographum.",
+          "imageUrl": "https://picsum.photos/seed/6OeQWS/1381/494",
+          "generation": 9
+        },
+        {
+          "id": 245,
+          "name": "Lukas",
+          "types": [
+            "Fire",
+            "Fighting"
+          ],
+          "height": 12.798376227134357,
+          "weight": 241.89381555300673,
+          "hp": 73,
+          "attack": 37,
+          "defense": 129,
+          "specialAttack": 148,
+          "specialDefense": 87,
+          "speed": 82,
+          "description": "Careo usus ab.",
+          "imageUrl": "https://loremflickr.com/2172/1783?lock=3830259130088613",
+          "generation": 1
+        },
+        {
+          "id": 249,
+          "name": "Bridie",
+          "types": [
+            "Fire"
+          ],
+          "height": 2.60758192653528,
+          "weight": 928.9124409565387,
+          "hp": 160,
+          "attack": 80,
+          "defense": 151,
+          "specialAttack": 187,
+          "specialDefense": 84,
+          "speed": 76,
+          "description": "Amissio vulariter somniculosus deorsum volubilis decet delibero video amita.",
+          "imageUrl": "https://picsum.photos/seed/eyNMSV/3878/3766?blur=10",
+          "generation": 6
+        },
+        {
+          "id": 251,
+          "name": "Tessie",
+          "types": [
+            "Fire"
+          ],
+          "height": 15.913808932595945,
+          "weight": 214.3440013440805,
+          "hp": 27,
+          "attack": 98,
+          "defense": 32,
+          "specialAttack": 93,
+          "specialDefense": 84,
+          "speed": 29,
+          "description": "Derelinquo conspergo currus.",
+          "imageUrl": "https://picsum.photos/seed/2m70lkG3Lg/2742/2448",
+          "isLegendary": true,
+          "generation": 2
+        },
+        {
+          "id": 258,
+          "name": "Ellsworth",
+          "types": [
+            "Steel",
+            "Fire"
+          ],
+          "height": 17.280247817294956,
+          "weight": 143.8772506682517,
+          "hp": 25,
+          "attack": 131,
+          "defense": 157,
+          "specialAttack": 135,
+          "specialDefense": 130,
+          "speed": 102,
+          "description": "Adfero aveho totam.",
+          "imageUrl": "https://loremflickr.com/3474/2714?lock=6463889991304566",
+          "generation": 7
+        },
+        {
+          "id": 286,
+          "name": "Emelia",
+          "types": [
+            "Water",
+            "Fire"
+          ],
+          "height": 2.3151712759413283,
+          "weight": 436.1760468488255,
+          "hp": 248,
+          "attack": 112,
+          "defense": 159,
+          "specialAttack": 62,
+          "specialDefense": 88,
+          "speed": 105,
+          "description": "Vitium deprimo verbera tamdiu.",
+          "imageUrl": "https://picsum.photos/seed/E33eKuoKzU/1149/2287",
+          "generation": 3
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 71,
+        "totalPages": 4
+      }
+    },
+    "query": {
+      "search": "fire"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 7,
+          "name": "Devon",
+          "types": [
+            "Fire"
+          ],
+          "height": 15.90433676412755,
+          "weight": 703.5305233535402,
+          "hp": 50,
+          "attack": 99,
+          "defense": 11,
+          "specialAttack": 167,
+          "specialDefense": 109,
+          "speed": 66,
+          "description": "Ancilla saepe desidero clam corrigo.",
+          "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+          "generation": 3
+        },
+        {
+          "id": 9,
+          "name": "Samson",
+          "types": [
+            "Dark",
+            "Fire"
+          ],
+          "height": 2.083234183122287,
+          "weight": 491.3491746010558,
+          "hp": 200,
+          "attack": 189,
+          "defense": 177,
+          "specialAttack": 29,
+          "specialDefense": 225,
+          "speed": 45,
+          "description": "Timidus ante conspergo ante.",
+          "imageUrl": "https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8",
+          "generation": 8
+        },
+        {
+          "id": 27,
+          "name": "Leslie",
+          "types": [
+            "Fire"
+          ],
+          "height": 19.54681233837112,
+          "weight": 11.364907771056133,
+          "hp": 61,
+          "attack": 126,
+          "defense": 146,
+          "specialAttack": 142,
+          "specialDefense": 124,
+          "speed": 175,
+          "description": "Nobis dignissimos adstringo verumtamen nisi.",
+          "imageUrl": "https://picsum.photos/seed/WCeu4r6XX/1629/2240",
+          "generation": 3
+        },
+        {
+          "id": 38,
+          "name": "Trent",
+          "types": [
+            "Psychic",
+            "Fire"
+          ],
+          "height": 19.559399326478832,
+          "weight": 987.8978389886076,
+          "hp": 36,
+          "attack": 42,
+          "defense": 190,
+          "specialAttack": 161,
+          "specialDefense": 49,
+          "speed": 66,
+          "description": "Capio thalassinus crudelis celo summopere.",
+          "imageUrl": "https://picsum.photos/seed/B03dHmCfd/3744/46?grayscale&blur=6",
+          "generation": 6
+        },
+        {
+          "id": 108,
+          "name": "Hardy",
+          "types": [
+            "Fire"
+          ],
+          "height": 5.1441717406247225,
+          "weight": 363.70589424306974,
+          "hp": 184,
+          "attack": 60,
+          "defense": 16,
+          "specialAttack": 47,
+          "specialDefense": 153,
+          "speed": 195,
+          "description": "Dapifer vita vitae.",
+          "imageUrl": "https://picsum.photos/seed/o3Gf7/3021/1089?blur=5",
+          "generation": 2
+        },
+        {
+          "id": 109,
+          "name": "Rick",
+          "types": [
+            "Fire",
+            "Fighting"
+          ],
+          "height": 13.511290110946176,
+          "weight": 122.41113013183947,
+          "hp": 68,
+          "attack": 45,
+          "defense": 109,
+          "specialAttack": 108,
+          "specialDefense": 122,
+          "speed": 114,
+          "description": "Quis vomer cohaero desipio comprehendo ultra talio carpo vado cilicium.",
+          "imageUrl": "https://picsum.photos/seed/RIxybgcdB/796/3632?blur=9",
+          "generation": 4
+        },
+        {
+          "id": 110,
+          "name": "Wendy",
+          "types": [
+            "Fire",
+            "Grass"
+          ],
+          "height": 6.311524071430888,
+          "weight": 606.2286420087638,
+          "hp": 59,
+          "attack": 9,
+          "defense": 116,
+          "specialAttack": 118,
+          "specialDefense": 70,
+          "speed": 148,
+          "description": "Vulariter cometes adicio.",
+          "imageUrl": "https://picsum.photos/seed/IQkkv/3617/3160?grayscale&blur=7",
+          "generation": 4
+        },
+        {
+          "id": 140,
+          "name": "Priscilla",
+          "types": [
+            "Flying",
+            "Fire"
+          ],
+          "height": 8.748797237276477,
+          "weight": 216.86731836878923,
+          "hp": 76,
+          "attack": 122,
+          "defense": 34,
+          "specialAttack": 123,
+          "specialDefense": 106,
+          "speed": 95,
+          "description": "Vesper adduco appono magni.",
+          "imageUrl": "https://loremflickr.com/1247/481?lock=8528216032434875",
+          "generation": 8
+        },
+        {
+          "id": 166,
+          "name": "Karl",
+          "types": [
+            "Fire"
+          ],
+          "height": 12.23973526301656,
+          "weight": 238.76577887752305,
+          "hp": 51,
+          "attack": 140,
+          "defense": 54,
+          "specialAttack": 176,
+          "specialDefense": 197,
+          "speed": 137,
+          "description": "Distinctio vorax tubineus cohors curiositas uterque coniuratio suppellex velociter.",
+          "imageUrl": "https://picsum.photos/seed/NqQOtHM3KJ/2464/2897",
+          "generation": 5
+        },
+        {
+          "id": 178,
+          "name": "Kayla",
+          "types": [
+            "Fire",
+            "Dragon"
+          ],
+          "height": 5.965601702790793,
+          "weight": 846.3987586262568,
+          "hp": 44,
+          "attack": 49,
+          "defense": 46,
+          "specialAttack": 15,
+          "specialDefense": 17,
+          "speed": 170,
+          "description": "Astrum assumenda derideo quod denique.",
+          "imageUrl": "https://picsum.photos/seed/KOOU8/840/1076?blur=7",
+          "generation": 8
+        },
+        {
+          "id": 180,
+          "name": "Aditya",
+          "types": [
+            "Fire"
+          ],
+          "height": 3.3824462494529035,
+          "weight": 256.81746593697557,
+          "hp": 152,
+          "attack": 114,
+          "defense": 73,
+          "specialAttack": 47,
+          "specialDefense": 131,
+          "speed": 164,
+          "description": "Cena argentum usitas commemoro vesica abeo.",
+          "imageUrl": "https://loremflickr.com/2844/2087?lock=7308412090131432",
+          "generation": 9
+        },
+        {
+          "id": 185,
+          "name": "Rocky",
+          "types": [
+            "Fire"
+          ],
+          "height": 17.01172138858092,
+          "weight": 788.1651585276225,
+          "hp": 119,
+          "attack": 118,
+          "defense": 95,
+          "specialAttack": 87,
+          "specialDefense": 99,
+          "speed": 38,
+          "description": "Rerum tres quae vulgus.",
+          "imageUrl": "https://loremflickr.com/2865/638?lock=5488476325411371",
+          "generation": 5
+        },
+        {
+          "id": 197,
+          "name": "Conner",
+          "types": [
+            "Fire"
+          ],
+          "height": 19.14737822652222,
+          "weight": 814.8962062425164,
+          "hp": 28,
+          "attack": 29,
+          "defense": 117,
+          "specialAttack": 113,
+          "specialDefense": 188,
+          "speed": 75,
+          "description": "Temptatio tristis testimonium cruciamentum quibusdam decet culpo unde desidero argumentum.",
+          "imageUrl": "https://loremflickr.com/3805/2993?lock=5874460467253955",
+          "generation": 6
+        },
+        {
+          "id": 211,
+          "name": "Fredrick",
+          "types": [
+            "Ground",
+            "Fire"
+          ],
+          "height": 7.689434343932913,
+          "weight": 815.4363752850694,
+          "hp": 104,
+          "attack": 111,
+          "defense": 140,
+          "specialAttack": 27,
+          "specialDefense": 181,
+          "speed": 142,
+          "description": "Sol aveho aggero coadunatio accusator titulus.",
+          "imageUrl": "https://loremflickr.com/85/1759?lock=8300446297845105",
+          "generation": 3
+        },
+        {
+          "id": 218,
+          "name": "Jennie",
+          "types": [
+            "Fire"
+          ],
+          "height": 14.46495819096705,
+          "weight": 286.61563833779746,
+          "hp": 101,
+          "attack": 29,
+          "defense": 163,
+          "specialAttack": 158,
+          "specialDefense": 145,
+          "speed": 191,
+          "description": "Timor thalassinus terebro aestus stillicidium sum velit voluptatum adsum chirographum.",
+          "imageUrl": "https://picsum.photos/seed/6OeQWS/1381/494",
+          "generation": 9
+        },
+        {
+          "id": 245,
+          "name": "Lukas",
+          "types": [
+            "Fire",
+            "Fighting"
+          ],
+          "height": 12.798376227134357,
+          "weight": 241.89381555300673,
+          "hp": 73,
+          "attack": 37,
+          "defense": 129,
+          "specialAttack": 148,
+          "specialDefense": 87,
+          "speed": 82,
+          "description": "Careo usus ab.",
+          "imageUrl": "https://loremflickr.com/2172/1783?lock=3830259130088613",
+          "generation": 1
+        },
+        {
+          "id": 249,
+          "name": "Bridie",
+          "types": [
+            "Fire"
+          ],
+          "height": 2.60758192653528,
+          "weight": 928.9124409565387,
+          "hp": 160,
+          "attack": 80,
+          "defense": 151,
+          "specialAttack": 187,
+          "specialDefense": 84,
+          "speed": 76,
+          "description": "Amissio vulariter somniculosus deorsum volubilis decet delibero video amita.",
+          "imageUrl": "https://picsum.photos/seed/eyNMSV/3878/3766?blur=10",
+          "generation": 6
+        },
+        {
+          "id": 251,
+          "name": "Tessie",
+          "types": [
+            "Fire"
+          ],
+          "height": 15.913808932595945,
+          "weight": 214.3440013440805,
+          "hp": 27,
+          "attack": 98,
+          "defense": 32,
+          "specialAttack": 93,
+          "specialDefense": 84,
+          "speed": 29,
+          "description": "Derelinquo conspergo currus.",
+          "imageUrl": "https://picsum.photos/seed/2m70lkG3Lg/2742/2448",
+          "isLegendary": true,
+          "generation": 2
+        },
+        {
+          "id": 258,
+          "name": "Ellsworth",
+          "types": [
+            "Steel",
+            "Fire"
+          ],
+          "height": 17.280247817294956,
+          "weight": 143.8772506682517,
+          "hp": 25,
+          "attack": 131,
+          "defense": 157,
+          "specialAttack": 135,
+          "specialDefense": 130,
+          "speed": 102,
+          "description": "Adfero aveho totam.",
+          "imageUrl": "https://loremflickr.com/3474/2714?lock=6463889991304566",
+          "generation": 7
+        },
+        {
+          "id": 286,
+          "name": "Emelia",
+          "types": [
+            "Water",
+            "Fire"
+          ],
+          "height": 2.3151712759413283,
+          "weight": 436.1760468488255,
+          "hp": 248,
+          "attack": 112,
+          "defense": 159,
+          "specialAttack": 62,
+          "specialDefense": 88,
+          "speed": 105,
+          "description": "Vitium deprimo verbera tamdiu.",
+          "imageUrl": "https://picsum.photos/seed/E33eKuoKzU/1149/2287",
+          "generation": 3
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 71,
+        "totalPages": 4
+      }
+    },
+    "query": {
+      "search": "  FIRE "
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [],
+      "pagination": {
+        "hasNext": false,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 0,
+        "totalPages": 0
+      }
+    },
+    "query": {
+      "search": "%"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [],
+      "pagination": {
+        "hasNext": false,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 0,
+        "totalPages": 0
+      }
+    },
+    "query": {
+      "search": "_"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 15,
+          "name": "Bonita",
+          "types": [
+            "Normal",
+            "Bug"
+          ],
+          "height": 0.5019428684451768,
+          "weight": 797.7995141469279,
+          "hp": 27,
+          "attack": 103,
+          "defense": 95,
+          "specialAttack": 93,
+          "specialDefense": 129,
+          "speed": 109,
+          "description": "Cognomen dedecor comptus veniam consuasor molestiae capitulus umquam.",
+          "imageUrl": "https://loremflickr.com/506/3837?lock=1304739405063893",
+          "generation": 9
+        },
+        {
+          "id": 16,
+          "name": "Tre",
+          "types": [
+            "Steel"
+          ],
+          "height": 16.259124957064852,
+          "weight": 26.127706335148584,
+          "hp": 30,
+          "attack": 68,
+          "defense": 83,
+          "specialAttack": 167,
+          "specialDefense": 115,
+          "speed": 118,
+          "description": "Sustineo statim paulatim acervus adhaero.",
+          "imageUrl": "https://picsum.photos/seed/kVzUucBfe/1024/501?grayscale&blur=4",
+          "generation": 6
+        },
+        {
+          "id": 17,
+          "name": "Jovan",
+          "types": [
+            "Ground"
+          ],
+          "height": 15.700022574729198,
+          "weight": 732.1608006722223,
+          "hp": 196,
+          "attack": 176,
+          "defense": 131,
+          "specialAttack": 44,
+          "specialDefense": 142,
+          "speed": 121,
+          "description": "Comprehendo corroboro coniuratio.",
+          "imageUrl": "https://loremflickr.com/2256/2549?lock=1907486016647445",
+          "generation": 1
+        },
+        {
+          "id": 18,
+          "name": "Morton",
+          "types": [
+            "Normal"
+          ],
+          "height": 12.995980120279485,
+          "weight": 901.3987738819023,
+          "hp": 242,
+          "attack": 36,
+          "defense": 74,
+          "specialAttack": 119,
+          "specialDefense": 84,
+          "speed": 44,
+          "description": "Vulpes centum canto tres.",
+          "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+          "generation": 3
+        },
+        {
+          "id": 19,
+          "name": "Greta",
+          "types": [
+            "Ghost"
+          ],
+          "height": 3.5034945267883897,
+          "weight": 553.6211978693028,
+          "hp": 217,
+          "attack": 40,
+          "defense": 69,
+          "specialAttack": 183,
+          "specialDefense": 225,
+          "speed": 107,
+          "description": "Ancilla astrum solio civitas.",
+          "imageUrl": "https://loremflickr.com/852/2642?lock=3291191604857675",
+          "generation": 2
+        },
+        {
+          "id": 21,
+          "name": "Ansel",
+          "types": [
+            "Normal"
+          ],
+          "height": 7.058872575976571,
+          "weight": 137.4749509087704,
+          "hp": 83,
+          "attack": 47,
+          "defense": 208,
+          "specialAttack": 49,
+          "specialDefense": 85,
+          "speed": 186,
+          "description": "Vorago similique cultura maiores suasoria cruciamentum aiunt.",
+          "imageUrl": "https://loremflickr.com/2640/2884?lock=6386354580126778",
+          "generation": 1
+        },
+        {
+          "id": 22,
+          "name": "Emmie",
+          "types": [
+            "Water"
+          ],
+          "height": 8.977714233908856,
+          "weight": 251.61685471036765,
+          "hp": 130,
+          "attack": 40,
+          "defense": 29,
+          "specialAttack": 64,
+          "specialDefense": 42,
+          "speed": 80,
+          "description": "Tabella decipio deleniti incidunt basium cras.",
+          "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+          "generation": 2
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": true,
+        "limit": 7,
+        "page": 3,
+        "total": 981,
+        "totalPages": 141
+      }
+    },
+    "query": {
+      "limit": "7",
+      "page": "3",
+      "search": "o"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 7,
+          "name": "Devon",
+          "types": [
+            "Fire"
+          ],
+          "height": 15.90433676412755,
+          "weight": 703.5305233535402,
+          "hp": 50,
+          "attack": 99,
+          "defense": 11,
+          "specialAttack": 167,
+          "specialDefense": 109,
+          "speed": 66,
+          "description": "Ancilla saepe desidero clam corrigo.",
+          "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+          "generation": 3
+        },
+        {
+          "id": 9,
+          "name": "Samson",
+          "types": [
+            "Dark",
+            "Fire"
+          ],
+          "height": 2.083234183122287,
+          "weight": 491.3491746010558,
+          "hp": 200,
+          "attack": 189,
+          "defense": 177,
+          "specialAttack": 29,
+          "specialDefense": 225,
+          "speed": 45,
+          "description": "Timidus ante conspergo ante.",
+          "imageUrl": "https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8",
+          "generation": 8
+        },
+        {
+          "id": 27,
+          "name": "Leslie",
+          "types": [
+            "Fire"
+          ],
+          "height": 19.54681233837112,
+          "weight": 11.364907771056133,
+          "hp": 61,
+          "attack": 126,
+          "defense": 146,
+          "specialAttack": 142,
+          "specialDefense": 124,
+          "speed": 175,
+          "description": "Nobis dignissimos adstringo verumtamen nisi.",
+          "imageUrl": "https://picsum.photos/seed/WCeu4r6XX/1629/2240",
+          "generation": 3
+        },
+        {
+          "id": 38,
+          "name": "Trent",
+          "types": [
+            "Psychic",
+            "Fire"
+          ],
+          "height": 19.559399326478832,
+          "weight": 987.8978389886076,
+          "hp": 36,
+          "attack": 42,
+          "defense": 190,
+          "specialAttack": 161,
+          "specialDefense": 49,
+          "speed": 66,
+          "description": "Capio thalassinus crudelis celo summopere.",
+          "imageUrl": "https://picsum.photos/seed/B03dHmCfd/3744/46?grayscale&blur=6",
+          "generation": 6
+        },
+        {
+          "id": 108,
+          "name": "Hardy",
+          "types": [
+            "Fire"
+          ],
+          "height": 5.1441717406247225,
+          "weight": 363.70589424306974,
+          "hp": 184,
+          "attack": 60,
+          "defense": 16,
+          "specialAttack": 47,
+          "specialDefense": 153,
+          "speed": 195,
+          "description": "Dapifer vita vitae.",
+          "imageUrl": "https://picsum.photos/seed/o3Gf7/3021/1089?blur=5",
+          "generation": 2
+        },
+        {
+          "id": 109,
+          "name": "Rick",
+          "types": [
+            "Fire",
+            "Fighting"
+          ],
+          "height": 13.511290110946176,
+          "weight": 122.41113013183947,
+          "hp": 68,
+          "attack": 45,
+          "defense": 109,
+          "specialAttack": 108,
+          "specialDefense": 122,
+          "speed": 114,
+          "description": "Quis vomer cohaero desipio comprehendo ultra talio carpo vado cilicium.",
+          "imageUrl": "https://picsum.photos/seed/RIxybgcdB/796/3632?blur=9",
+          "generation": 4
+        },
+        {
+          "id": 110,
+          "name": "Wendy",
+          "types": [
+            "Fire",
+            "Grass"
+          ],
+          "height": 6.311524071430888,
+          "weight": 606.2286420087638,
+          "hp": 59,
+          "attack": 9,
+          "defense": 116,
+          "specialAttack": 118,
+          "specialDefense": 70,
+          "speed": 148,
+          "description": "Vulariter cometes adicio.",
+          "imageUrl": "https://picsum.photos/seed/IQkkv/3617/3160?grayscale&blur=7",
+          "generation": 4
+        },
+        {
+          "id": 140,
+          "name": "Priscilla",
+          "types": [
+            "Flying",
+            "Fire"
+          ],
+          "height": 8.748797237276477,
+          "weight": 216.86731836878923,
+          "hp": 76,
+          "attack": 122,
+          "defense": 34,
+          "specialAttack": 123,
+          "specialDefense": 106,
+          "speed": 95,
+          "description": "Vesper adduco appono magni.",
+          "imageUrl": "https://loremflickr.com/1247/481?lock=8528216032434875",
+          "generation": 8
+        },
+        {
+          "id": 166,
+          "name": "Karl",
+          "types": [
+            "Fire"
+          ],
+          "height": 12.23973526301656,
+          "weight": 238.76577887752305,
+          "hp": 51,
+          "attack": 140,
+          "defense": 54,
+          "specialAttack": 176,
+          "specialDefense": 197,
+          "speed": 137,
+          "description": "Distinctio vorax tubineus cohors curiositas uterque coniuratio suppellex velociter.",
+          "imageUrl": "https://picsum.photos/seed/NqQOtHM3KJ/2464/2897",
+          "generation": 5
+        },
+        {
+          "id": 178,
+          "name": "Kayla",
+          "types": [
+            "Fire",
+            "Dragon"
+          ],
+          "height": 5.965601702790793,
+          "weight": 846.3987586262568,
+          "hp": 44,
+          "attack": 49,
+          "defense": 46,
+          "specialAttack": 15,
+          "specialDefense": 17,
+          "speed": 170,
+          "description": "Astrum assumenda derideo quod denique.",
+          "imageUrl": "https://picsum.photos/seed/KOOU8/840/1076?blur=7",
+          "generation": 8
+        },
+        {
+          "id": 180,
+          "name": "Aditya",
+          "types": [
+            "Fire"
+          ],
+          "height": 3.3824462494529035,
+          "weight": 256.81746593697557,
+          "hp": 152,
+          "attack": 114,
+          "defense": 73,
+          "specialAttack": 47,
+          "specialDefense": 131,
+          "speed": 164,
+          "description": "Cena argentum usitas commemoro vesica abeo.",
+          "imageUrl": "https://loremflickr.com/2844/2087?lock=7308412090131432",
+          "generation": 9
+        },
+        {
+          "id": 185,
+          "name": "Rocky",
+          "types": [
+            "Fire"
+          ],
+          "height": 17.01172138858092,
+          "weight": 788.1651585276225,
+          "hp": 119,
+          "attack": 118,
+          "defense": 95,
+          "specialAttack": 87,
+          "specialDefense": 99,
+          "speed": 38,
+          "description": "Rerum tres quae vulgus.",
+          "imageUrl": "https://loremflickr.com/2865/638?lock=5488476325411371",
+          "generation": 5
+        },
+        {
+          "id": 197,
+          "name": "Conner",
+          "types": [
+            "Fire"
+          ],
+          "height": 19.14737822652222,
+          "weight": 814.8962062425164,
+          "hp": 28,
+          "attack": 29,
+          "defense": 117,
+          "specialAttack": 113,
+          "specialDefense": 188,
+          "speed": 75,
+          "description": "Temptatio tristis testimonium cruciamentum quibusdam decet culpo unde desidero argumentum.",
+          "imageUrl": "https://loremflickr.com/3805/2993?lock=5874460467253955",
+          "generation": 6
+        },
+        {
+          "id": 211,
+          "name": "Fredrick",
+          "types": [
+            "Ground",
+            "Fire"
+          ],
+          "height": 7.689434343932913,
+          "weight": 815.4363752850694,
+          "hp": 104,
+          "attack": 111,
+          "defense": 140,
+          "specialAttack": 27,
+          "specialDefense": 181,
+          "speed": 142,
+          "description": "Sol aveho aggero coadunatio accusator titulus.",
+          "imageUrl": "https://loremflickr.com/85/1759?lock=8300446297845105",
+          "generation": 3
+        },
+        {
+          "id": 218,
+          "name": "Jennie",
+          "types": [
+            "Fire"
+          ],
+          "height": 14.46495819096705,
+          "weight": 286.61563833779746,
+          "hp": 101,
+          "attack": 29,
+          "defense": 163,
+          "specialAttack": 158,
+          "specialDefense": 145,
+          "speed": 191,
+          "description": "Timor thalassinus terebro aestus stillicidium sum velit voluptatum adsum chirographum.",
+          "imageUrl": "https://picsum.photos/seed/6OeQWS/1381/494",
+          "generation": 9
+        },
+        {
+          "id": 245,
+          "name": "Lukas",
+          "types": [
+            "Fire",
+            "Fighting"
+          ],
+          "height": 12.798376227134357,
+          "weight": 241.89381555300673,
+          "hp": 73,
+          "attack": 37,
+          "defense": 129,
+          "specialAttack": 148,
+          "specialDefense": 87,
+          "speed": 82,
+          "description": "Careo usus ab.",
+          "imageUrl": "https://loremflickr.com/2172/1783?lock=3830259130088613",
+          "generation": 1
+        },
+        {
+          "id": 249,
+          "name": "Bridie",
+          "types": [
+            "Fire"
+          ],
+          "height": 2.60758192653528,
+          "weight": 928.9124409565387,
+          "hp": 160,
+          "attack": 80,
+          "defense": 151,
+          "specialAttack": 187,
+          "specialDefense": 84,
+          "speed": 76,
+          "description": "Amissio vulariter somniculosus deorsum volubilis decet delibero video amita.",
+          "imageUrl": "https://picsum.photos/seed/eyNMSV/3878/3766?blur=10",
+          "generation": 6
+        },
+        {
+          "id": 251,
+          "name": "Tessie",
+          "types": [
+            "Fire"
+          ],
+          "height": 15.913808932595945,
+          "weight": 214.3440013440805,
+          "hp": 27,
+          "attack": 98,
+          "defense": 32,
+          "specialAttack": 93,
+          "specialDefense": 84,
+          "speed": 29,
+          "description": "Derelinquo conspergo currus.",
+          "imageUrl": "https://picsum.photos/seed/2m70lkG3Lg/2742/2448",
+          "isLegendary": true,
+          "generation": 2
+        },
+        {
+          "id": 258,
+          "name": "Ellsworth",
+          "types": [
+            "Steel",
+            "Fire"
+          ],
+          "height": 17.280247817294956,
+          "weight": 143.8772506682517,
+          "hp": 25,
+          "attack": 131,
+          "defense": 157,
+          "specialAttack": 135,
+          "specialDefense": 130,
+          "speed": 102,
+          "description": "Adfero aveho totam.",
+          "imageUrl": "https://loremflickr.com/3474/2714?lock=6463889991304566",
+          "generation": 7
+        },
+        {
+          "id": 286,
+          "name": "Emelia",
+          "types": [
+            "Water",
+            "Fire"
+          ],
+          "height": 2.3151712759413283,
+          "weight": 436.1760468488255,
+          "hp": 248,
+          "attack": 112,
+          "defense": 159,
+          "specialAttack": 62,
+          "specialDefense": 88,
+          "speed": 105,
+          "description": "Vitium deprimo verbera tamdiu.",
+          "imageUrl": "https://picsum.photos/seed/E33eKuoKzU/1149/2287",
+          "generation": 3
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 71,
+        "totalPages": 4
+      }
+    },
+    "query": {
+      "type": "fire"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 10,
+          "name": "Arnoldo",
+          "types": [
+            "Fighting",
+            "Water"
+          ],
+          "height": 14.355692762819112,
+          "weight": 606.2905361567018,
+          "hp": 232,
+          "attack": 173,
+          "defense": 130,
+          "specialAttack": 30,
+          "specialDefense": 221,
+          "speed": 54,
+          "description": "Degenero magnam vomica condico desino tempus arceo suscipit omnis.",
+          "imageUrl": "https://picsum.photos/seed/DCDstq/3972/205?grayscale&blur=8",
+          "generation": 5
+        },
+        {
+          "id": 22,
+          "name": "Emmie",
+          "types": [
+            "Water"
+          ],
+          "height": 8.977714233908856,
+          "weight": 251.61685471036765,
+          "hp": 130,
+          "attack": 40,
+          "defense": 29,
+          "specialAttack": 64,
+          "specialDefense": 42,
+          "speed": 80,
+          "description": "Tabella decipio deleniti incidunt basium cras.",
+          "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+          "generation": 2
+        },
+        {
+          "id": 28,
+          "name": "Rhianna",
+          "types": [
+            "Water"
+          ],
+          "height": 1.981391088918285,
+          "weight": 721.8606503885451,
+          "hp": 194,
+          "attack": 69,
+          "defense": 13,
+          "specialAttack": 48,
+          "specialDefense": 155,
+          "speed": 75,
+          "description": "Depraedor victus virtus.",
+          "imageUrl": "https://picsum.photos/seed/jRZhQasR/2459/2474",
+          "generation": 2
+        },
+        {
+          "id": 29,
+          "name": "Dane",
+          "types": [
+            "Water"
+          ],
+          "height": 11.108480647769605,
+          "weight": 636.8997201935715,
+          "hp": 76,
+          "attack": 178,
+          "defense": 78,
+          "specialAttack": 182,
+          "specialDefense": 78,
+          "speed": 148,
+          "description": "Vilicus clibanus talis.",
+          "imageUrl": "https://loremflickr.com/3310/544?lock=4019302161733663",
+          "generation": 7
+        },
+        {
+          "id": 102,
+          "name": "Trinity",
+          "types": [
+            "Water"
+          ],
+          "height": 13.09277344497352,
+          "weight": 478.06654237297727,
+          "hp": 242,
+          "attack": 25,
+          "defense": 36,
+          "specialAttack": 55,
+          "specialDefense": 154,
+          "speed": 21,
+          "description": "Delectus compello verumtamen clarus autem aetas.",
+          "imageUrl": "https://picsum.photos/seed/fyU1gL/419/36",
+          "generation": 2
+        },
+        {
+          "id": 104,
+          "name": "Gwen",
+          "types": [
+            "Water"
+          ],
+          "height": 0.44899935535621144,
+          "weight": 514.6291154437802,
+          "hp": 226,
+          "attack": 175,
+          "defense": 210,
+          "specialAttack": 109,
+          "specialDefense": 191,
+          "speed": 72,
+          "description": "Audio caste arx denego cibus termes denego.",
+          "imageUrl": "https://loremflickr.com/2759/2550?lock=6868642484884461",
+          "generation": 4
+        },
+        {
+          "id": 130,
+          "name": "Rupert",
+          "types": [
+            "Water"
+          ],
+          "height": 16.174397337920514,
+          "weight": 19.434562758350268,
+          "hp": 124,
+          "attack": 149,
+          "defense": 102,
+          "specialAttack": 126,
+          "specialDefense": 202,
+          "speed": 57,
+          "description": "Arcus aduro copia quas alii degusto articulus vindico.",
+          "imageUrl": "https://loremflickr.com/2556/2189?lock=6736712228178448",
+          "generation": 7
+        },
+        {
+          "id": 135,
+          "name": "Cornell",
+          "types": [
+            "Water"
+          ],
+          "height": 17.689533033321503,
+          "weight": 272.2083032641114,
+          "hp": 84,
+          "attack": 105,
+          "defense": 119,
+          "specialAttack": 37,
+          "specialDefense": 226,
+          "speed": 199,
+          "description": "Suffragium astrum inventore amet sortitus adnuo.",
+          "imageUrl": "https://loremflickr.com/62/1584?lock=6274843098387057",
+          "generation": 5
+        },
+        {
+          "id": 167,
+          "name": "Nova",
+          "types": [
+            "Water"
+          ],
+          "height": 11.643602268890012,
+          "weight": 615.3794619291914,
+          "hp": 100,
+          "attack": 166,
+          "defense": 101,
+          "specialAttack": 41,
+          "specialDefense": 51,
+          "speed": 29,
+          "description": "Video vorago audacia patior decipio creator tabernus.",
+          "imageUrl": "https://loremflickr.com/1267/2078?lock=5173686728891101",
+          "generation": 1
+        },
+        {
+          "id": 184,
+          "name": "Ellsworth",
+          "types": [
+            "Water",
+            "Grass"
+          ],
+          "height": 4.192009184472321,
+          "weight": 247.3053851666544,
+          "hp": 125,
+          "attack": 176,
+          "defense": 145,
+          "specialAttack": 82,
+          "specialDefense": 75,
+          "speed": 147,
+          "description": "Demens conturbo canto depereo thymbra.",
+          "imageUrl": "https://picsum.photos/seed/7hhP4yu/1870/3209?blur=7",
+          "generation": 8
+        },
+        {
+          "id": 213,
+          "name": "Lupe",
+          "types": [
+            "Water"
+          ],
+          "height": 16.57576727267025,
+          "weight": 808.7837001896345,
+          "hp": 139,
+          "attack": 152,
+          "defense": 187,
+          "specialAttack": 172,
+          "specialDefense": 76,
+          "speed": 199,
+          "description": "Nam abbas alveus.",
+          "imageUrl": "https://picsum.photos/seed/E9eKb/2008/2207",
+          "generation": 1
+        },
+        {
+          "id": 229,
+          "name": "Eldora",
+          "types": [
+            "Water",
+            "Ghost"
+          ],
+          "height": 15.961300023673287,
+          "weight": 345.2804949034567,
+          "hp": 107,
+          "attack": 172,
+          "defense": 73,
+          "specialAttack": 182,
+          "specialDefense": 31,
+          "speed": 83,
+          "description": "Recusandae arceo corrigo tempore acerbitas adflicto.",
+          "imageUrl": "https://picsum.photos/seed/DHpFqV/117/1068?grayscale&blur=7",
+          "generation": 2
+        },
+        {
+          "id": 235,
+          "name": "Mercedes",
+          "types": [
+            "Water"
+          ],
+          "height": 8.94148609347447,
+          "weight": 637.3322900925468,
+          "hp": 174,
+          "attack": 20,
+          "defense": 90,
+          "specialAttack": 55,
+          "specialDefense": 130,
+          "speed": 5,
+          "description": "Deinde vulnero defessus aetas vacuus comitatus cura appello considero circumvenio.",
+          "imageUrl": "https://picsum.photos/seed/S0wbV/69/1406",
+          "generation": 1
+        },
+        {
+          "id": 248,
+          "name": "Sophie",
+          "types": [
+            "Water"
+          ],
+          "height": 2.3575188884860867,
+          "weight": 111.67552860056061,
+          "hp": 189,
+          "attack": 11,
+          "defense": 58,
+          "specialAttack": 154,
+          "specialDefense": 98,
+          "speed": 28,
+          "description": "Ventosus vinitor suffoco artificiose brevis ademptio decerno timidus.",
+          "imageUrl": "https://loremflickr.com/1633/3191?lock=3969809175045370",
+          "generation": 9
+        },
+        {
+          "id": 255,
+          "name": "Aliza",
+          "types": [
+            "Ground",
+            "Water"
+          ],
+          "height": 7.4213655920797725,
+          "weight": 670.6505444045488,
+          "hp": 194,
+          "attack": 89,
+          "defense": 168,
+          "specialAttack": 19,
+          "specialDefense": 53,
+          "speed": 169,
+          "description": "Bonus cornu autem vindico comis.",
+          "imageUrl": "https://picsum.photos/seed/uxH1Mk/824/3567?blur=6",
+          "generation": 5
+        },
+        {
+          "id": 269,
+          "name": "Meaghan",
+          "types": [
+            "Water"
+          ],
+          "height": 13.578932202438796,
+          "weight": 402.54752440275945,
+          "hp": 28,
+          "attack": 59,
+          "defense": 126,
+          "specialAttack": 87,
+          "specialDefense": 140,
+          "speed": 54,
+          "description": "Sit aedificium ratione.",
+          "imageUrl": "https://picsum.photos/seed/QbWfUv/1007/3569",
+          "generation": 3
+        },
+        {
+          "id": 286,
+          "name": "Emelia",
+          "types": [
+            "Water",
+            "Fire"
+          ],
+          "height": 2.3151712759413283,
+          "weight": 436.1760468488255,
+          "hp": 248,
+          "attack": 112,
+          "defense": 159,
+          "specialAttack": 62,
+          "specialDefense": 88,
+          "speed": 105,
+          "description": "Vitium deprimo verbera tamdiu.",
+          "imageUrl": "https://picsum.photos/seed/E33eKuoKzU/1149/2287",
+          "generation": 3
+        },
+        {
+          "id": 288,
+          "name": "Elenor",
+          "types": [
+            "Flying",
+            "Water"
+          ],
+          "height": 13.528664830984988,
+          "weight": 431.7151536530815,
+          "hp": 228,
+          "attack": 122,
+          "defense": 109,
+          "specialAttack": 175,
+          "specialDefense": 20,
+          "speed": 82,
+          "description": "Voluptates demulceo non tertius validus atrocitas accedo tremo adulatio ciminatio.",
+          "imageUrl": "https://picsum.photos/seed/Ypd7XiTnNv/3149/1525",
+          "generation": 7
+        },
+        {
+          "id": 303,
+          "name": "Marie",
+          "types": [
+            "Steel",
+            "Water"
+          ],
+          "height": 16.980524375792175,
+          "weight": 527.2239170535643,
+          "hp": 245,
+          "attack": 147,
+          "defense": 166,
+          "specialAttack": 81,
+          "specialDefense": 104,
+          "speed": 97,
+          "description": "Crinis talio tui asperiores defetiscor.",
+          "imageUrl": "https://loremflickr.com/3285/2306?lock=1273569092694433",
+          "generation": 5
+        },
+        {
+          "id": 306,
+          "name": "Casey",
+          "types": [
+            "Water"
+          ],
+          "height": 3.1793197386089638,
+          "weight": 520.1256740426572,
+          "hp": 136,
+          "attack": 62,
+          "defense": 128,
+          "specialAttack": 109,
+          "specialDefense": 183,
+          "speed": 93,
+          "description": "Surgo uredo subvenio peior spectaculum dolores cum adeo abundans chirographum.",
+          "imageUrl": "https://picsum.photos/seed/6sSeiUek/3163/1066",
+          "generation": 3
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 60,
+        "totalPages": 3
+      }
+    },
+    "query": {
+      "search": "a",
+      "type": "Water"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 339,
+          "name": "Michaela",
+          "types": [
+            "Bug"
+          ],
+          "height": 17.416636418877104,
+          "weight": 543.6013541905296,
+          "hp": 136,
+          "attack": 171,
+          "defense": 208,
+          "specialAttack": 192,
+          "specialDefense": 169,
+          "speed": 195,
+          "description": "Beatus nisi admoveo alioqui conduco vacuus iste via tubineus cui.",
+          "imageUrl": "https://picsum.photos/seed/TMMQpKGeZt/3883/455?grayscale&blur=5",
+          "generation": 9
+        },
+        {
+          "id": 209,
+          "name": "Abigail",
+          "types": [
+            "Normal"
+          ],
+          "height": 19.96415001003626,
+          "weight": 545.6945223946672,
+          "hp": 188,
+          "attack": 168,
+          "defense": 221,
+          "specialAttack": 127,
+          "specialDefense": 212,
+          "speed": 130,
+          "description": "Claro corrupti truculenter.",
+          "imageUrl": "https://loremflickr.com/2685/2602?lock=2128258884077290",
+          "generation": 3
+        },
+        {
+          "id": 660,
+          "name": "Rahul",
+          "types": [
+            "Steel",
+            "Flying"
+          ],
+          "height": 1.7708977655260947,
+          "weight": 264.32774356466757,
+          "hp": 158,
+          "attack": 89,
+          "defense": 203,
+          "specialAttack": 181,
+          "specialDefense": 224,
+          "speed": 178,
+          "description": "Benigne cursus deludo caries antea.",
+          "imageUrl": "https://loremflickr.com/3309/2860?lock=4698804449129829",
+          "generation": 3
+        },
+        {
+          "id": 137,
+          "name": "Agnes",
+          "types": [
+            "Ground"
+          ],
+          "height": 2.3332652314991265,
+          "weight": 268.71176332095456,
+          "hp": 203,
+          "attack": 55,
+          "defense": 157,
+          "specialAttack": 191,
+          "specialDefense": 223,
+          "speed": 193,
+          "description": "Videlicet ducimus aut canto.",
+          "imageUrl": "https://picsum.photos/seed/WpHjHIm/520/3679",
+          "generation": 4
+        },
+        {
+          "id": 134,
+          "name": "Otha",
+          "types": [
+            "Fairy"
+          ],
+          "height": 12.658108882864967,
+          "weight": 253.86927195085906,
+          "hp": 196,
+          "attack": 146,
+          "defense": 146,
+          "specialAttack": 182,
+          "specialDefense": 193,
+          "speed": 140,
+          "description": "Vomica super color cruentus volup vaco dedico cado tibi.",
+          "imageUrl": "https://picsum.photos/seed/AvQAVcXc/3021/1016?blur=3",
+          "generation": 7
+        },
+        {
+          "id": 518,
+          "name": "Magdalen",
+          "types": [
+            "Fighting"
+          ],
+          "height": 4.25188868239877,
+          "weight": 447.01436074376244,
+          "hp": 220,
+          "attack": 17,
+          "defense": 218,
+          "specialAttack": 186,
+          "specialDefense": 184,
+          "speed": 175,
+          "description": "Peccatus arma quaerat.",
+          "imageUrl": "https://loremflickr.com/2217/637?lock=5353369971706552",
+          "generation": 2
+        },
+        {
+          "id": 807,
+          "name": "Rahul",
+          "types": [
+            "Fire"
+          ],
+          "height": 14.480976316835624,
+          "weight": 405.3871433281928,
+          "hp": 142,
+          "attack": 110,
+          "defense": 192,
+          "specialAttack": 181,
+          "specialDefense": 224,
+          "speed": 149,
+          "description": "Amplus articulus subiungo tendo tot sequi deficio valetudo.",
+          "imageUrl": "https://loremflickr.com/2534/3527?lock=4649850853273885",
+          "generation": 9
+        },
+        {
+          "id": 691,
+          "name": "Rudy",
+          "types": [
+            "Psychic",
+            "Fighting"
+          ],
+          "height": 9.862684509847245,
+          "weight": 495.24734718248794,
+          "hp": 236,
+          "attack": 151,
+          "defense": 174,
+          "specialAttack": 108,
+          "specialDefense": 217,
+          "speed": 108,
+          "description": "Viscus coniuratio condico talis abutor vorax vaco termes.",
+          "imageUrl": "https://loremflickr.com/1774/3073?lock=6017814065022728",
+          "generation": 2
+        },
+        {
+          "id": 285,
+          "name": "Lorine",
+          "types": [
+            "Normal"
+          ],
+          "height": 19.11017610168109,
+          "weight": 888.7882982284344,
+          "hp": 72,
+          "attack": 171,
+          "defense": 219,
+          "specialAttack": 177,
+          "specialDefense": 212,
+          "speed": 142,
+          "description": "Tutis animus aqua depereo suffragium acidus commemoro nobis aranea.",
+          "imageUrl": "https://loremflickr.com/2207/1654?lock=4351536669095559",
+          "generation": 2
+        },
+        {
+          "id": 236,
+          "name": "Jaylon",
+          "types": [
+            "Poison"
+          ],
+          "height": 0.9655921006365564,
+          "weight": 838.8204731471624,
+          "hp": 254,
+          "attack": 161,
+          "defense": 135,
+          "specialAttack": 140,
+          "specialDefense": 179,
+          "speed": 123,
+          "description": "Communis vis capitulus attonbitus claro accusamus deleo aperio demonstro censura.",
+          "imageUrl": "https://loremflickr.com/1987/1912?lock=5086818636755744",
+          "generation": 4
+        },
+        {
+          "id": 419,
+          "name": "Christiana",
+          "types": [
+            "Grass"
+          ],
+          "height": 1.1504994789602752,
+          "weight": 817.0759140393947,
+          "hp": 171,
+          "attack": 179,
+          "defense": 167,
+          "specialAttack": 175,
+          "specialDefense": 109,
+          "speed": 191,
+          "description": "Appello creator triduana repellat capto tergiversatio beneficium nostrum.",
+          "imageUrl": "https://picsum.photos/seed/ECOR30NVGN/3370/1120",
+          "generation": 3
+        },
+        {
+          "id": 360,
+          "name": "Kylie",
+          "types": [
+            "Ground"
+          ],
+          "height": 6.596080908634838,
+          "weight": 383.7028555693043,
+          "hp": 209,
+          "attack": 168,
+          "defense": 176,
+          "specialAttack": 130,
+          "specialDefense": 182,
+          "speed": 122,
+          "description": "Uterque sumo ager bestia comptus.",
+          "imageUrl": "https://picsum.photos/seed/LqKUoG/3429/3998",
+          "generation": 5
+        },
+        {
+          "id": 104,
+          "name": "Gwen",
+          "types": [
+            "Water"
+          ],
+          "height": 0.44899935535621144,
+          "weight": 514.6291154437802,
+          "hp": 226,
+          "attack": 175,
+          "defense": 210,
+          "specialAttack": 109,
+          "specialDefense": 191,
+          "speed": 72,
+          "description": "Audio caste arx denego cibus termes denego.",
+          "imageUrl": "https://loremflickr.com/2759/2550?lock=6868642484884461",
+          "generation": 4
+        },
+        {
+          "id": 321,
+          "name": "Mertie",
+          "types": [
+            "Rock"
+          ],
+          "height": 3.321418588140377,
+          "weight": 288.18216572196985,
+          "hp": 228,
+          "attack": 176,
+          "defense": 173,
+          "specialAttack": 179,
+          "specialDefense": 61,
+          "speed": 166,
+          "description": "Magnam damnatio est clam talis arto suffragium.",
+          "imageUrl": "https://picsum.photos/seed/jEuvx8g/1656/952",
+          "generation": 1
+        },
+        {
+          "id": 452,
+          "name": "Santos",
+          "types": [
+            "Fire"
+          ],
+          "height": 16.219783109478517,
+          "weight": 313.5102330892051,
+          "hp": 214,
+          "attack": 190,
+          "defense": 189,
+          "specialAttack": 132,
+          "specialDefense": 176,
+          "speed": 80,
+          "description": "Vomica animus demo placeat adulescens aspicio uredo subiungo addo apostolus.",
+          "imageUrl": "https://loremflickr.com/88/2845?lock=6903047660091125",
+          "generation": 1
+        },
+        {
+          "id": 484,
+          "name": "Sabryna",
+          "types": [
+            "Fighting"
+          ],
+          "height": 8.69040682467867,
+          "weight": 113.72724446505086,
+          "hp": 187,
+          "attack": 152,
+          "defense": 165,
+          "specialAttack": 71,
+          "specialDefense": 226,
+          "speed": 175,
+          "description": "Vivo ager quam tutis curto arma arcesso corporis amaritudo adsum.",
+          "imageUrl": "https://loremflickr.com/533/3117?lock=5889794838779546",
+          "generation": 6
+        },
+        {
+          "id": 791,
+          "name": "Nicholas",
+          "types": [
+            "Bug"
+          ],
+          "height": 16.59444386325504,
+          "weight": 289.84000385623114,
+          "hp": 169,
+          "attack": 166,
+          "defense": 188,
+          "specialAttack": 185,
+          "specialDefense": 96,
+          "speed": 171,
+          "description": "Averto thermae contigo.",
+          "imageUrl": "https://loremflickr.com/3401/2539?lock=3423410076343554",
+          "generation": 6
+        },
+        {
+          "id": 992,
+          "name": "Nora",
+          "types": [
+            "Ghost"
+          ],
+          "height": 16.205705151295483,
+          "weight": 233.28916533523065,
+          "hp": 255,
+          "attack": 65,
+          "defense": 213,
+          "specialAttack": 98,
+          "specialDefense": 225,
+          "speed": 112,
+          "description": "Spes triumphus victus contra conscendo demo in depereo.",
+          "imageUrl": "https://loremflickr.com/1235/871?lock=5288633895282523",
+          "generation": 2
+        },
+        {
+          "id": 947,
+          "name": "Coty",
+          "types": [
+            "Ice"
+          ],
+          "height": 5.3780360452741975,
+          "weight": 308.245968143761,
+          "hp": 250,
+          "attack": 180,
+          "defense": 180,
+          "specialAttack": 111,
+          "specialDefense": 109,
+          "speed": 131,
+          "description": "Arbustum audacia vinitor compono voluptatem tener.",
+          "imageUrl": "https://loremflickr.com/3487/3012?lock=6233626945111872",
+          "generation": 4
+        },
+        {
+          "id": 78,
+          "name": "Jasmin",
+          "types": [
+            "Dragon"
+          ],
+          "height": 7.316995852950494,
+          "weight": 329.9870954419775,
+          "hp": 156,
+          "attack": 185,
+          "defense": 154,
+          "specialAttack": 128,
+          "specialDefense": 205,
+          "speed": 132,
+          "description": "Terra eaque audax correptius torrens cogito temporibus tepesco demergo terebro.",
+          "imageUrl": "https://picsum.photos/seed/1MGiT2WdP/510/2309",
+          "generation": 7
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 1000,
+        "totalPages": 50
+      }
+    },
+    "query": {
+      "sort": "total"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 131,
+          "name": "Jannie",
+          "types": [
+            "Dark",
+            "Bug"
+          ],
+          "height": 18.815302076414202,
+          "weight": 265.7205294654724,
+          "hp": 164,
+          "attack": 163,
+          "defense": 193,
+          "specialAttack": 180,
+          "specialDefense": 227,
+          "speed": 33,
+          "description": "Derideo creber dolorem amaritudo sordeo coaegresco surculus cena deludo vesco.",
+          "imageUrl": "https://picsum.photos/seed/YRaam/3614/3662",
+          "generation": 8
+        },
+        {
+          "id": 196,
+          "name": "Sebastian",
+          "types": [
+            "Dark"
+          ],
+          "height": 8.328648612032632,
+          "weight": 196.99572265404976,
+          "hp": 118,
+          "attack": 97,
+          "defense": 215,
+          "specialAttack": 181,
+          "specialDefense": 201,
+          "speed": 148,
+          "description": "Volaticus territo patruus unus.",
+          "imageUrl": "https://loremflickr.com/2697/992?lock=418753192794529",
+          "generation": 7
+        },
+        {
+          "id": 107,
+          "name": "Glennie",
+          "types": [
+            "Ground"
+          ],
+          "height": 6.057035900037933,
+          "weight": 12.391534102676069,
+          "hp": 213,
+          "attack": 189,
+          "defense": 144,
+          "specialAttack": 74,
+          "specialDefense": 195,
+          "speed": 142,
+          "description": "Aeneus curto rem porro tego asporto surgo crapula curtus.",
+          "imageUrl": "https://loremflickr.com/2355/2004?lock=2972772738285139",
+          "generation": 1
+        },
+        {
+          "id": 407,
+          "name": "Cecil",
+          "types": [
+            "Electric",
+            "Psychic"
+          ],
+          "height": 10.035218018357828,
+          "weight": 361.2037308282235,
+          "hp": 103,
+          "attack": 167,
+          "defense": 194,
+          "specialAttack": 123,
+          "specialDefense": 189,
+          "speed": 180,
+          "description": "Officiis eligendi soluta causa adimpleo altus adfectus collum adipisci.",
+          "imageUrl": "https://picsum.photos/seed/RbmxOcgNx/2525/2659?grayscale&blur=8",
+          "generation": 5
+        },
+        {
+          "id": 466,
+          "name": "Maida",
+          "types": [
+            "Fairy"
+          ],
+          "height": 9.48047390534699,
+          "weight": 702.8438771633861,
+          "hp": 253,
+          "attack": 182,
+          "defense": 155,
+          "specialAttack": 158,
+          "specialDefense": 114,
+          "speed": 91,
+          "description": "Sapiente spero aufero.",
+          "imageUrl": "https://picsum.photos/seed/Exs1mNF/1388/2674",
+          "generation": 4
+        },
+        {
+          "id": 636,
+          "name": "Quinn",
+          "types": [
+            "Dragon"
+          ],
+          "height": 2.470089127016132,
+          "weight": 516.4630999022389,
+          "hp": 213,
+          "attack": 180,
+          "defense": 180,
+          "specialAttack": 141,
+          "specialDefense": 121,
+          "speed": 116,
+          "description": "Tandem caelum patrocinor desipio cibus tunc.",
+          "imageUrl": "https://picsum.photos/seed/i57kSWmk/3992/557?blur=8",
+          "isLegendary": true,
+          "generation": 4
+        },
+        {
+          "id": 328,
+          "name": "Ila",
+          "types": [
+            "Normal"
+          ],
+          "height": 12.542208496189977,
+          "weight": 874.7761523202188,
+          "hp": 147,
+          "attack": 150,
+          "defense": 193,
+          "specialAttack": 178,
+          "specialDefense": 219,
+          "speed": 63,
+          "description": "Una terreo accommodo reprehenderit aut speciosus.",
+          "imageUrl": "https://loremflickr.com/2409/3253?lock=1045492869302600",
+          "generation": 8
+        },
+        {
+          "id": 98,
+          "name": "Ralph",
+          "types": [
+            "Bug"
+          ],
+          "height": 1.1562338082411203,
+          "weight": 846.2117729041823,
+          "hp": 231,
+          "attack": 184,
+          "defense": 225,
+          "specialAttack": 78,
+          "specialDefense": 130,
+          "speed": 101,
+          "description": "Nulla adsum dignissimos.",
+          "imageUrl": "https://loremflickr.com/3795/1586?lock=10726961340529",
+          "generation": 5
+        },
+        {
+          "id": 462,
+          "name": "Megane",
+          "types": [
+            "Steel",
+            "Ground"
+          ],
+          "height": 14.312792897054168,
+          "weight": 823.6962679610536,
+          "hp": 253,
+          "attack": 127,
+          "defense": 163,
+          "specialAttack": 178,
+          "specialDefense": 200,
+          "speed": 27,
+          "description": "Cupiditate magnam tenus cibus demonstro ancilla tenus venio cernuus.",
+          "imageUrl": "https://loremflickr.com/3487/905?lock=2637117582789227",
+          "generation": 5
+        },
+        {
+          "id": 590,
+          "name": "Lula",
+          "types": [
+            "Fighting"
+          ],
+          "height": 3.0342922627014604,
+          "weight": 745.5721321267674,
+          "hp": 47,
+          "attack": 161,
+          "defense": 225,
+          "specialAttack": 137,
+          "specialDefense": 227,
+          "speed": 146,
+          "description": "Tracto vero denuncio celebrer sumptus tumultus callide vicinus tribuo.",
+          "imageUrl": "https://loremflickr.com/517/3733?lock=1033440520354518",
+          "generation": 4
+        },
+        {
+          "id": 242,
+          "name": "Loy",
+          "types": [
+            "Dark",
+            "Bug"
+          ],
+          "height": 12.320805804461243,
+          "weight": 111.64777998258643,
+          "hp": 205,
+          "attack": 138,
+          "defense": 170,
+          "specialAttack": 142,
+          "specialDefense": 229,
+          "speed": 58,
+          "description": "Nostrum defetiscor ustilo texo accusamus abutor.",
+          "imageUrl": "https://loremflickr.com/3691/2938?lock=9003201309609196",
+          "generation": 7
+        },
+        {
+          "id": 536,
+          "name": "Minerva",
+          "types": [
+            "Normal",
+            "Ghost"
+          ],
+          "height": 19.097739673515346,
+          "weight": 371.76300348864555,
+          "hp": 112,
+          "attack": 156,
+          "defense": 219,
+          "specialAttack": 109,
+          "specialDefense": 159,
+          "speed": 187,
+          "description": "Altus tracto cimentarius argentum iusto caritas tutamen ratione complectus.",
+          "imageUrl": "https://picsum.photos/seed/3KO0qoW/3294/2884?grayscale&blur=4",
+          "isLegendary": true,
+          "generation": 3
+        },
+        {
+          "id": 830,
+          "name": "D'angelo",
+          "types": [
+            "Water",
+            "Dragon"
+          ],
+          "height": 18.571076803920516,
+          "weight": 192.45836771480967,
+          "hp": 233,
+          "attack": 72,
+          "defense": 177,
+          "specialAttack": 114,
+          "specialDefense": 210,
+          "speed": 134,
+          "description": "Addo advoco ratione arx tergeo adflicto.",
+          "imageUrl": "https://picsum.photos/seed/z58yLa/1068/2048",
+          "generation": 9
+        },
+        {
+          "id": 823,
+          "name": "Max",
+          "types": [
+            "Poison",
+            "Grass"
+          ],
+          "height": 4.207597114979304,
+          "weight": 809.3953704445433,
+          "hp": 111,
+          "attack": 190,
+          "defense": 122,
+          "specialAttack": 183,
+          "specialDefense": 220,
+          "speed": 113,
+          "description": "Tot minima victus.",
+          "imageUrl": "https://loremflickr.com/1043/3218?lock=4592986318138960",
+          "generation": 2
+        },
+        {
+          "id": 785,
+          "name": "Efren",
+          "types": [
+            "Water"
+          ],
+          "height": 3.8025053078709115,
+          "weight": 202.18724638143368,
+          "hp": 233,
+          "attack": 100,
+          "defense": 150,
+          "specialAttack": 189,
+          "specialDefense": 149,
+          "speed": 116,
+          "description": "Dolor cotidie umbra cumque.",
+          "imageUrl": "https://loremflickr.com/1313/2066?lock=1310035332124556",
+          "generation": 8
+        },
+        {
+          "id": 121,
+          "name": "Britney",
+          "types": [
+            "Dark"
+          ],
+          "height": 14.299515554447877,
+          "weight": 58.822621477924095,
+          "hp": 222,
+          "attack": 71,
+          "defense": 161,
+          "specialAttack": 168,
+          "specialDefense": 221,
+          "speed": 92,
+          "description": "Arceo conduco advoco certus coadunatio statua ullus tepesco videlicet.",
+          "imageUrl": "https://loremflickr.com/3637/1230?lock=5748195423125936",
+          "generation": 2
+        },
+        {
+          "id": 863,
+          "name": "Javonte",
+          "types": [
+            "Normal"
+          ],
+          "height": 12.332837545479359,
+          "weight": 983.6367727724801,
+          "hp": 234,
+          "attack": 131,
+          "defense": 128,
+          "specialAttack": 158,
+          "specialDefense": 111,
+          "speed": 173,
+          "description": "Tredecim sed vestrum annus.",
+          "imageUrl": "https://picsum.photos/seed/FSmKrY/741/2329?blur=10",
+          "generation": 8
+        },
+        {
+          "id": 2,
+          "name": "Britney",
+          "types": [
+            "Fighting"
+          ],
+          "height": 12.682239423545507,
+          "weight": 969.2196606406716,
+          "hp": 181,
+          "attack": 7,
+          "defense": 216,
+          "specialAttack": 175,
+          "specialDefense": 173,
+          "speed": 178,
+          "description": "Harum torqueo cicuta saepe speciosus vis tergo torrens combibo.",
+          "imageUrl": "https://loremflickr.com/77/2039?lock=5064093778437473",
+          "generation": 7
+        },
+        {
+          "id": 387,
+          "name": "Mohammed",
+          "types": [
+            "Electric"
+          ],
+          "height": 0.560758756123421,
+          "weight": 797.7210061388438,
+          "hp": 186,
+          "attack": 178,
+          "defense": 219,
+          "specialAttack": 189,
+          "specialDefense": 48,
+          "speed": 110,
+          "description": "Surculus attero tepidus armarium fuga aranea curtus cibus.",
+          "imageUrl": "https://picsum.photos/seed/f9Uwo5/1243/199?grayscale&blur=1",
+          "generation": 1
+        },
+        {
+          "id": 696,
+          "name": "Virgie",
+          "types": [
+            "Dragon"
+          ],
+          "height": 12.305781024027691,
+          "weight": 930.6249518853054,
+          "hp": 229,
+          "attack": 74,
+          "defense": 216,
+          "specialAttack": 71,
+          "specialDefense": 197,
+          "speed": 142,
+          "description": "Degero utor tubineus undique debeo fugiat centum suppono curvo earum.",
+          "imageUrl": "https://loremflickr.com/2873/441?lock=6019073330818066",
+          "generation": 9
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": true,
+        "limit": 20,
+        "page": 2,
+        "total": 1000,
+        "totalPages": 50
+      }
+    },
+    "query": {
+      "page": "2",
+      "sort": "total"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 635,
+          "name": "Linnea",
+          "types": [
+            "Poison",
+            "Steel"
+          ],
+          "height": 8.335371569905103,
+          "weight": 871.9794180624502,
+          "hp": 233,
+          "attack": 180,
+          "defense": 218,
+          "specialAttack": 29,
+          "specialDefense": 137,
+          "speed": 129,
+          "description": "Vorax utor talus cernuus basium laboriosam culpa volup sopor.",
+          "imageUrl": "https://picsum.photos/seed/PL5YJNcx7E/1115/636?grayscale&blur=1",
+          "generation": 3
+        },
+        {
+          "id": 213,
+          "name": "Lupe",
+          "types": [
+            "Water"
+          ],
+          "height": 16.57576727267025,
+          "weight": 808.7837001896345,
+          "hp": 139,
+          "attack": 152,
+          "defense": 187,
+          "specialAttack": 172,
+          "specialDefense": 76,
+          "speed": 199,
+          "description": "Nam abbas alveus.",
+          "imageUrl": "https://picsum.photos/seed/E9eKb/2008/2207",
+          "generation": 1
+        },
+        {
+          "id": 369,
+          "name": "Aileen",
+          "types": [
+            "Dark"
+          ],
+          "height": 0.9915479561189227,
+          "weight": 12.254711214169939,
+          "hp": 187,
+          "attack": 189,
+          "defense": 58,
+          "specialAttack": 163,
+          "specialDefense": 132,
+          "speed": 196,
+          "description": "Territo suffoco adulatio crur titulus correptius ustilo demergo crinis.",
+          "imageUrl": "https://picsum.photos/seed/vsFUl/1434/3737?grayscale",
+          "generation": 3
+        },
+        {
+          "id": 351,
+          "name": "Patience",
+          "types": [
+            "Water",
+            "Steel"
+          ],
+          "height": 4.847542706717955,
+          "weight": 175.42458557803457,
+          "hp": 200,
+          "attack": 154,
+          "defense": 168,
+          "specialAttack": 85,
+          "specialDefense": 224,
+          "speed": 92,
+          "description": "Thema conservo arx dignissimos colligo vitiosus.",
+          "imageUrl": "https://picsum.photos/seed/gVYoFW1TdM/2512/3492?grayscale&blur=4",
+          "generation": 1
+        },
+        {
+          "id": 280,
+          "name": "Devyn",
+          "types": [
+            "Ground"
+          ],
+          "height": 9.567779499805248,
+          "weight": 408.23549947452045,
+          "hp": 232,
+          "attack": 131,
+          "defense": 196,
+          "specialAttack": 120,
+          "specialDefense": 63,
+          "speed": 178,
+          "description": "Videlicet asper victus.",
+          "imageUrl": "https://picsum.photos/seed/uq2NuZ5mD7/527/910",
+          "generation": 4
+        },
+        {
+          "id": 39,
+          "name": "Kennith",
+          "types": [
+            "Ground",
+            "Bug"
+          ],
+          "height": 8.981769248216844,
+          "weight": 921.070780016064,
+          "hp": 226,
+          "attack": 98,
+          "defense": 79,
+          "specialAttack": 135,
+          "specialDefense": 194,
+          "speed": 186,
+          "description": "Iusto taceo tero.",
+          "imageUrl": "https://loremflickr.com/3571/1681?lock=2647036839663552",
+          "generation": 7
+        },
+        {
+          "id": 182,
+          "name": "Ashly",
+          "types": [
+            "Ground"
+          ],
+          "height": 7.1288686459463975,
+          "weight": 471.5589240475123,
+          "hp": 247,
+          "attack": 168,
+          "defense": 121,
+          "specialAttack": 57,
+          "specialDefense": 212,
+          "speed": 113,
+          "description": "Consequatur tergum suscipio demergo.",
+          "imageUrl": "https://loremflickr.com/939/1249?lock=7405461539255816",
+          "generation": 6
+        },
+        {
+          "id": 763,
+          "name": "Bethany",
+          "types": [
+            "Ghost",
+            "Ice"
+          ],
+          "height": 17.91768496074065,
+          "weight": 965.7587921065517,
+          "hp": 112,
+          "attack": 99,
+          "defense": 202,
+          "specialAttack": 160,
+          "specialDefense": 172,
+          "speed": 171,
+          "description": "Attollo coaegresco minima.",
+          "imageUrl": "https://picsum.photos/seed/4X5gGhEr/2999/1682?blur=1",
+          "generation": 4
+        },
+        {
+          "id": 962,
+          "name": "Eliseo",
+          "types": [
+            "Ghost",
+            "Psychic"
+          ],
+          "height": 18.232416120111026,
+          "weight": 967.0987484648921,
+          "hp": 170,
+          "attack": 148,
+          "defense": 88,
+          "specialAttack": 157,
+          "specialDefense": 168,
+          "speed": 183,
+          "description": "Deputo tempus tricesimus ducimus velit.",
+          "imageUrl": "https://loremflickr.com/1027/3254?lock=2215799065168956",
+          "generation": 1
+        },
+        {
+          "id": 52,
+          "name": "Cheyenne",
+          "types": [
+            "Psychic"
+          ],
+          "height": 19.565672158888162,
+          "weight": 36.61846915454576,
+          "hp": 173,
+          "attack": 177,
+          "defense": 136,
+          "specialAttack": 69,
+          "specialDefense": 199,
+          "speed": 159,
+          "description": "Aetas absconditus thesaurus virtus voluptatum accendo cohors.",
+          "imageUrl": "https://picsum.photos/seed/Asxy3cOY/3990/1363",
+          "generation": 8
+        },
+        {
+          "id": 882,
+          "name": "Alejandra",
+          "types": [
+            "Steel"
+          ],
+          "height": 12.942477510570903,
+          "weight": 155.7938827029728,
+          "hp": 225,
+          "attack": 92,
+          "defense": 166,
+          "specialAttack": 178,
+          "specialDefense": 89,
+          "speed": 163,
+          "description": "Fugit demum vulticulus sordeo sublime absorbeo conitor verbum spiritus.",
+          "imageUrl": "https://picsum.photos/seed/A7JkTgc9f/2381/2291?blur=5",
+          "generation": 3
+        },
+        {
+          "id": 373,
+          "name": "Damaris",
+          "types": [
+            "Steel"
+          ],
+          "height": 0.5475041628329296,
+          "weight": 75.64089620845031,
+          "hp": 238,
+          "attack": 128,
+          "defense": 227,
+          "specialAttack": 106,
+          "specialDefense": 122,
+          "speed": 91,
+          "description": "Adflicto pariatur totidem.",
+          "imageUrl": "https://picsum.photos/seed/EcZaHA/3963/467?grayscale&blur=2",
+          "generation": 4
+        },
+        {
+          "id": 971,
+          "name": "Gwendolyn",
+          "types": [
+            "Fairy"
+          ],
+          "height": 16.302685405127523,
+          "weight": 841.344903750232,
+          "hp": 184,
+          "attack": 182,
+          "defense": 170,
+          "specialAttack": 150,
+          "specialDefense": 101,
+          "speed": 124,
+          "description": "Sed succedo abeo adnuo cribro excepturi sequi molestias pax.",
+          "imageUrl": "https://loremflickr.com/574/1792?lock=6419271421797120",
+          "generation": 7
+        },
+        {
+          "id": 557,
+          "name": "Ellis",
+          "types": [
+            "Fairy",
+            "Ghost"
+          ],
+          "height": 11.214195097307536,
+          "weight": 688.0253012879358,
+          "hp": 93,
+          "attack": 98,
+          "defense": 219,
+          "specialAttack": 155,
+          "specialDefense": 187,
+          "speed": 158,
+          "description": "Inflammatio patior tergiversatio super territo accusamus cetera textor abundans terror.",
+          "imageUrl": "https://loremflickr.com/1743/127?lock=4607958595930468",
+          "generation": 3
+        },
+        {
+          "id": 844,
+          "name": "Glennie",
+          "types": [
+            "Dragon"
+          ],
+          "height": 19.32551311303774,
+          "weight": 250.30797789216717,
+          "hp": 120,
+          "attack": 153,
+          "defense": 227,
+          "specialAttack": 140,
+          "specialDefense": 105,
+          "speed": 165,
+          "description": "Quo teres tristis conculco censura accusantium coepi commodi timor desolo.",
+          "imageUrl": "https://loremflickr.com/1089/1470?lock=2980942194328524",
+          "generation": 4
+        },
+        {
+          "id": 45,
+          "name": "Gino",
+          "types": [
+            "Dragon",
+            "Fairy"
+          ],
+          "height": 19.724741542694684,
+          "weight": 730.6325233462554,
+          "hp": 195,
+          "attack": 141,
+          "defense": 211,
+          "specialAttack": 162,
+          "specialDefense": 62,
+          "speed": 136,
+          "description": "Cunabula argumentum vaco claro tamisium abbas.",
+          "imageUrl": "https://picsum.photos/seed/WfYU6I/1447/3461",
+          "generation": 9
+        },
+        {
+          "id": 433,
+          "name": "Abel",
+          "types": [
+            "Electric"
+          ],
+          "height": 15.287468010731615,
+          "weight": 487.22634729474174,
+          "hp": 176,
+          "attack": 88,
+          "defense": 83,
+          "specialAttack": 179,
+          "specialDefense": 185,
+          "speed": 194,
+          "description": "Concedo deripio beneficium similique ea verbera ullam.",
+          "imageUrl": "https://loremflickr.com/3564/1930?lock=4050033840803112",
+          "generation": 6
+        },
+        {
+          "id": 35,
+          "name": "Sofia",
+          "types": [
+            "Bug"
+          ],
+          "height": 13.720704170349366,
+          "weight": 361.547830004443,
+          "hp": 103,
+          "attack": 74,
+          "defense": 225,
+          "specialAttack": 186,
+          "specialDefense": 152,
+          "speed": 164,
+          "description": "Collum depereo subseco corrupti.",
+          "imageUrl": "https://loremflickr.com/1582/3972?lock=8896985382734461",
+          "generation": 8
+        },
+        {
+          "id": 301,
+          "name": "Judge",
+          "types": [
+            "Dragon"
+          ],
+          "height": 11.321090580353564,
+          "weight": 296.4654901537839,
+          "hp": 67,
+          "attack": 154,
+          "defense": 192,
+          "specialAttack": 189,
+          "specialDefense": 181,
+          "speed": 121,
+          "description": "Casso derideo desino vitium.",
+          "imageUrl": "https://loremflickr.com/3741/3242?lock=620704102835114",
+          "generation": 7
+        },
+        {
+          "id": 860,
+          "name": "Conor",
+          "types": [
+            "Poison",
+            "Dragon"
+          ],
+          "height": 16.69695413879504,
+          "weight": 680.9482639934813,
+          "hp": 173,
+          "attack": 88,
+          "defense": 108,
+          "specialAttack": 169,
+          "specialDefense": 208,
+          "speed": 158,
+          "description": "Sursum tibi adflicto nulla aeneus tametsi conatus.",
+          "imageUrl": "https://picsum.photos/seed/bVlDXuzgjE/699/3499",
+          "generation": 1
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": true,
+        "limit": 20,
+        "page": 3,
+        "total": 1000,
+        "totalPages": 50
+      }
+    },
+    "query": {
+      "page": "3",
+      "sort": "total"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "data": [
+        {
+          "id": 560,
+          "name": "Bennie",
+          "types": [
+            "Dragon",
+            "Ghost"
+          ],
+          "height": 16.826527639950882,
+          "weight": 147.70977617151874,
+          "hp": 182,
+          "attack": 155,
+          "defense": 165,
+          "specialAttack": 34,
+          "specialDefense": 45,
+          "speed": 197,
+          "description": "Repellendus attonbitus aptus absorbeo sponte depereo.",
+          "imageUrl": "https://loremflickr.com/2181/901?lock=3659720160047377",
+          "generation": 4
+        },
+        {
+          "id": 415,
+          "name": "Bettye",
+          "types": [
+            "Dragon"
+          ],
+          "height": 19.859808953023755,
+          "weight": 96.04097874038783,
+          "hp": 221,
+          "attack": 84,
+          "defense": 81,
+          "specialAttack": 11,
+          "specialDefense": 182,
+          "speed": 193,
+          "description": "Curtus vito temptatio ventosus talio cubitum debeo quasi.",
+          "imageUrl": "https://picsum.photos/seed/qjgt0dKnG/1991/267?grayscale&blur=4",
+          "generation": 1
+        },
+        {
+          "id": 350,
+          "name": "Raheem",
+          "types": [
+            "Water",
+            "Dragon"
+          ],
+          "height": 13.761613380257439,
+          "weight": 505.548861694407,
+          "hp": 176,
+          "attack": 128,
+          "defense": 132,
+          "specialAttack": 70,
+          "specialDefense": 118,
+          "speed": 186,
+          "description": "Animadverto caelum cohors at corporis tendo.",
+          "imageUrl": "https://loremflickr.com/55/3545?lock=1206466927395438",
+          "generation": 1
+        },
+        {
+          "id": 268,
+          "name": "Nicolas",
+          "types": [
+            "Dragon",
+            "Rock"
+          ],
+          "height": 11.682896807534823,
+          "weight": 695.3923292540866,
+          "hp": 35,
+          "attack": 185,
+          "defense": 228,
+          "specialAttack": 86,
+          "specialDefense": 111,
+          "speed": 185,
+          "description": "Labore alioqui consequuntur illum ago triduana.",
+          "imageUrl": "https://picsum.photos/seed/wmAfTC/578/1190?blur=5",
+          "generation": 7
+        },
+        {
+          "id": 277,
+          "name": "Vidal",
+          "types": [
+            "Dragon"
+          ],
+          "height": 19.080868943237597,
+          "weight": 210.97279727525145,
+          "hp": 197,
+          "attack": 137,
+          "defense": 82,
+          "specialAttack": 50,
+          "specialDefense": 88,
+          "speed": 184,
+          "description": "Certe approbo decerno verto defetiscor desolo vomica theologus calculus.",
+          "imageUrl": "https://picsum.photos/seed/GEaTz/1208/951",
+          "generation": 2
+        },
+        {
+          "id": 468,
+          "name": "Melyna",
+          "types": [
+            "Dragon"
+          ],
+          "height": 13.390299959364038,
+          "weight": 717.4331611043032,
+          "hp": 173,
+          "attack": 82,
+          "defense": 158,
+          "specialAttack": 49,
+          "specialDefense": 145,
+          "speed": 184,
+          "description": "Terebro sublime attero toties volaticus cena cerno colligo aduro.",
+          "imageUrl": "https://picsum.photos/seed/ncXqUds/795/748?grayscale&blur=4",
+          "generation": 8
+        },
+        {
+          "id": 157,
+          "name": "Murphy",
+          "types": [
+            "Dragon"
+          ],
+          "height": 19.725344820829665,
+          "weight": 738.3823348941271,
+          "hp": 61,
+          "attack": 74,
+          "defense": 74,
+          "specialAttack": 89,
+          "specialDefense": 167,
+          "speed": 182,
+          "description": "Dolor vergo vulariter pecto videlicet admoneo demonstro ventus.",
+          "imageUrl": "https://picsum.photos/seed/yC1owjp33F/1197/474",
+          "generation": 1
+        },
+        {
+          "id": 631,
+          "name": "Laurel",
+          "types": [
+            "Ghost",
+            "Dragon"
+          ],
+          "height": 18.180291283301894,
+          "weight": 467.1730654297627,
+          "hp": 26,
+          "attack": 139,
+          "defense": 33,
+          "specialAttack": 19,
+          "specialDefense": 209,
+          "speed": 182,
+          "description": "Auctus debitis excepturi coruscus eaque.",
+          "imageUrl": "https://picsum.photos/seed/HwV5RCF3Xo/2978/3718?grayscale&blur=7",
+          "generation": 9
+        },
+        {
+          "id": 801,
+          "name": "Dannie",
+          "types": [
+            "Dragon"
+          ],
+          "height": 4.681280055395019,
+          "weight": 260.1326447632271,
+          "hp": 82,
+          "attack": 145,
+          "defense": 113,
+          "specialAttack": 43,
+          "specialDefense": 80,
+          "speed": 181,
+          "description": "Cruentus cursus tergeo iure congregatio deporto argumentum curto.",
+          "imageUrl": "https://loremflickr.com/2366/3312?lock=8834812074712173",
+          "generation": 9
+        },
+        {
+          "id": 893,
+          "name": "Kaia",
+          "types": [
+            "Dragon",
+            "Ghost"
+          ],
+          "height": 4.788773658786791,
+          "weight": 464.4976004205182,
+          "hp": 25,
+          "attack": 137,
+          "defense": 139,
+          "specialAttack": 143,
+          "specialDefense": 207,
+          "speed": 180,
+          "description": "Thalassinus carbo adaugeo cedo bellicus sui abscido.",
+          "imageUrl": "https://picsum.photos/seed/3atcSKm2P/3265/1655",
+          "isLegendary": true,
+          "generation": 2
+        },
+        {
+          "id": 520,
+          "name": "Norval",
+          "types": [
+            "Dragon"
+          ],
+          "height": 12.07088160242187,
+          "weight": 831.1450002761483,
+          "hp": 148,
+          "attack": 93,
+          "defense": 45,
+          "specialAttack": 40,
+          "specialDefense": 173,
+          "speed": 178,
+          "description": "Sufficio stella balbus decerno.",
+          "imageUrl": "https://picsum.photos/seed/NtBCXYAm0/2148/2177?blur=5",
+          "generation": 6
+        },
+        {
+          "id": 422,
+          "name": "Dixie",
+          "types": [
+            "Dragon"
+          ],
+          "height": 0.48982062041135077,
+          "weight": 995.397315997141,
+          "hp": 120,
+          "attack": 112,
+          "defense": 13,
+          "specialAttack": 183,
+          "specialDefense": 40,
+          "speed": 173,
+          "description": "Patria ascisco urbanus in.",
+          "imageUrl": "https://picsum.photos/seed/qmUI65/3960/739",
+          "generation": 5
+        },
+        {
+          "id": 664,
+          "name": "Xander",
+          "types": [
+            "Dragon",
+            "Dark"
+          ],
+          "height": 13.136181018179233,
+          "weight": 231.71446679349495,
+          "hp": 201,
+          "attack": 88,
+          "defense": 84,
+          "specialAttack": 121,
+          "specialDefense": 199,
+          "speed": 173,
+          "description": "Adfero deserunt catena virtus commemoro.",
+          "imageUrl": "https://picsum.photos/seed/MAEy877KSQ/1129/1379?blur=6",
+          "generation": 3
+        },
+        {
+          "id": 428,
+          "name": "Dahlia",
+          "types": [
+            "Steel",
+            "Dragon"
+          ],
+          "height": 10.906646481107762,
+          "weight": 698.1728018156135,
+          "hp": 87,
+          "attack": 173,
+          "defense": 226,
+          "specialAttack": 69,
+          "specialDefense": 148,
+          "speed": 172,
+          "description": "Color soleo tego coadunatio deprimo nostrum accendo.",
+          "imageUrl": "https://loremflickr.com/1465/665?lock=7421043304187911",
+          "generation": 1
+        },
+        {
+          "id": 95,
+          "name": "Webster",
+          "types": [
+            "Dragon",
+            "Ground"
+          ],
+          "height": 4.3406324793563655,
+          "weight": 339.6740748183559,
+          "hp": 73,
+          "attack": 156,
+          "defense": 121,
+          "specialAttack": 71,
+          "specialDefense": 191,
+          "speed": 170,
+          "description": "Surgo tunc victoria succedo supplanto dedico talus.",
+          "imageUrl": "https://loremflickr.com/620/1827?lock=5169426343211385",
+          "generation": 7
+        },
+        {
+          "id": 178,
+          "name": "Kayla",
+          "types": [
+            "Fire",
+            "Dragon"
+          ],
+          "height": 5.965601702790793,
+          "weight": 846.3987586262568,
+          "hp": 44,
+          "attack": 49,
+          "defense": 46,
+          "specialAttack": 15,
+          "specialDefense": 17,
+          "speed": 170,
+          "description": "Astrum assumenda derideo quod denique.",
+          "imageUrl": "https://picsum.photos/seed/KOOU8/840/1076?blur=7",
+          "generation": 8
+        },
+        {
+          "id": 155,
+          "name": "Rosanna",
+          "types": [
+            "Dragon",
+            "Rock"
+          ],
+          "height": 14.407182499821827,
+          "weight": 729.7319440852616,
+          "hp": 96,
+          "attack": 31,
+          "defense": 105,
+          "specialAttack": 160,
+          "specialDefense": 55,
+          "speed": 169,
+          "description": "Comptus vero solvo cur ait delibero.",
+          "imageUrl": "https://picsum.photos/seed/jbhwfak/2808/2010",
+          "generation": 4
+        },
+        {
+          "id": 844,
+          "name": "Glennie",
+          "types": [
+            "Dragon"
+          ],
+          "height": 19.32551311303774,
+          "weight": 250.30797789216717,
+          "hp": 120,
+          "attack": 153,
+          "defense": 227,
+          "specialAttack": 140,
+          "specialDefense": 105,
+          "speed": 165,
+          "description": "Quo teres tristis conculco censura accusantium coepi commodi timor desolo.",
+          "imageUrl": "https://loremflickr.com/1089/1470?lock=2980942194328524",
+          "generation": 4
+        },
+        {
+          "id": 761,
+          "name": "Adele",
+          "types": [
+            "Dragon"
+          ],
+          "height": 6.130490401913676,
+          "weight": 847.5193386617831,
+          "hp": 77,
+          "attack": 190,
+          "defense": 179,
+          "specialAttack": 98,
+          "specialDefense": 123,
+          "speed": 164,
+          "description": "Ultra stabilis capto.",
+          "imageUrl": "https://loremflickr.com/3726/3151?lock=3067784798037836",
+          "generation": 1
+        },
+        {
+          "id": 764,
+          "name": "Margie",
+          "types": [
+            "Dragon"
+          ],
+          "height": 3.9914341954715127,
+          "weight": 720.8072052787954,
+          "hp": 194,
+          "attack": 93,
+          "defense": 69,
+          "specialAttack": 149,
+          "specialDefense": 82,
+          "speed": 164,
+          "description": "Cras tamdiu maiores advoco somniculosus aegre.",
+          "imageUrl": "https://loremflickr.com/3937/2184?lock=3612379337798410",
+          "generation": 4
+        }
+      ],
+      "pagination": {
+        "hasNext": true,
+        "hasPrev": false,
+        "limit": 20,
+        "page": 1,
+        "total": 81,
+        "totalPages": 5
+      }
+    },
+    "query": {
+      "sort": "speed",
+      "type": "Dragon"
+    },
+    "status": 200
+  },
+  {
+    "body": {
+      "error": "limit must be an integer from 1 to 100"
+    },
+    "query": {
+      "limit": "0"
+    },
+    "status": 400
+  },
+  {
+    "body": {
+      "error": "limit must be an integer from 1 to 100"
+    },
+    "query": {
+      "limit": "101"
+    },
+    "status": 400
+  },
+  {
+    "body": {
+      "error": "page must be a positive integer"
+    },
+    "query": {
+      "page": "abc"
+    },
+    "status": 400
+  },
+  {
+    "body": {
+      "error": "sort must be one of id, total, speed"
+    },
+    "query": {
+      "sort": "name"
+    },
+    "status": 400
+  },
+  {
+    "body": {
+      "error": "type must be a known type"
+    },
+    "query": {
+      "type": "Plasma"
+    },
+    "status": 400
+  },
+  {
+    "body": {
+      "error": "search must be at most 100 characters"
+    },
+    "query": {
+      "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "status": 400
+  }
+]
