@@ -1,0 +1,5479 @@
+[
+  {
+    "kind": "wild",
+    "name": "move turn, both hit",
+    "setup": {
+      "enemy": {
+        "id": 2,
+        "level": 20
+      },
+      "party": [
+        {
+          "id": 1,
+          "level": 20
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0.3,
+          0.9,
+          0.4,
+          0.3,
+          0.9,
+          0.4,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Palm Strike",
+                "power": 50,
+                "type": "Fighting"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 2,
+              "crit": false,
+              "effectiveness": 0.5,
+              "hp": 39,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Gust Slice",
+                "power": 50,
+                "type": "Flying"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "amount": 35,
+              "crit": false,
+              "effectiveness": 2,
+              "hp": 67,
+              "target": "enemy",
+              "type": "damage"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 2,
+                "name": "Britney",
+                "types": [
+                  "Fighting"
+                ],
+                "height": 12.682239423545507,
+                "weight": 969.2196606406716,
+                "hp": 181,
+                "attack": 7,
+                "defense": 216,
+                "specialAttack": 175,
+                "specialDefense": 173,
+                "speed": 178,
+                "description": "Harum torqueo cicuta saepe speciosus vis tergo torrens combibo.",
+                "imageUrl": "https://loremflickr.com/77/2039?lock=5064093778437473",
+                "generation": 7
+              },
+              "hp": 67,
+              "level": 20,
+              "maxHp": 102,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Palm Strike",
+                  "power": 50,
+                  "type": "Fighting"
+                },
+                {
+                  "accuracy": 85,
+                  "name": "Rising Knee",
+                  "power": 85,
+                  "type": "Fighting"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 7,
+                "defense": 91,
+                "specialAttack": 75,
+                "specialDefense": 74,
+                "speed": 76
+              },
+              "uid": "wild",
+              "xp": 8000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 1,
+                  "name": "Geovanni",
+                  "types": [
+                    "Flying"
+                  ],
+                  "height": 11.570127311360618,
+                  "weight": 6.723623131928173,
+                  "hp": 28,
+                  "attack": 128,
+                  "defense": 162,
+                  "specialAttack": 193,
+                  "specialDefense": 140,
+                  "speed": 132,
+                  "description": "Victus universe demoror paens speciosus patior ocer vinco aggero callide.",
+                  "imageUrl": "https://loremflickr.com/3266/1298?lock=2718838203017904",
+                  "generation": 8
+                },
+                "hp": 39,
+                "level": 20,
+                "maxHp": 41,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Gust Slice",
+                    "power": 50,
+                    "type": "Flying"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Sky Dive",
+                    "power": 85,
+                    "type": "Flying"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 56,
+                  "defense": 69,
+                  "specialAttack": 82,
+                  "specialDefense": 61,
+                  "speed": 57
+                },
+                "uid": "p0",
+                "xp": 8000
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 7
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "speed tie broken each way",
+    "setup": {
+      "enemy": {
+        "id": 78,
+        "level": 30
+      },
+      "party": [
+        {
+          "id": 1,
+          "level": 30
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0.3,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Gust Slice",
+                "power": 50,
+                "type": "Flying"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "amount": 20,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 113,
+              "target": "enemy",
+              "type": "damage"
+            },
+            {
+              "move": {
+                "accuracy": 85,
+                "name": "Wyrm Roar",
+                "power": 90,
+                "type": "Dragon"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 33,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 23,
+              "target": "player",
+              "type": "damage"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 78,
+                "name": "Jasmin",
+                "types": [
+                  "Dragon"
+                ],
+                "height": 7.316995852950494,
+                "weight": 329.9870954419775,
+                "hp": 156,
+                "attack": 185,
+                "defense": 154,
+                "specialAttack": 128,
+                "specialDefense": 205,
+                "speed": 132,
+                "description": "Terra eaque audax correptius torrens cogito temporibus tepesco demergo terebro.",
+                "imageUrl": "https://picsum.photos/seed/1MGiT2WdP/510/2309",
+                "generation": 7
+              },
+              "hp": 113,
+              "level": 30,
+              "maxHp": 133,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Scale Rush",
+                  "power": 60,
+                  "type": "Dragon"
+                },
+                {
+                  "accuracy": 85,
+                  "name": "Wyrm Roar",
+                  "power": 90,
+                  "type": "Dragon"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 116,
+                "defense": 97,
+                "specialAttack": 81,
+                "specialDefense": 128,
+                "speed": 84
+              },
+              "uid": "wild",
+              "xp": 27000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 1,
+                  "name": "Geovanni",
+                  "types": [
+                    "Flying"
+                  ],
+                  "height": 11.570127311360618,
+                  "weight": 6.723623131928173,
+                  "hp": 28,
+                  "attack": 128,
+                  "defense": 162,
+                  "specialAttack": 193,
+                  "specialDefense": 140,
+                  "speed": 132,
+                  "description": "Victus universe demoror paens speciosus patior ocer vinco aggero callide.",
+                  "imageUrl": "https://loremflickr.com/3266/1298?lock=2718838203017904",
+                  "generation": 8
+                },
+                "hp": 23,
+                "level": 30,
+                "maxHp": 56,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Gust Slice",
+                    "power": 50,
+                    "type": "Flying"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Sky Dive",
+                    "power": 85,
+                    "type": "Flying"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 81,
+                  "defense": 102,
+                  "specialAttack": 120,
+                  "specialDefense": 89,
+                  "speed": 84
+                },
+                "uid": "p0",
+                "xp": 27000
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 8
+        }
+      },
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0.7,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 85,
+                "name": "Wyrm Roar",
+                "power": 90,
+                "type": "Dragon"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 33,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 0,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "side": "player",
+              "type": "faint"
+            },
+            {
+              "type": "blackout"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 78,
+                "name": "Jasmin",
+                "types": [
+                  "Dragon"
+                ],
+                "height": 7.316995852950494,
+                "weight": 329.9870954419775,
+                "hp": 156,
+                "attack": 185,
+                "defense": 154,
+                "specialAttack": 128,
+                "specialDefense": 205,
+                "speed": 132,
+                "description": "Terra eaque audax correptius torrens cogito temporibus tepesco demergo terebro.",
+                "imageUrl": "https://picsum.photos/seed/1MGiT2WdP/510/2309",
+                "generation": 7
+              },
+              "hp": 113,
+              "level": 30,
+              "maxHp": 133,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Scale Rush",
+                  "power": 60,
+                  "type": "Dragon"
+                },
+                {
+                  "accuracy": 85,
+                  "name": "Wyrm Roar",
+                  "power": 90,
+                  "type": "Dragon"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 116,
+                "defense": 97,
+                "specialAttack": 81,
+                "specialDefense": 128,
+                "speed": 84
+              },
+              "uid": "wild",
+              "xp": 27000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 1,
+                  "name": "Geovanni",
+                  "types": [
+                    "Flying"
+                  ],
+                  "height": 11.570127311360618,
+                  "weight": 6.723623131928173,
+                  "hp": 28,
+                  "attack": 128,
+                  "defense": 162,
+                  "specialAttack": 193,
+                  "specialDefense": 140,
+                  "speed": 132,
+                  "description": "Victus universe demoror paens speciosus patior ocer vinco aggero callide.",
+                  "imageUrl": "https://loremflickr.com/3266/1298?lock=2718838203017904",
+                  "generation": 8
+                },
+                "hp": 0,
+                "level": 30,
+                "maxHp": 56,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Gust Slice",
+                    "power": 50,
+                    "type": "Flying"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Sky Dive",
+                    "power": 85,
+                    "type": "Flying"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 81,
+                  "defense": 102,
+                  "specialAttack": 120,
+                  "specialDefense": 89,
+                  "speed": 84
+                },
+                "uid": "p0",
+                "xp": 27000
+              }
+            ],
+            "winner": "enemy"
+          },
+          "rngUsed": 5
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "a critical hit",
+    "setup": {
+      "enemy": {
+        "id": 3,
+        "level": 50
+      },
+      "party": [
+        {
+          "id": 4,
+          "level": 50
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0,
+          0.01,
+          0.6,
+          0,
+          0.5,
+          0.6,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Palm Strike",
+                "power": 50,
+                "type": "Fighting"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 892,
+              "crit": true,
+              "effectiveness": 2,
+              "hp": 0,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "side": "player",
+              "type": "faint"
+            },
+            {
+              "type": "blackout"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 3,
+                "name": "Hershel",
+                "types": [
+                  "Fairy",
+                  "Fighting"
+                ],
+                "height": 9.612142123503638,
+                "weight": 834.9245000240522,
+                "hp": 92,
+                "attack": 109,
+                "defense": 196,
+                "specialAttack": 42,
+                "specialDefense": 119,
+                "speed": 148,
+                "description": "Tenax quae auctor.",
+                "imageUrl": "https://loremflickr.com/1557/1352?lock=6527493554262662",
+                "generation": 4
+              },
+              "hp": 152,
+              "level": 50,
+              "maxHp": 152,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Glimmer",
+                  "power": 50,
+                  "type": "Fairy"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Moonbeam Burst",
+                  "power": 85,
+                  "type": "Fairy"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Palm Strike",
+                  "power": 50,
+                  "type": "Fighting"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 114,
+                "defense": 201,
+                "specialAttack": 47,
+                "specialDefense": 124,
+                "speed": 153
+              },
+              "uid": "wild",
+              "xp": 125000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 4,
+                  "name": "Rasheed",
+                  "types": [
+                    "Dark"
+                  ],
+                  "height": 14.873855722761645,
+                  "weight": 408.88342923794715,
+                  "hp": 168,
+                  "attack": 107,
+                  "defense": 7,
+                  "specialAttack": 168,
+                  "specialDefense": 133,
+                  "speed": 135,
+                  "description": "Vetus totidem saepe.",
+                  "imageUrl": "https://picsum.photos/seed/Sg0khOc/2174/2575",
+                  "generation": 6
+                },
+                "hp": 0,
+                "level": 50,
+                "maxHp": 228,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Sly Swipe",
+                    "power": 55,
+                    "type": "Dark"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Night Lunge",
+                    "power": 80,
+                    "type": "Dark"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 112,
+                  "defense": 12,
+                  "specialAttack": 173,
+                  "specialDefense": 138,
+                  "speed": 140
+                },
+                "uid": "p0",
+                "xp": 125000
+              }
+            ],
+            "winner": "enemy"
+          },
+          "rngUsed": 4
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "both miss",
+    "setup": {
+      "enemy": {
+        "id": 3,
+        "level": 50
+      },
+      "party": [
+        {
+          "id": 4,
+          "level": 50
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 1,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.7,
+          0.3,
+          0.999,
+          0.999,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 90,
+                "name": "Moonbeam Burst",
+                "power": 85,
+                "type": "Fairy"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "side": "enemy",
+              "type": "miss"
+            },
+            {
+              "move": {
+                "accuracy": 90,
+                "name": "Night Lunge",
+                "power": 80,
+                "type": "Dark"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "side": "player",
+              "type": "miss"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 3,
+                "name": "Hershel",
+                "types": [
+                  "Fairy",
+                  "Fighting"
+                ],
+                "height": 9.612142123503638,
+                "weight": 834.9245000240522,
+                "hp": 92,
+                "attack": 109,
+                "defense": 196,
+                "specialAttack": 42,
+                "specialDefense": 119,
+                "speed": 148,
+                "description": "Tenax quae auctor.",
+                "imageUrl": "https://loremflickr.com/1557/1352?lock=6527493554262662",
+                "generation": 4
+              },
+              "hp": 152,
+              "level": 50,
+              "maxHp": 152,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Glimmer",
+                  "power": 50,
+                  "type": "Fairy"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Moonbeam Burst",
+                  "power": 85,
+                  "type": "Fairy"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Palm Strike",
+                  "power": 50,
+                  "type": "Fighting"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 114,
+                "defense": 201,
+                "specialAttack": 47,
+                "specialDefense": 124,
+                "speed": 153
+              },
+              "uid": "wild",
+              "xp": 125000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 4,
+                  "name": "Rasheed",
+                  "types": [
+                    "Dark"
+                  ],
+                  "height": 14.873855722761645,
+                  "weight": 408.88342923794715,
+                  "hp": 168,
+                  "attack": 107,
+                  "defense": 7,
+                  "specialAttack": 168,
+                  "specialDefense": 133,
+                  "speed": 135,
+                  "description": "Vetus totidem saepe.",
+                  "imageUrl": "https://picsum.photos/seed/Sg0khOc/2174/2575",
+                  "generation": 6
+                },
+                "hp": 228,
+                "level": 50,
+                "maxHp": 228,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Sly Swipe",
+                    "power": 55,
+                    "type": "Dark"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Night Lunge",
+                    "power": 80,
+                    "type": "Dark"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 112,
+                  "defense": 12,
+                  "specialAttack": 173,
+                  "specialDefense": 138,
+                  "speed": 140
+                },
+                "uid": "p0",
+                "xp": 125000
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 4
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "immune target takes 0",
+    "setup": {
+      "enemy": {
+        "id": 19,
+        "level": 20
+      },
+      "party": [
+        {
+          "id": 18,
+          "level": 20
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 95,
+                "name": "Body Check",
+                "power": 60,
+                "type": "Normal"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 8,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 118,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Quick Tackle",
+                "power": 40,
+                "type": "Normal"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "amount": 0,
+              "crit": false,
+              "effectiveness": 0,
+              "hp": 116,
+              "target": "enemy",
+              "type": "damage"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 19,
+                "name": "Greta",
+                "types": [
+                  "Ghost"
+                ],
+                "height": 3.5034945267883897,
+                "weight": 553.6211978693028,
+                "hp": 217,
+                "attack": 40,
+                "defense": 69,
+                "specialAttack": 183,
+                "specialDefense": 225,
+                "speed": 107,
+                "description": "Ancilla astrum solio civitas.",
+                "imageUrl": "https://loremflickr.com/852/2642?lock=3291191604857675",
+                "generation": 2
+              },
+              "hp": 116,
+              "level": 20,
+              "maxHp": 116,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Shade Tap",
+                  "power": 50,
+                  "type": "Ghost"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Phantom Grip",
+                  "power": 80,
+                  "type": "Ghost"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 21,
+                "defense": 32,
+                "specialAttack": 78,
+                "specialDefense": 95,
+                "speed": 47
+              },
+              "uid": "wild",
+              "xp": 8000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 18,
+                  "name": "Morton",
+                  "types": [
+                    "Normal"
+                  ],
+                  "height": 12.995980120279485,
+                  "weight": 901.3987738819023,
+                  "hp": 242,
+                  "attack": 36,
+                  "defense": 74,
+                  "specialAttack": 119,
+                  "specialDefense": 84,
+                  "speed": 44,
+                  "description": "Vulpes centum canto tres.",
+                  "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+                  "generation": 3
+                },
+                "hp": 118,
+                "level": 20,
+                "maxHp": 126,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Heavy Slam",
+                    "power": 90,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 19,
+                  "defense": 34,
+                  "specialAttack": 52,
+                  "specialDefense": 38,
+                  "speed": 22
+                },
+                "uid": "p0",
+                "xp": 8000
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 7
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "timing bonus on the player move",
+    "setup": {
+      "enemy": {
+        "id": 6,
+        "level": 30
+      },
+      "party": [
+        {
+          "id": 5,
+          "level": 30
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 0,
+          "timing": 1.25,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Iron Tap",
+                "power": 50,
+                "type": "Steel"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 38,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 124,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Iron Tap",
+                "power": 50,
+                "type": "Steel"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "amount": 19,
+              "crit": false,
+              "effectiveness": 0.5,
+              "hp": 39,
+              "target": "enemy",
+              "type": "damage"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 6,
+                "name": "Anthony",
+                "types": [
+                  "Bug",
+                  "Steel"
+                ],
+                "height": 17.473226211180968,
+                "weight": 753.3758996432969,
+                "hp": 30,
+                "attack": 77,
+                "defense": 37,
+                "specialAttack": 147,
+                "specialDefense": 35,
+                "speed": 182,
+                "description": "Venio caute tempus tibi.",
+                "imageUrl": "https://loremflickr.com/2745/3795?lock=8295763301752628",
+                "generation": 1
+              },
+              "hp": 39,
+              "level": 30,
+              "maxHp": 58,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Swarm Nip",
+                  "power": 50,
+                  "type": "Bug"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Carapace Ram",
+                  "power": 80,
+                  "type": "Bug"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Iron Tap",
+                  "power": 50,
+                  "type": "Steel"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 51,
+                "defense": 27,
+                "specialAttack": 93,
+                "specialDefense": 26,
+                "speed": 114
+              },
+              "uid": "wild",
+              "xp": 27000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 5,
+                  "name": "Sophia",
+                  "types": [
+                    "Steel",
+                    "Fairy"
+                  ],
+                  "height": 6.042054517089631,
+                  "weight": 857.2321519918422,
+                  "hp": 204,
+                  "attack": 57,
+                  "defense": 38,
+                  "specialAttack": 53,
+                  "specialDefense": 196,
+                  "speed": 64,
+                  "description": "Porro tumultus audax est fuga somnus tantum.",
+                  "imageUrl": "https://loremflickr.com/1148/2435?lock=2070055301194142",
+                  "generation": 7
+                },
+                "hp": 124,
+                "level": 30,
+                "maxHp": 162,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Iron Tap",
+                    "power": 50,
+                    "type": "Steel"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Alloy Smash",
+                    "power": 85,
+                    "type": "Steel"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Glimmer",
+                    "power": 50,
+                    "type": "Fairy"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 39,
+                  "defense": 27,
+                  "specialAttack": 36,
+                  "specialDefense": 122,
+                  "speed": 43
+                },
+                "uid": "p0",
+                "xp": 27000
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 7
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "enemy faints, XP and a level-up",
+    "setup": {
+      "enemy": {
+        "hp": 1,
+        "id": 7,
+        "level": 30
+      },
+      "party": [
+        {
+          "id": 8,
+          "level": 5
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.7,
+          0.3,
+          0.99,
+          0,
+          0.9,
+          0.5,
+          0.99,
+          0,
+          0.9,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 90,
+                "name": "Blaze Burst",
+                "power": 85,
+                "type": "Fire"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "side": "enemy",
+              "type": "miss"
+            },
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Palm Strike",
+                "power": 50,
+                "type": "Fighting"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "amount": 11,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 0,
+              "target": "enemy",
+              "type": "damage"
+            },
+            {
+              "side": "enemy",
+              "type": "faint"
+            },
+            {
+              "amount": 535,
+              "name": "Jordane",
+              "type": "xp"
+            },
+            {
+              "fighter": {
+                "creature": {
+                  "id": 8,
+                  "name": "Jordane",
+                  "types": [
+                    "Fighting",
+                    "Ice"
+                  ],
+                  "height": 11.311548837733033,
+                  "weight": 462.35475533396016,
+                  "hp": 28,
+                  "attack": 124,
+                  "defense": 224,
+                  "specialAttack": 35,
+                  "specialDefense": 220,
+                  "speed": 112,
+                  "description": "Cruentus votum colo.",
+                  "imageUrl": "https://loremflickr.com/2855/3439?lock=4840418693235406",
+                  "generation": 2
+                },
+                "hp": 22,
+                "level": 8,
+                "maxHp": 22,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Palm Strike",
+                    "power": 50,
+                    "type": "Fighting"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Rising Knee",
+                    "power": 85,
+                    "type": "Fighting"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Frost Nip",
+                    "power": 45,
+                    "type": "Ice"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 24,
+                  "defense": 40,
+                  "specialAttack": 10,
+                  "specialDefense": 40,
+                  "speed": 22
+                },
+                "uid": "p0",
+                "xp": 660
+              },
+              "type": "levelUp"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 7,
+                "name": "Devon",
+                "types": [
+                  "Fire"
+                ],
+                "height": 15.90433676412755,
+                "weight": 703.5305233535402,
+                "hp": 50,
+                "attack": 99,
+                "defense": 11,
+                "specialAttack": 167,
+                "specialDefense": 109,
+                "speed": 66,
+                "description": "Ancilla saepe desidero clam corrigo.",
+                "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+                "generation": 3
+              },
+              "hp": 0,
+              "level": 30,
+              "maxHp": 70,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Cinder Flick",
+                  "power": 45,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Blaze Burst",
+                  "power": 85,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 64,
+                "defense": 11,
+                "specialAttack": 105,
+                "specialDefense": 70,
+                "speed": 44
+              },
+              "uid": "wild",
+              "xp": 27000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 8,
+                  "name": "Jordane",
+                  "types": [
+                    "Fighting",
+                    "Ice"
+                  ],
+                  "height": 11.311548837733033,
+                  "weight": 462.35475533396016,
+                  "hp": 28,
+                  "attack": 124,
+                  "defense": 224,
+                  "specialAttack": 35,
+                  "specialDefense": 220,
+                  "speed": 112,
+                  "description": "Cruentus votum colo.",
+                  "imageUrl": "https://loremflickr.com/2855/3439?lock=4840418693235406",
+                  "generation": 2
+                },
+                "hp": 22,
+                "level": 8,
+                "maxHp": 22,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Palm Strike",
+                    "power": 50,
+                    "type": "Fighting"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Rising Knee",
+                    "power": 85,
+                    "type": "Fighting"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Frost Nip",
+                    "power": 45,
+                    "type": "Ice"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 24,
+                  "defense": 40,
+                  "specialAttack": 10,
+                  "specialDefense": 40,
+                  "speed": 22
+                },
+                "uid": "p0",
+                "xp": 660
+              }
+            ],
+            "winner": "player"
+          },
+          "rngUsed": 6
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "faint, send out, blackout",
+    "setup": {
+      "enemy": {
+        "id": 7,
+        "level": 40
+      },
+      "party": [
+        {
+          "hp": 1,
+          "id": 18,
+          "level": 5
+        },
+        {
+          "hp": 1,
+          "id": 18,
+          "level": 5
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0,
+          0.9,
+          0.5,
+          0,
+          0.9,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 90,
+                "name": "Blaze Burst",
+                "power": 85,
+                "type": "Fire"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 452,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 0,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "side": "player",
+              "type": "faint"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 7,
+                "name": "Devon",
+                "types": [
+                  "Fire"
+                ],
+                "height": 15.90433676412755,
+                "weight": 703.5305233535402,
+                "hp": 50,
+                "attack": 99,
+                "defense": 11,
+                "specialAttack": 167,
+                "specialDefense": 109,
+                "speed": 66,
+                "description": "Ancilla saepe desidero clam corrigo.",
+                "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+                "generation": 3
+              },
+              "hp": 90,
+              "level": 40,
+              "maxHp": 90,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Cinder Flick",
+                  "power": 45,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Blaze Burst",
+                  "power": 85,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 84,
+                "defense": 13,
+                "specialAttack": 138,
+                "specialDefense": 92,
+                "speed": 57
+              },
+              "uid": "wild",
+              "xp": 64000
+            },
+            "mustSwitch": true,
+            "party": [
+              {
+                "creature": {
+                  "id": 18,
+                  "name": "Morton",
+                  "types": [
+                    "Normal"
+                  ],
+                  "height": 12.995980120279485,
+                  "weight": 901.3987738819023,
+                  "hp": 242,
+                  "attack": 36,
+                  "defense": 74,
+                  "specialAttack": 119,
+                  "specialDefense": 84,
+                  "speed": 44,
+                  "description": "Vulpes centum canto tres.",
+                  "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+                  "generation": 3
+                },
+                "hp": 0,
+                "level": 5,
+                "maxHp": 39,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Heavy Slam",
+                    "power": 90,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 8,
+                  "defense": 12,
+                  "specialAttack": 16,
+                  "specialDefense": 13,
+                  "speed": 9
+                },
+                "uid": "p0",
+                "xp": 125
+              },
+              {
+                "creature": {
+                  "id": 18,
+                  "name": "Morton",
+                  "types": [
+                    "Normal"
+                  ],
+                  "height": 12.995980120279485,
+                  "weight": 901.3987738819023,
+                  "hp": 242,
+                  "attack": 36,
+                  "defense": 74,
+                  "specialAttack": 119,
+                  "specialDefense": 84,
+                  "speed": 44,
+                  "description": "Vulpes centum canto tres.",
+                  "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+                  "generation": 3
+                },
+                "hp": 1,
+                "level": 5,
+                "maxHp": 39,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Heavy Slam",
+                    "power": 90,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 8,
+                  "defense": 12,
+                  "specialAttack": 16,
+                  "specialDefense": 13,
+                  "speed": 9
+                },
+                "uid": "p1",
+                "xp": 125
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 4
+        }
+      },
+      {
+        "call": "sendOut",
+        "to": 1,
+        "result": {
+          "events": [
+            {
+              "fighter": {
+                "creature": {
+                  "id": 18,
+                  "name": "Morton",
+                  "types": [
+                    "Normal"
+                  ],
+                  "height": 12.995980120279485,
+                  "weight": 901.3987738819023,
+                  "hp": 242,
+                  "attack": 36,
+                  "defense": 74,
+                  "specialAttack": 119,
+                  "specialDefense": 84,
+                  "speed": 44,
+                  "description": "Vulpes centum canto tres.",
+                  "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+                  "generation": 3
+                },
+                "hp": 1,
+                "level": 5,
+                "maxHp": 39,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Heavy Slam",
+                    "power": 90,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 8,
+                  "defense": 12,
+                  "specialAttack": 16,
+                  "specialDefense": 13,
+                  "speed": 9
+                },
+                "uid": "p1",
+                "xp": 125
+              },
+              "from": null,
+              "type": "switch"
+            }
+          ],
+          "state": {
+            "active": 1,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 7,
+                "name": "Devon",
+                "types": [
+                  "Fire"
+                ],
+                "height": 15.90433676412755,
+                "weight": 703.5305233535402,
+                "hp": 50,
+                "attack": 99,
+                "defense": 11,
+                "specialAttack": 167,
+                "specialDefense": 109,
+                "speed": 66,
+                "description": "Ancilla saepe desidero clam corrigo.",
+                "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+                "generation": 3
+              },
+              "hp": 90,
+              "level": 40,
+              "maxHp": 90,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Cinder Flick",
+                  "power": 45,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Blaze Burst",
+                  "power": 85,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 84,
+                "defense": 13,
+                "specialAttack": 138,
+                "specialDefense": 92,
+                "speed": 57
+              },
+              "uid": "wild",
+              "xp": 64000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 18,
+                  "name": "Morton",
+                  "types": [
+                    "Normal"
+                  ],
+                  "height": 12.995980120279485,
+                  "weight": 901.3987738819023,
+                  "hp": 242,
+                  "attack": 36,
+                  "defense": 74,
+                  "specialAttack": 119,
+                  "specialDefense": 84,
+                  "speed": 44,
+                  "description": "Vulpes centum canto tres.",
+                  "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+                  "generation": 3
+                },
+                "hp": 0,
+                "level": 5,
+                "maxHp": 39,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Heavy Slam",
+                    "power": 90,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 8,
+                  "defense": 12,
+                  "specialAttack": 16,
+                  "specialDefense": 13,
+                  "speed": 9
+                },
+                "uid": "p0",
+                "xp": 125
+              },
+              {
+                "creature": {
+                  "id": 18,
+                  "name": "Morton",
+                  "types": [
+                    "Normal"
+                  ],
+                  "height": 12.995980120279485,
+                  "weight": 901.3987738819023,
+                  "hp": 242,
+                  "attack": 36,
+                  "defense": 74,
+                  "specialAttack": 119,
+                  "specialDefense": 84,
+                  "speed": 44,
+                  "description": "Vulpes centum canto tres.",
+                  "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+                  "generation": 3
+                },
+                "hp": 1,
+                "level": 5,
+                "maxHp": 39,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Heavy Slam",
+                    "power": 90,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 8,
+                  "defense": 12,
+                  "specialAttack": 16,
+                  "specialDefense": 13,
+                  "speed": 9
+                },
+                "uid": "p1",
+                "xp": 125
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 0
+        }
+      },
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0,
+          0.9,
+          0.5,
+          0,
+          0.9,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 90,
+                "name": "Blaze Burst",
+                "power": 85,
+                "type": "Fire"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 452,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 0,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "side": "player",
+              "type": "faint"
+            },
+            {
+              "type": "blackout"
+            }
+          ],
+          "state": {
+            "active": 1,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 7,
+                "name": "Devon",
+                "types": [
+                  "Fire"
+                ],
+                "height": 15.90433676412755,
+                "weight": 703.5305233535402,
+                "hp": 50,
+                "attack": 99,
+                "defense": 11,
+                "specialAttack": 167,
+                "specialDefense": 109,
+                "speed": 66,
+                "description": "Ancilla saepe desidero clam corrigo.",
+                "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+                "generation": 3
+              },
+              "hp": 90,
+              "level": 40,
+              "maxHp": 90,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Cinder Flick",
+                  "power": 45,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Blaze Burst",
+                  "power": 85,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 84,
+                "defense": 13,
+                "specialAttack": 138,
+                "specialDefense": 92,
+                "speed": 57
+              },
+              "uid": "wild",
+              "xp": 64000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 18,
+                  "name": "Morton",
+                  "types": [
+                    "Normal"
+                  ],
+                  "height": 12.995980120279485,
+                  "weight": 901.3987738819023,
+                  "hp": 242,
+                  "attack": 36,
+                  "defense": 74,
+                  "specialAttack": 119,
+                  "specialDefense": 84,
+                  "speed": 44,
+                  "description": "Vulpes centum canto tres.",
+                  "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+                  "generation": 3
+                },
+                "hp": 0,
+                "level": 5,
+                "maxHp": 39,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Heavy Slam",
+                    "power": 90,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 8,
+                  "defense": 12,
+                  "specialAttack": 16,
+                  "specialDefense": 13,
+                  "speed": 9
+                },
+                "uid": "p0",
+                "xp": 125
+              },
+              {
+                "creature": {
+                  "id": 18,
+                  "name": "Morton",
+                  "types": [
+                    "Normal"
+                  ],
+                  "height": 12.995980120279485,
+                  "weight": 901.3987738819023,
+                  "hp": 242,
+                  "attack": 36,
+                  "defense": 74,
+                  "specialAttack": 119,
+                  "specialDefense": 84,
+                  "speed": 44,
+                  "description": "Vulpes centum canto tres.",
+                  "imageUrl": "https://loremflickr.com/156/2816?lock=8287937603596945",
+                  "generation": 3
+                },
+                "hp": 0,
+                "level": 5,
+                "maxHp": 39,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Heavy Slam",
+                    "power": 90,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 8,
+                  "defense": 12,
+                  "specialAttack": 16,
+                  "specialDefense": 13,
+                  "speed": 9
+                },
+                "uid": "p1",
+                "xp": 125
+              }
+            ],
+            "winner": "enemy"
+          },
+          "rngUsed": 4
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "switch, then the enemy attacks the new creature",
+    "setup": {
+      "enemy": {
+        "id": 10,
+        "level": 20
+      },
+      "party": [
+        {
+          "id": 11,
+          "level": 20
+        },
+        {
+          "id": 12,
+          "level": 22,
+          "xp": 12000
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "to": 1,
+          "type": "switch"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.1,
+          0.2,
+          0.9,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "fighter": {
+                "creature": {
+                  "id": 12,
+                  "name": "Madaline",
+                  "types": [
+                    "Steel"
+                  ],
+                  "height": 1.980259930937172,
+                  "weight": 953.7884136380419,
+                  "hp": 240,
+                  "attack": 111,
+                  "defense": 119,
+                  "specialAttack": 153,
+                  "specialDefense": 114,
+                  "speed": 71,
+                  "description": "Comburo conicio turpis angulus auxilium absque desidero.",
+                  "imageUrl": "https://loremflickr.com/3654/3605?lock=6333735098178881",
+                  "generation": 2
+                },
+                "hp": 137,
+                "level": 22,
+                "maxHp": 137,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Iron Tap",
+                    "power": 50,
+                    "type": "Steel"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Alloy Smash",
+                    "power": 85,
+                    "type": "Steel"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 53,
+                  "defense": 57,
+                  "specialAttack": 72,
+                  "specialDefense": 55,
+                  "speed": 36
+                },
+                "uid": "p1",
+                "xp": 12000
+              },
+              "from": "Melvin",
+              "type": "switch"
+            },
+            {
+              "move": {
+                "accuracy": 85,
+                "name": "Rising Knee",
+                "power": 85,
+                "type": "Fighting"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 66,
+              "crit": false,
+              "effectiveness": 2,
+              "hp": 71,
+              "target": "player",
+              "type": "damage"
+            }
+          ],
+          "state": {
+            "active": 1,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 10,
+                "name": "Arnoldo",
+                "types": [
+                  "Fighting",
+                  "Water"
+                ],
+                "height": 14.355692762819112,
+                "weight": 606.2905361567018,
+                "hp": 232,
+                "attack": 173,
+                "defense": 130,
+                "specialAttack": 30,
+                "specialDefense": 221,
+                "speed": 54,
+                "description": "Degenero magnam vomica condico desino tempus arceo suscipit omnis.",
+                "imageUrl": "https://picsum.photos/seed/DCDstq/3972/205?grayscale&blur=8",
+                "generation": 5
+              },
+              "hp": 122,
+              "level": 20,
+              "maxHp": 122,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Palm Strike",
+                  "power": 50,
+                  "type": "Fighting"
+                },
+                {
+                  "accuracy": 85,
+                  "name": "Rising Knee",
+                  "power": 85,
+                  "type": "Fighting"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Splash Jet",
+                  "power": 45,
+                  "type": "Water"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 74,
+                "defense": 57,
+                "specialAttack": 17,
+                "specialDefense": 93,
+                "speed": 26
+              },
+              "uid": "wild",
+              "xp": 8000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 11,
+                  "name": "Melvin",
+                  "types": [
+                    "Ice"
+                  ],
+                  "height": 19.534134338268164,
+                  "weight": 834.4916547315063,
+                  "hp": 178,
+                  "attack": 185,
+                  "defense": 59,
+                  "specialAttack": 69,
+                  "specialDefense": 95,
+                  "speed": 54,
+                  "description": "Concido nam aro creator trans.",
+                  "imageUrl": "https://loremflickr.com/236/3840?lock=1252156794727560",
+                  "generation": 5
+                },
+                "hp": 101,
+                "level": 20,
+                "maxHp": 101,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Frost Nip",
+                    "power": 45,
+                    "type": "Ice"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Glacier Spear",
+                    "power": 85,
+                    "type": "Ice"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 79,
+                  "defense": 28,
+                  "specialAttack": 32,
+                  "specialDefense": 43,
+                  "speed": 26
+                },
+                "uid": "p0",
+                "xp": 8000
+              },
+              {
+                "creature": {
+                  "id": 12,
+                  "name": "Madaline",
+                  "types": [
+                    "Steel"
+                  ],
+                  "height": 1.980259930937172,
+                  "weight": 953.7884136380419,
+                  "hp": 240,
+                  "attack": 111,
+                  "defense": 119,
+                  "specialAttack": 153,
+                  "specialDefense": 114,
+                  "speed": 71,
+                  "description": "Comburo conicio turpis angulus auxilium absque desidero.",
+                  "imageUrl": "https://loremflickr.com/3654/3605?lock=6333735098178881",
+                  "generation": 2
+                },
+                "hp": 71,
+                "level": 22,
+                "maxHp": 137,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Iron Tap",
+                    "power": 50,
+                    "type": "Steel"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Alloy Smash",
+                    "power": 85,
+                    "type": "Steel"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 53,
+                  "defense": 57,
+                  "specialAttack": 72,
+                  "specialDefense": 55,
+                  "speed": 36
+                },
+                "uid": "p1",
+                "xp": 12000
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 4
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "catch fails at 2 shakes, then succeeds",
+    "setup": {
+      "enemy": {
+        "id": 13,
+        "level": 10
+      },
+      "party": [
+        {
+          "id": 14,
+          "level": 20
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "type": "catch"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0,
+          0,
+          0.999,
+          0.1,
+          0.5,
+          0.9,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "shakes": 2,
+              "type": "catch"
+            },
+            {
+              "move": {
+                "accuracy": 95,
+                "name": "Body Check",
+                "power": 60,
+                "type": "Normal"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 5,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 92,
+              "target": "player",
+              "type": "damage"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 13,
+                "name": "Jakayla",
+                "types": [
+                  "Electric"
+                ],
+                "height": 7.549998082613933,
+                "weight": 426.72079524062104,
+                "hp": 46,
+                "attack": 174,
+                "defense": 210,
+                "specialAttack": 123,
+                "specialDefense": 65,
+                "speed": 112,
+                "description": "Minima crepusculum cubo turbo dignissimos vomer videlicet tantillus amplexus clementia.",
+                "imageUrl": "https://loremflickr.com/704/3869?lock=3497972580036283",
+                "generation": 4
+              },
+              "hp": 29,
+              "level": 10,
+              "maxHp": 29,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Static Snap",
+                  "power": 45,
+                  "type": "Electric"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Volt Crash",
+                  "power": 85,
+                  "type": "Electric"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 39,
+                "defense": 47,
+                "specialAttack": 29,
+                "specialDefense": 18,
+                "speed": 27
+              },
+              "uid": "wild",
+              "xp": 1000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 14,
+                  "name": "Jalyn",
+                  "types": [
+                    "Dragon",
+                    "Ground"
+                  ],
+                  "height": 19.829495056411687,
+                  "weight": 601.6201659878734,
+                  "hp": 168,
+                  "attack": 14,
+                  "defense": 148,
+                  "specialAttack": 161,
+                  "specialDefense": 17,
+                  "speed": 127,
+                  "description": "Tandem depono acidus aeternus laborum vestrum.",
+                  "imageUrl": "https://picsum.photos/seed/TKrCn/2757/2103?grayscale&blur=6",
+                  "generation": 4
+                },
+                "hp": 92,
+                "level": 20,
+                "maxHp": 97,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Scale Rush",
+                    "power": 60,
+                    "type": "Dragon"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Wyrm Roar",
+                    "power": 90,
+                    "type": "Dragon"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Mud Toss",
+                    "power": 50,
+                    "type": "Ground"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 10,
+                  "defense": 64,
+                  "specialAttack": 69,
+                  "specialDefense": 11,
+                  "speed": 55
+                },
+                "uid": "p0",
+                "xp": 8000
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 7
+        }
+      },
+      {
+        "action": {
+          "type": "catch"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0,
+          0,
+          0,
+          0,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "shakes": 4,
+              "type": "catch"
+            },
+            {
+              "amount": 260,
+              "name": "Jalyn",
+              "type": "xp"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": true,
+            "enemy": {
+              "creature": {
+                "id": 13,
+                "name": "Jakayla",
+                "types": [
+                  "Electric"
+                ],
+                "height": 7.549998082613933,
+                "weight": 426.72079524062104,
+                "hp": 46,
+                "attack": 174,
+                "defense": 210,
+                "specialAttack": 123,
+                "specialDefense": 65,
+                "speed": 112,
+                "description": "Minima crepusculum cubo turbo dignissimos vomer videlicet tantillus amplexus clementia.",
+                "imageUrl": "https://loremflickr.com/704/3869?lock=3497972580036283",
+                "generation": 4
+              },
+              "hp": 29,
+              "level": 10,
+              "maxHp": 29,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Static Snap",
+                  "power": 45,
+                  "type": "Electric"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Volt Crash",
+                  "power": 85,
+                  "type": "Electric"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 39,
+                "defense": 47,
+                "specialAttack": 29,
+                "specialDefense": 18,
+                "speed": 27
+              },
+              "uid": "wild",
+              "xp": 1000
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 14,
+                  "name": "Jalyn",
+                  "types": [
+                    "Dragon",
+                    "Ground"
+                  ],
+                  "height": 19.829495056411687,
+                  "weight": 601.6201659878734,
+                  "hp": 168,
+                  "attack": 14,
+                  "defense": 148,
+                  "specialAttack": 161,
+                  "specialDefense": 17,
+                  "speed": 127,
+                  "description": "Tandem depono acidus aeternus laborum vestrum.",
+                  "imageUrl": "https://picsum.photos/seed/TKrCn/2757/2103?grayscale&blur=6",
+                  "generation": 4
+                },
+                "hp": 92,
+                "level": 20,
+                "maxHp": 97,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Scale Rush",
+                    "power": 60,
+                    "type": "Dragon"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Wyrm Roar",
+                    "power": 90,
+                    "type": "Dragon"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Mud Toss",
+                    "power": 50,
+                    "type": "Ground"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 10,
+                  "defense": 64,
+                  "specialAttack": 69,
+                  "specialDefense": 11,
+                  "speed": 55
+                },
+                "uid": "p0",
+                "xp": 8260
+              }
+            ],
+            "winner": "player"
+          },
+          "rngUsed": 4
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "enemy picks a random move",
+    "setup": {
+      "enemy": {
+        "id": 16,
+        "level": 25
+      },
+      "party": [
+        {
+          "id": 15,
+          "level": 25
+        }
+      ]
+    },
+    "steps": [
+      {
+        "action": {
+          "index": 0,
+          "type": "move"
+        },
+        "call": "resolveTurn",
+        "rng": [
+          0.8,
+          0.6,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Quick Tackle",
+                "power": 40,
+                "type": "Normal"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 8,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 40,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Quick Tackle",
+                "power": 40,
+                "type": "Normal"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "amount": 9,
+              "crit": false,
+              "effectiveness": 0.5,
+              "hp": 41,
+              "target": "enemy",
+              "type": "damage"
+            }
+          ],
+          "state": {
+            "active": 0,
+            "caught": false,
+            "enemy": {
+              "creature": {
+                "id": 16,
+                "name": "Tre",
+                "types": [
+                  "Steel"
+                ],
+                "height": 16.259124957064852,
+                "weight": 26.127706335148584,
+                "hp": 30,
+                "attack": 68,
+                "defense": 83,
+                "specialAttack": 167,
+                "specialDefense": 115,
+                "speed": 118,
+                "description": "Sustineo statim paulatim acervus adhaero.",
+                "imageUrl": "https://picsum.photos/seed/kVzUucBfe/1024/501?grayscale&blur=4",
+                "generation": 6
+              },
+              "hp": 41,
+              "level": 25,
+              "maxHp": 50,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Iron Tap",
+                  "power": 50,
+                  "type": "Steel"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Alloy Smash",
+                  "power": 85,
+                  "type": "Steel"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 39,
+                "defense": 46,
+                "specialAttack": 88,
+                "specialDefense": 62,
+                "speed": 64
+              },
+              "uid": "wild",
+              "xp": 15625
+            },
+            "mustSwitch": false,
+            "party": [
+              {
+                "creature": {
+                  "id": 15,
+                  "name": "Bonita",
+                  "types": [
+                    "Normal",
+                    "Bug"
+                  ],
+                  "height": 0.5019428684451768,
+                  "weight": 797.7995141469279,
+                  "hp": 27,
+                  "attack": 103,
+                  "defense": 95,
+                  "specialAttack": 93,
+                  "specialDefense": 129,
+                  "speed": 109,
+                  "description": "Cognomen dedecor comptus veniam consuasor molestiae capitulus umquam.",
+                  "imageUrl": "https://loremflickr.com/506/3837?lock=1304739405063893",
+                  "generation": 9
+                },
+                "hp": 40,
+                "level": 25,
+                "maxHp": 48,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Swarm Nip",
+                    "power": 50,
+                    "type": "Bug"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Wild Swing",
+                    "power": 75,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 56,
+                  "defense": 52,
+                  "specialAttack": 51,
+                  "specialDefense": 69,
+                  "speed": 59
+                },
+                "uid": "p0",
+                "xp": 15625
+              }
+            ],
+            "winner": null
+          },
+          "rngUsed": 8
+        }
+      }
+    ]
+  },
+  {
+    "kind": "wild",
+    "name": "wild level: JS rounds 5.5 up",
+    "setup": {
+      "enemy": {
+        "id": 1,
+        "level": 5
+      },
+      "party": [
+        {
+          "id": 1,
+          "level": 5
+        }
+      ]
+    },
+    "steps": [
+      {
+        "call": "wildLevel",
+        "levels": [
+          5,
+          6
+        ],
+        "rng": [
+          0
+        ],
+        "result": {
+          "rngUsed": 1,
+          "value": 4
+        }
+      },
+      {
+        "call": "wildLevel",
+        "levels": [
+          5,
+          6
+        ],
+        "rng": [
+          0.999
+        ],
+        "result": {
+          "rngUsed": 1,
+          "value": 8
+        }
+      },
+      {
+        "call": "wildLevel",
+        "levels": [
+          5,
+          6
+        ],
+        "rng": [
+          0.5
+        ],
+        "result": {
+          "rngUsed": 1,
+          "value": 6
+        }
+      },
+      {
+        "call": "wildLevel",
+        "levels": [],
+        "rng": [
+          0.5
+        ],
+        "result": {
+          "rngUsed": 1,
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "kind": "versus",
+    "name": "both move, a faint stops the turn",
+    "setup": {
+      "guest": [
+        22,
+        22
+      ],
+      "hp": {
+        "guest": [
+          1,
+          null
+        ]
+      },
+      "host": [
+        7,
+        21
+      ]
+    },
+    "steps": [
+      {
+        "actions": {
+          "guest": {
+            "index": 0,
+            "timing": 1.25,
+            "type": "move"
+          },
+          "host": {
+            "index": 0,
+            "timing": 1.1,
+            "type": "move"
+          }
+        },
+        "call": "resolveVersusTurn",
+        "rng": [
+          0.3,
+          0,
+          0.9,
+          0.5,
+          0,
+          0.9,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Splash Jet",
+                "power": 45,
+                "type": "Water"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 72,
+              "crit": true,
+              "effectiveness": 2,
+              "hp": 38,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Cinder Flick",
+                "power": 45,
+                "type": "Fire"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "amount": 90,
+              "crit": true,
+              "effectiveness": 0.5,
+              "hp": 0,
+              "target": "enemy",
+              "type": "damage"
+            },
+            {
+              "side": "enemy",
+              "type": "faint"
+            }
+          ],
+          "state": {
+            "guest": {
+              "active": 0,
+              "mustSwitch": true,
+              "party": [
+                {
+                  "creature": {
+                    "id": 22,
+                    "name": "Emmie",
+                    "types": [
+                      "Water"
+                    ],
+                    "height": 8.977714233908856,
+                    "weight": 251.61685471036765,
+                    "hp": 130,
+                    "attack": 40,
+                    "defense": 29,
+                    "specialAttack": 64,
+                    "specialDefense": 42,
+                    "speed": 80,
+                    "description": "Tabella decipio deleniti incidunt basium cras.",
+                    "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+                    "generation": 2
+                  },
+                  "hp": 0,
+                  "level": 50,
+                  "maxHp": 190,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Splash Jet",
+                      "power": 45,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Tidal Crash",
+                      "power": 85,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 45,
+                    "defense": 34,
+                    "specialAttack": 69,
+                    "specialDefense": 47,
+                    "speed": 85
+                  },
+                  "uid": "guest-0",
+                  "xp": 125000
+                },
+                {
+                  "creature": {
+                    "id": 22,
+                    "name": "Emmie",
+                    "types": [
+                      "Water"
+                    ],
+                    "height": 8.977714233908856,
+                    "weight": 251.61685471036765,
+                    "hp": 130,
+                    "attack": 40,
+                    "defense": 29,
+                    "specialAttack": 64,
+                    "specialDefense": 42,
+                    "speed": 80,
+                    "description": "Tabella decipio deleniti incidunt basium cras.",
+                    "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+                    "generation": 2
+                  },
+                  "hp": 190,
+                  "level": 50,
+                  "maxHp": 190,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Splash Jet",
+                      "power": 45,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Tidal Crash",
+                      "power": 85,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 45,
+                    "defense": 34,
+                    "specialAttack": 69,
+                    "specialDefense": 47,
+                    "speed": 85
+                  },
+                  "uid": "guest-1",
+                  "xp": 125000
+                }
+              ]
+            },
+            "host": {
+              "active": 0,
+              "mustSwitch": false,
+              "party": [
+                {
+                  "creature": {
+                    "id": 7,
+                    "name": "Devon",
+                    "types": [
+                      "Fire"
+                    ],
+                    "height": 15.90433676412755,
+                    "weight": 703.5305233535402,
+                    "hp": 50,
+                    "attack": 99,
+                    "defense": 11,
+                    "specialAttack": 167,
+                    "specialDefense": 109,
+                    "speed": 66,
+                    "description": "Ancilla saepe desidero clam corrigo.",
+                    "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+                    "generation": 3
+                  },
+                  "hp": 38,
+                  "level": 50,
+                  "maxHp": 110,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Cinder Flick",
+                      "power": 45,
+                      "type": "Fire"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Blaze Burst",
+                      "power": 85,
+                      "type": "Fire"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 104,
+                    "defense": 16,
+                    "specialAttack": 172,
+                    "specialDefense": 114,
+                    "speed": 71
+                  },
+                  "uid": "host-0",
+                  "xp": 125000
+                },
+                {
+                  "creature": {
+                    "id": 21,
+                    "name": "Ansel",
+                    "types": [
+                      "Normal"
+                    ],
+                    "height": 7.058872575976571,
+                    "weight": 137.4749509087704,
+                    "hp": 83,
+                    "attack": 47,
+                    "defense": 208,
+                    "specialAttack": 49,
+                    "specialDefense": 85,
+                    "speed": 186,
+                    "description": "Vorago similique cultura maiores suasoria cruciamentum aiunt.",
+                    "imageUrl": "https://loremflickr.com/2640/2884?lock=6386354580126778",
+                    "generation": 1
+                  },
+                  "hp": 143,
+                  "level": 50,
+                  "maxHp": 143,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Wild Swing",
+                      "power": 75,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 85,
+                      "name": "Heavy Slam",
+                      "power": 90,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 52,
+                    "defense": 213,
+                    "specialAttack": 54,
+                    "specialDefense": 90,
+                    "speed": 191
+                  },
+                  "uid": "host-1",
+                  "xp": 125000
+                }
+              ]
+            },
+            "winner": null
+          },
+          "rngUsed": 6
+        }
+      },
+      {
+        "call": "versusSendOut",
+        "seat": "guest",
+        "to": 1,
+        "result": {
+          "events": [
+            {
+              "fighter": {
+                "creature": {
+                  "id": 22,
+                  "name": "Emmie",
+                  "types": [
+                    "Water"
+                  ],
+                  "height": 8.977714233908856,
+                  "weight": 251.61685471036765,
+                  "hp": 130,
+                  "attack": 40,
+                  "defense": 29,
+                  "specialAttack": 64,
+                  "specialDefense": 42,
+                  "speed": 80,
+                  "description": "Tabella decipio deleniti incidunt basium cras.",
+                  "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+                  "generation": 2
+                },
+                "hp": 190,
+                "level": 50,
+                "maxHp": 190,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Splash Jet",
+                    "power": 45,
+                    "type": "Water"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Tidal Crash",
+                    "power": 85,
+                    "type": "Water"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 45,
+                  "defense": 34,
+                  "specialAttack": 69,
+                  "specialDefense": 47,
+                  "speed": 85
+                },
+                "uid": "guest-1",
+                "xp": 125000
+              },
+              "from": null,
+              "side": "enemy",
+              "type": "switch"
+            }
+          ],
+          "state": {
+            "guest": {
+              "active": 1,
+              "mustSwitch": false,
+              "party": [
+                {
+                  "creature": {
+                    "id": 22,
+                    "name": "Emmie",
+                    "types": [
+                      "Water"
+                    ],
+                    "height": 8.977714233908856,
+                    "weight": 251.61685471036765,
+                    "hp": 130,
+                    "attack": 40,
+                    "defense": 29,
+                    "specialAttack": 64,
+                    "specialDefense": 42,
+                    "speed": 80,
+                    "description": "Tabella decipio deleniti incidunt basium cras.",
+                    "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+                    "generation": 2
+                  },
+                  "hp": 0,
+                  "level": 50,
+                  "maxHp": 190,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Splash Jet",
+                      "power": 45,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Tidal Crash",
+                      "power": 85,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 45,
+                    "defense": 34,
+                    "specialAttack": 69,
+                    "specialDefense": 47,
+                    "speed": 85
+                  },
+                  "uid": "guest-0",
+                  "xp": 125000
+                },
+                {
+                  "creature": {
+                    "id": 22,
+                    "name": "Emmie",
+                    "types": [
+                      "Water"
+                    ],
+                    "height": 8.977714233908856,
+                    "weight": 251.61685471036765,
+                    "hp": 130,
+                    "attack": 40,
+                    "defense": 29,
+                    "specialAttack": 64,
+                    "specialDefense": 42,
+                    "speed": 80,
+                    "description": "Tabella decipio deleniti incidunt basium cras.",
+                    "imageUrl": "https://loremflickr.com/1486/1744?lock=2574214756939542",
+                    "generation": 2
+                  },
+                  "hp": 190,
+                  "level": 50,
+                  "maxHp": 190,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Splash Jet",
+                      "power": 45,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Tidal Crash",
+                      "power": 85,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 45,
+                    "defense": 34,
+                    "specialAttack": 69,
+                    "specialDefense": 47,
+                    "speed": 85
+                  },
+                  "uid": "guest-1",
+                  "xp": 125000
+                }
+              ]
+            },
+            "host": {
+              "active": 0,
+              "mustSwitch": false,
+              "party": [
+                {
+                  "creature": {
+                    "id": 7,
+                    "name": "Devon",
+                    "types": [
+                      "Fire"
+                    ],
+                    "height": 15.90433676412755,
+                    "weight": 703.5305233535402,
+                    "hp": 50,
+                    "attack": 99,
+                    "defense": 11,
+                    "specialAttack": 167,
+                    "specialDefense": 109,
+                    "speed": 66,
+                    "description": "Ancilla saepe desidero clam corrigo.",
+                    "imageUrl": "https://loremflickr.com/1715/1335?lock=968507741311805",
+                    "generation": 3
+                  },
+                  "hp": 38,
+                  "level": 50,
+                  "maxHp": 110,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Cinder Flick",
+                      "power": 45,
+                      "type": "Fire"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Blaze Burst",
+                      "power": 85,
+                      "type": "Fire"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 104,
+                    "defense": 16,
+                    "specialAttack": 172,
+                    "specialDefense": 114,
+                    "speed": 71
+                  },
+                  "uid": "host-0",
+                  "xp": 125000
+                },
+                {
+                  "creature": {
+                    "id": 21,
+                    "name": "Ansel",
+                    "types": [
+                      "Normal"
+                    ],
+                    "height": 7.058872575976571,
+                    "weight": 137.4749509087704,
+                    "hp": 83,
+                    "attack": 47,
+                    "defense": 208,
+                    "specialAttack": 49,
+                    "specialDefense": 85,
+                    "speed": 186,
+                    "description": "Vorago similique cultura maiores suasoria cruciamentum aiunt.",
+                    "imageUrl": "https://loremflickr.com/2640/2884?lock=6386354580126778",
+                    "generation": 1
+                  },
+                  "hp": 143,
+                  "level": 50,
+                  "maxHp": 143,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Wild Swing",
+                      "power": 75,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 85,
+                      "name": "Heavy Slam",
+                      "power": 90,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 52,
+                    "defense": 213,
+                    "specialAttack": 54,
+                    "specialDefense": 90,
+                    "speed": 191
+                  },
+                  "uid": "host-1",
+                  "xp": 125000
+                }
+              ]
+            },
+            "winner": null
+          },
+          "rngUsed": 0
+        }
+      }
+    ]
+  },
+  {
+    "kind": "versus",
+    "name": "one switches, the other moves; then a send-out",
+    "setup": {
+      "guest": [
+        24,
+        25
+      ],
+      "hp": {
+        "host": [
+          null,
+          1
+        ]
+      },
+      "host": [
+        23,
+        26
+      ]
+    },
+    "steps": [
+      {
+        "actions": {
+          "guest": {
+            "index": 0,
+            "timing": 1,
+            "type": "move"
+          },
+          "host": {
+            "to": 1,
+            "type": "switch"
+          }
+        },
+        "call": "resolveVersusTurn",
+        "rng": [
+          0,
+          0.9,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "fighter": {
+                "creature": {
+                  "id": 26,
+                  "name": "Mavis",
+                  "types": [
+                    "Ground"
+                  ],
+                  "height": 10.280949027613184,
+                  "weight": 939.87329307809,
+                  "hp": 226,
+                  "attack": 102,
+                  "defense": 34,
+                  "specialAttack": 75,
+                  "specialDefense": 205,
+                  "speed": 17,
+                  "description": "Tempore bene vos agnosco vivo demoror cursim videlicet atqui vorax.",
+                  "imageUrl": "https://picsum.photos/seed/Sc0zQw3/3225/2640?blur=2",
+                  "generation": 7
+                },
+                "hp": 1,
+                "level": 50,
+                "maxHp": 286,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Mud Toss",
+                    "power": 50,
+                    "type": "Ground"
+                  },
+                  {
+                    "accuracy": 85,
+                    "name": "Quake Stomp",
+                    "power": 90,
+                    "type": "Ground"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 107,
+                  "defense": 39,
+                  "specialAttack": 80,
+                  "specialDefense": 210,
+                  "speed": 22
+                },
+                "uid": "host-1",
+                "xp": 125000
+              },
+              "from": "Houston",
+              "side": "player",
+              "type": "switch"
+            },
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Sly Swipe",
+                "power": 55,
+                "type": "Dark"
+              },
+              "side": "enemy",
+              "type": "move"
+            },
+            {
+              "amount": 16,
+              "crit": false,
+              "effectiveness": 1,
+              "hp": 0,
+              "target": "player",
+              "type": "damage"
+            },
+            {
+              "side": "player",
+              "type": "faint"
+            }
+          ],
+          "state": {
+            "guest": {
+              "active": 0,
+              "mustSwitch": false,
+              "party": [
+                {
+                  "creature": {
+                    "id": 24,
+                    "name": "Anais",
+                    "types": [
+                      "Dark"
+                    ],
+                    "height": 2.127454668128789,
+                    "weight": 478.28866019742253,
+                    "hp": 29,
+                    "attack": 42,
+                    "defense": 78,
+                    "specialAttack": 89,
+                    "specialDefense": 23,
+                    "speed": 68,
+                    "description": "Auditor triumphus cupio volaticus.",
+                    "imageUrl": "https://loremflickr.com/2038/1347?lock=5359117153340617",
+                    "generation": 1
+                  },
+                  "hp": 89,
+                  "level": 50,
+                  "maxHp": 89,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Sly Swipe",
+                      "power": 55,
+                      "type": "Dark"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Night Lunge",
+                      "power": 80,
+                      "type": "Dark"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 47,
+                    "defense": 83,
+                    "specialAttack": 94,
+                    "specialDefense": 28,
+                    "speed": 73
+                  },
+                  "uid": "guest-0",
+                  "xp": 125000
+                },
+                {
+                  "creature": {
+                    "id": 25,
+                    "name": "Ward",
+                    "types": [
+                      "Psychic"
+                    ],
+                    "height": 16.211797403693165,
+                    "weight": 758.6623877012039,
+                    "hp": 189,
+                    "attack": 115,
+                    "defense": 86,
+                    "specialAttack": 20,
+                    "specialDefense": 188,
+                    "speed": 134,
+                    "description": "Civitas uberrime sonitus tametsi ancilla ater contabesco vis spero.",
+                    "imageUrl": "https://loremflickr.com/349/1526?lock=3268292158866819",
+                    "generation": 7
+                  },
+                  "hp": 249,
+                  "level": 50,
+                  "maxHp": 249,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Mind Poke",
+                      "power": 50,
+                      "type": "Psychic"
+                    },
+                    {
+                      "accuracy": 85,
+                      "name": "Psi Storm",
+                      "power": 90,
+                      "type": "Psychic"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 120,
+                    "defense": 91,
+                    "specialAttack": 25,
+                    "specialDefense": 193,
+                    "speed": 139
+                  },
+                  "uid": "guest-1",
+                  "xp": 125000
+                }
+              ]
+            },
+            "host": {
+              "active": 1,
+              "mustSwitch": true,
+              "party": [
+                {
+                  "creature": {
+                    "id": 23,
+                    "name": "Houston",
+                    "types": [
+                      "Ghost"
+                    ],
+                    "height": 5.15837068395718,
+                    "weight": 44.73541400217904,
+                    "hp": 46,
+                    "attack": 135,
+                    "defense": 206,
+                    "specialAttack": 48,
+                    "specialDefense": 64,
+                    "speed": 87,
+                    "description": "Velum tabernus ante undique varietas benevolentia.",
+                    "imageUrl": "https://loremflickr.com/917/2415?lock=3676082205843388",
+                    "generation": 6
+                  },
+                  "hp": 106,
+                  "level": 50,
+                  "maxHp": 106,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Shade Tap",
+                      "power": 50,
+                      "type": "Ghost"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Phantom Grip",
+                      "power": 80,
+                      "type": "Ghost"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 140,
+                    "defense": 211,
+                    "specialAttack": 53,
+                    "specialDefense": 69,
+                    "speed": 92
+                  },
+                  "uid": "host-0",
+                  "xp": 125000
+                },
+                {
+                  "creature": {
+                    "id": 26,
+                    "name": "Mavis",
+                    "types": [
+                      "Ground"
+                    ],
+                    "height": 10.280949027613184,
+                    "weight": 939.87329307809,
+                    "hp": 226,
+                    "attack": 102,
+                    "defense": 34,
+                    "specialAttack": 75,
+                    "specialDefense": 205,
+                    "speed": 17,
+                    "description": "Tempore bene vos agnosco vivo demoror cursim videlicet atqui vorax.",
+                    "imageUrl": "https://picsum.photos/seed/Sc0zQw3/3225/2640?blur=2",
+                    "generation": 7
+                  },
+                  "hp": 0,
+                  "level": 50,
+                  "maxHp": 286,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Mud Toss",
+                      "power": 50,
+                      "type": "Ground"
+                    },
+                    {
+                      "accuracy": 85,
+                      "name": "Quake Stomp",
+                      "power": 90,
+                      "type": "Ground"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 107,
+                    "defense": 39,
+                    "specialAttack": 80,
+                    "specialDefense": 210,
+                    "speed": 22
+                  },
+                  "uid": "host-1",
+                  "xp": 125000
+                }
+              ]
+            },
+            "winner": null
+          },
+          "rngUsed": 3
+        }
+      },
+      {
+        "call": "versusSendOut",
+        "seat": "host",
+        "to": 0,
+        "result": {
+          "events": [
+            {
+              "fighter": {
+                "creature": {
+                  "id": 23,
+                  "name": "Houston",
+                  "types": [
+                    "Ghost"
+                  ],
+                  "height": 5.15837068395718,
+                  "weight": 44.73541400217904,
+                  "hp": 46,
+                  "attack": 135,
+                  "defense": 206,
+                  "specialAttack": 48,
+                  "specialDefense": 64,
+                  "speed": 87,
+                  "description": "Velum tabernus ante undique varietas benevolentia.",
+                  "imageUrl": "https://loremflickr.com/917/2415?lock=3676082205843388",
+                  "generation": 6
+                },
+                "hp": 106,
+                "level": 50,
+                "maxHp": 106,
+                "moves": [
+                  {
+                    "accuracy": 100,
+                    "name": "Shade Tap",
+                    "power": 50,
+                    "type": "Ghost"
+                  },
+                  {
+                    "accuracy": 90,
+                    "name": "Phantom Grip",
+                    "power": 80,
+                    "type": "Ghost"
+                  },
+                  {
+                    "accuracy": 100,
+                    "name": "Quick Tackle",
+                    "power": 40,
+                    "type": "Normal"
+                  },
+                  {
+                    "accuracy": 95,
+                    "name": "Body Check",
+                    "power": 60,
+                    "type": "Normal"
+                  }
+                ],
+                "stats": {
+                  "attack": 140,
+                  "defense": 211,
+                  "specialAttack": 53,
+                  "specialDefense": 69,
+                  "speed": 92
+                },
+                "uid": "host-0",
+                "xp": 125000
+              },
+              "from": null,
+              "side": "player",
+              "type": "switch"
+            }
+          ],
+          "state": {
+            "guest": {
+              "active": 0,
+              "mustSwitch": false,
+              "party": [
+                {
+                  "creature": {
+                    "id": 24,
+                    "name": "Anais",
+                    "types": [
+                      "Dark"
+                    ],
+                    "height": 2.127454668128789,
+                    "weight": 478.28866019742253,
+                    "hp": 29,
+                    "attack": 42,
+                    "defense": 78,
+                    "specialAttack": 89,
+                    "specialDefense": 23,
+                    "speed": 68,
+                    "description": "Auditor triumphus cupio volaticus.",
+                    "imageUrl": "https://loremflickr.com/2038/1347?lock=5359117153340617",
+                    "generation": 1
+                  },
+                  "hp": 89,
+                  "level": 50,
+                  "maxHp": 89,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Sly Swipe",
+                      "power": 55,
+                      "type": "Dark"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Night Lunge",
+                      "power": 80,
+                      "type": "Dark"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 47,
+                    "defense": 83,
+                    "specialAttack": 94,
+                    "specialDefense": 28,
+                    "speed": 73
+                  },
+                  "uid": "guest-0",
+                  "xp": 125000
+                },
+                {
+                  "creature": {
+                    "id": 25,
+                    "name": "Ward",
+                    "types": [
+                      "Psychic"
+                    ],
+                    "height": 16.211797403693165,
+                    "weight": 758.6623877012039,
+                    "hp": 189,
+                    "attack": 115,
+                    "defense": 86,
+                    "specialAttack": 20,
+                    "specialDefense": 188,
+                    "speed": 134,
+                    "description": "Civitas uberrime sonitus tametsi ancilla ater contabesco vis spero.",
+                    "imageUrl": "https://loremflickr.com/349/1526?lock=3268292158866819",
+                    "generation": 7
+                  },
+                  "hp": 249,
+                  "level": 50,
+                  "maxHp": 249,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Mind Poke",
+                      "power": 50,
+                      "type": "Psychic"
+                    },
+                    {
+                      "accuracy": 85,
+                      "name": "Psi Storm",
+                      "power": 90,
+                      "type": "Psychic"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 120,
+                    "defense": 91,
+                    "specialAttack": 25,
+                    "specialDefense": 193,
+                    "speed": 139
+                  },
+                  "uid": "guest-1",
+                  "xp": 125000
+                }
+              ]
+            },
+            "host": {
+              "active": 0,
+              "mustSwitch": false,
+              "party": [
+                {
+                  "creature": {
+                    "id": 23,
+                    "name": "Houston",
+                    "types": [
+                      "Ghost"
+                    ],
+                    "height": 5.15837068395718,
+                    "weight": 44.73541400217904,
+                    "hp": 46,
+                    "attack": 135,
+                    "defense": 206,
+                    "specialAttack": 48,
+                    "specialDefense": 64,
+                    "speed": 87,
+                    "description": "Velum tabernus ante undique varietas benevolentia.",
+                    "imageUrl": "https://loremflickr.com/917/2415?lock=3676082205843388",
+                    "generation": 6
+                  },
+                  "hp": 106,
+                  "level": 50,
+                  "maxHp": 106,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Shade Tap",
+                      "power": 50,
+                      "type": "Ghost"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Phantom Grip",
+                      "power": 80,
+                      "type": "Ghost"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 140,
+                    "defense": 211,
+                    "specialAttack": 53,
+                    "specialDefense": 69,
+                    "speed": 92
+                  },
+                  "uid": "host-0",
+                  "xp": 125000
+                },
+                {
+                  "creature": {
+                    "id": 26,
+                    "name": "Mavis",
+                    "types": [
+                      "Ground"
+                    ],
+                    "height": 10.280949027613184,
+                    "weight": 939.87329307809,
+                    "hp": 226,
+                    "attack": 102,
+                    "defense": 34,
+                    "specialAttack": 75,
+                    "specialDefense": 205,
+                    "speed": 17,
+                    "description": "Tempore bene vos agnosco vivo demoror cursim videlicet atqui vorax.",
+                    "imageUrl": "https://picsum.photos/seed/Sc0zQw3/3225/2640?blur=2",
+                    "generation": 7
+                  },
+                  "hp": 0,
+                  "level": 50,
+                  "maxHp": 286,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Mud Toss",
+                      "power": 50,
+                      "type": "Ground"
+                    },
+                    {
+                      "accuracy": 85,
+                      "name": "Quake Stomp",
+                      "power": 90,
+                      "type": "Ground"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 107,
+                    "defense": 39,
+                    "specialAttack": 80,
+                    "specialDefense": 210,
+                    "speed": 22
+                  },
+                  "uid": "host-1",
+                  "xp": 125000
+                }
+              ]
+            },
+            "winner": null
+          },
+          "rngUsed": 0
+        }
+      }
+    ]
+  },
+  {
+    "kind": "versus",
+    "name": "the last creature faints: a winner, and both views",
+    "setup": {
+      "guest": [
+        28
+      ],
+      "hp": {
+        "guest": [
+          1
+        ]
+      },
+      "host": [
+        27
+      ]
+    },
+    "steps": [
+      {
+        "actions": {
+          "guest": {
+            "index": 1,
+            "timing": 1,
+            "type": "move"
+          },
+          "host": {
+            "index": 0,
+            "timing": 1,
+            "type": "move"
+          }
+        },
+        "call": "resolveVersusTurn",
+        "rng": [
+          0,
+          0.9,
+          0.5,
+          0,
+          0.9,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5,
+          0.5
+        ],
+        "result": {
+          "events": [
+            {
+              "move": {
+                "accuracy": 100,
+                "name": "Cinder Flick",
+                "power": 45,
+                "type": "Fire"
+              },
+              "side": "player",
+              "type": "move"
+            },
+            {
+              "amount": 13,
+              "crit": false,
+              "effectiveness": 0.5,
+              "hp": 0,
+              "target": "enemy",
+              "type": "damage"
+            },
+            {
+              "side": "enemy",
+              "type": "faint"
+            }
+          ],
+          "state": {
+            "guest": {
+              "active": 0,
+              "mustSwitch": false,
+              "party": [
+                {
+                  "creature": {
+                    "id": 28,
+                    "name": "Rhianna",
+                    "types": [
+                      "Water"
+                    ],
+                    "height": 1.981391088918285,
+                    "weight": 721.8606503885451,
+                    "hp": 194,
+                    "attack": 69,
+                    "defense": 13,
+                    "specialAttack": 48,
+                    "specialDefense": 155,
+                    "speed": 75,
+                    "description": "Depraedor victus virtus.",
+                    "imageUrl": "https://picsum.photos/seed/jRZhQasR/2459/2474",
+                    "generation": 2
+                  },
+                  "hp": 0,
+                  "level": 50,
+                  "maxHp": 254,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Splash Jet",
+                      "power": 45,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Tidal Crash",
+                      "power": 85,
+                      "type": "Water"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 74,
+                    "defense": 18,
+                    "specialAttack": 53,
+                    "specialDefense": 160,
+                    "speed": 80
+                  },
+                  "uid": "guest-0",
+                  "xp": 125000
+                }
+              ]
+            },
+            "host": {
+              "active": 0,
+              "mustSwitch": false,
+              "party": [
+                {
+                  "creature": {
+                    "id": 27,
+                    "name": "Leslie",
+                    "types": [
+                      "Fire"
+                    ],
+                    "height": 19.54681233837112,
+                    "weight": 11.364907771056133,
+                    "hp": 61,
+                    "attack": 126,
+                    "defense": 146,
+                    "specialAttack": 142,
+                    "specialDefense": 124,
+                    "speed": 175,
+                    "description": "Nobis dignissimos adstringo verumtamen nisi.",
+                    "imageUrl": "https://picsum.photos/seed/WCeu4r6XX/1629/2240",
+                    "generation": 3
+                  },
+                  "hp": 121,
+                  "level": 50,
+                  "maxHp": 121,
+                  "moves": [
+                    {
+                      "accuracy": 100,
+                      "name": "Cinder Flick",
+                      "power": 45,
+                      "type": "Fire"
+                    },
+                    {
+                      "accuracy": 90,
+                      "name": "Blaze Burst",
+                      "power": 85,
+                      "type": "Fire"
+                    },
+                    {
+                      "accuracy": 100,
+                      "name": "Quick Tackle",
+                      "power": 40,
+                      "type": "Normal"
+                    },
+                    {
+                      "accuracy": 95,
+                      "name": "Body Check",
+                      "power": 60,
+                      "type": "Normal"
+                    }
+                  ],
+                  "stats": {
+                    "attack": 131,
+                    "defense": 151,
+                    "specialAttack": 147,
+                    "specialDefense": 129,
+                    "speed": 180
+                  },
+                  "uid": "host-0",
+                  "xp": 125000
+                }
+              ]
+            },
+            "winner": "host"
+          },
+          "rngUsed": 3
+        }
+      },
+      {
+        "call": "battleViewFor",
+        "seat": "host",
+        "result": {
+          "active": 0,
+          "caught": false,
+          "enemy": {
+            "creature": {
+              "id": 28,
+              "name": "Rhianna",
+              "types": [
+                "Water"
+              ],
+              "height": 1.981391088918285,
+              "weight": 721.8606503885451,
+              "hp": 194,
+              "attack": 69,
+              "defense": 13,
+              "specialAttack": 48,
+              "specialDefense": 155,
+              "speed": 75,
+              "description": "Depraedor victus virtus.",
+              "imageUrl": "https://picsum.photos/seed/jRZhQasR/2459/2474",
+              "generation": 2
+            },
+            "hp": 0,
+            "level": 50,
+            "maxHp": 254,
+            "moves": [
+              {
+                "accuracy": 100,
+                "name": "Splash Jet",
+                "power": 45,
+                "type": "Water"
+              },
+              {
+                "accuracy": 90,
+                "name": "Tidal Crash",
+                "power": 85,
+                "type": "Water"
+              },
+              {
+                "accuracy": 100,
+                "name": "Quick Tackle",
+                "power": 40,
+                "type": "Normal"
+              },
+              {
+                "accuracy": 95,
+                "name": "Body Check",
+                "power": 60,
+                "type": "Normal"
+              }
+            ],
+            "stats": {
+              "attack": 74,
+              "defense": 18,
+              "specialAttack": 53,
+              "specialDefense": 160,
+              "speed": 80
+            },
+            "uid": "guest-0",
+            "xp": 125000
+          },
+          "mustSwitch": false,
+          "party": [
+            {
+              "creature": {
+                "id": 27,
+                "name": "Leslie",
+                "types": [
+                  "Fire"
+                ],
+                "height": 19.54681233837112,
+                "weight": 11.364907771056133,
+                "hp": 61,
+                "attack": 126,
+                "defense": 146,
+                "specialAttack": 142,
+                "specialDefense": 124,
+                "speed": 175,
+                "description": "Nobis dignissimos adstringo verumtamen nisi.",
+                "imageUrl": "https://picsum.photos/seed/WCeu4r6XX/1629/2240",
+                "generation": 3
+              },
+              "hp": 121,
+              "level": 50,
+              "maxHp": 121,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Cinder Flick",
+                  "power": 45,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Blaze Burst",
+                  "power": 85,
+                  "type": "Fire"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 131,
+                "defense": 151,
+                "specialAttack": 147,
+                "specialDefense": 129,
+                "speed": 180
+              },
+              "uid": "host-0",
+              "xp": 125000
+            }
+          ],
+          "versus": true,
+          "winner": "player"
+        }
+      },
+      {
+        "call": "battleViewFor",
+        "seat": "guest",
+        "result": {
+          "active": 0,
+          "caught": false,
+          "enemy": {
+            "creature": {
+              "id": 27,
+              "name": "Leslie",
+              "types": [
+                "Fire"
+              ],
+              "height": 19.54681233837112,
+              "weight": 11.364907771056133,
+              "hp": 61,
+              "attack": 126,
+              "defense": 146,
+              "specialAttack": 142,
+              "specialDefense": 124,
+              "speed": 175,
+              "description": "Nobis dignissimos adstringo verumtamen nisi.",
+              "imageUrl": "https://picsum.photos/seed/WCeu4r6XX/1629/2240",
+              "generation": 3
+            },
+            "hp": 121,
+            "level": 50,
+            "maxHp": 121,
+            "moves": [
+              {
+                "accuracy": 100,
+                "name": "Cinder Flick",
+                "power": 45,
+                "type": "Fire"
+              },
+              {
+                "accuracy": 90,
+                "name": "Blaze Burst",
+                "power": 85,
+                "type": "Fire"
+              },
+              {
+                "accuracy": 100,
+                "name": "Quick Tackle",
+                "power": 40,
+                "type": "Normal"
+              },
+              {
+                "accuracy": 95,
+                "name": "Body Check",
+                "power": 60,
+                "type": "Normal"
+              }
+            ],
+            "stats": {
+              "attack": 131,
+              "defense": 151,
+              "specialAttack": 147,
+              "specialDefense": 129,
+              "speed": 180
+            },
+            "uid": "host-0",
+            "xp": 125000
+          },
+          "mustSwitch": false,
+          "party": [
+            {
+              "creature": {
+                "id": 28,
+                "name": "Rhianna",
+                "types": [
+                  "Water"
+                ],
+                "height": 1.981391088918285,
+                "weight": 721.8606503885451,
+                "hp": 194,
+                "attack": 69,
+                "defense": 13,
+                "specialAttack": 48,
+                "specialDefense": 155,
+                "speed": 75,
+                "description": "Depraedor victus virtus.",
+                "imageUrl": "https://picsum.photos/seed/jRZhQasR/2459/2474",
+                "generation": 2
+              },
+              "hp": 0,
+              "level": 50,
+              "maxHp": 254,
+              "moves": [
+                {
+                  "accuracy": 100,
+                  "name": "Splash Jet",
+                  "power": 45,
+                  "type": "Water"
+                },
+                {
+                  "accuracy": 90,
+                  "name": "Tidal Crash",
+                  "power": 85,
+                  "type": "Water"
+                },
+                {
+                  "accuracy": 100,
+                  "name": "Quick Tackle",
+                  "power": 40,
+                  "type": "Normal"
+                },
+                {
+                  "accuracy": 95,
+                  "name": "Body Check",
+                  "power": 60,
+                  "type": "Normal"
+                }
+              ],
+              "stats": {
+                "attack": 74,
+                "defense": 18,
+                "specialAttack": 53,
+                "specialDefense": 160,
+                "speed": 80
+              },
+              "uid": "guest-0",
+              "xp": 125000
+            }
+          ],
+          "versus": true,
+          "winner": "enemy"
+        }
+      },
+      {
+        "call": "eventsFor",
+        "seat": "host",
+        "result": [
+          {
+            "move": {
+              "accuracy": 100,
+              "name": "Cinder Flick",
+              "power": 45,
+              "type": "Fire"
+            },
+            "side": "player",
+            "type": "move"
+          },
+          {
+            "amount": 13,
+            "crit": false,
+            "effectiveness": 0.5,
+            "hp": 0,
+            "target": "enemy",
+            "type": "damage"
+          },
+          {
+            "side": "enemy",
+            "type": "faint"
+          }
+        ]
+      },
+      {
+        "call": "eventsFor",
+        "seat": "guest",
+        "result": [
+          {
+            "move": {
+              "accuracy": 100,
+              "name": "Cinder Flick",
+              "power": 45,
+              "type": "Fire"
+            },
+            "side": "enemy",
+            "type": "move"
+          },
+          {
+            "amount": 13,
+            "crit": false,
+            "effectiveness": 0.5,
+            "hp": 0,
+            "target": "player",
+            "type": "damage"
+          },
+          {
+            "side": "player",
+            "type": "faint"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "versus",
+    "name": "timing clamp",
+    "setup": {
+      "guest": [
+        2
+      ],
+      "host": [
+        1
+      ]
+    },
+    "steps": [
+      {
+        "call": "clampTiming",
+        "values": [
+          "x",
+          0.5,
+          2,
+          1.1,
+          1,
+          true,
+          null
+        ],
+        "result": [
+          1,
+          1,
+          1.25,
+          1.1,
+          1,
+          1,
+          1
+        ]
+      }
+    ]
+  }
+]
