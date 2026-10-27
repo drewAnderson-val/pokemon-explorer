@@ -41,3 +41,19 @@ describe('GET /api/pokemon', () => {
     })
   })
 })
+
+// Builds without VITE_API_URL (pnpm start, a docker build without the arg) call
+// Express for this too; the team screen loads creatures by id.
+describe('GET /api/pokemon/:id', () => {
+  it('returns one creature', async () => {
+    const res = await fetch(`${base}/api/pokemon/7`)
+    expect(res.status).toBe(200)
+    expect(((await res.json()) as { id: number }).id).toBe(7)
+  })
+
+  it('answers an unknown id with a 404 error', async () => {
+    const res = await fetch(`${base}/api/pokemon/5000`)
+    expect(res.status).toBe(404)
+    expect(await res.json()).toEqual({ error: 'No creature #5000' })
+  })
+})

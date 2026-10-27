@@ -54,3 +54,17 @@ def test_non_numeric_id_is_400(client: TestClient) -> None:
     response = client.get("/api/pokemon/abc")
     assert response.status_code == 400
     assert "error" in response.json()
+
+
+@pytest.mark.parametrize("page", ["9223372036854775807", "99999999999999999999"])
+def test_huge_page_is_an_empty_page_not_an_error(client: TestClient, page: str) -> None:
+    response = client.get("/api/pokemon", params={"page": page})
+    assert response.status_code == 200
+    assert response.json()["data"] == []
+    assert response.json()["pagination"]["total"] == 1000
+
+
+def test_nul_in_search_matches_nothing(client: TestClient) -> None:
+    response = client.get("/api/pokemon", params={"search": "fi\x00re"})
+    assert response.status_code == 200
+    assert response.json()["pagination"]["total"] == 0

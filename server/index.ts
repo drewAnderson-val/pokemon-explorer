@@ -15,6 +15,11 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' })
 })
 
+// An unknown API path is a JSON 404, not the SPA's index.html with a 200.
+app.use('/api', (_req, res) => {
+  res.status(404).json({ error: 'Not found' })
+})
+
 app.use(express.static(distDir))
 app.get('/{*splat}', (_req, res) => {
   // `root` keeps send's dotfile check off the absolute path (e.g. a checkout under ~/.something).

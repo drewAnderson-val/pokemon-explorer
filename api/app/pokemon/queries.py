@@ -43,22 +43,35 @@ def like_pattern(search: str) -> str | None:
 
 
 async def find_page(conn: AsyncConnection, query: PokemonQuery) -> dict[str, Any]:
+    # Postgres text can't hold a NUL byte, so no record contains one: answer
+    # without asking (sending it would be an error, not "no matches").
+    if "\x00" in query.search:
+        return page_body([], 0, query)
+
+    offset = (query.page - 1) * query.limit
     params = {
         "type": query.type,
         "pattern": like_pattern(query.search),
         "limit": query.limit,
-        "offset": (query.page - 1) * query.limit,
+        "offset": offset,
     }
     cursor = await conn.execute(f"SELECT count(*) FROM pokemon WHERE {WHERE}", params)
     (total,) = await cursor.fetchone() or (0,)
+
+    # Past the last match there's nothing to fetch. Also keeps a huge page number
+    # from overflowing Postgres's OFFSET (a 64-bit integer).
+    if offset >= total:
+        return page_body([], total, query)
 
     cursor = await conn.execute(
         f"SELECT {COLUMNS} FROM pokemon WHERE {WHERE}"
         f" ORDER BY {ORDER_BY[query.sort]} LIMIT %(limit)s OFFSET %(offset)s",
         params,
     )
-    data = [to_json(row) for row in await cursor.fetchall()]
+    return page_body([to_json(row) for row in await cursor.fetchall()], total, query)
 
+
+def page_body(data: list[dict[str, Any]], total: int, query: PokemonQuery) -> dict[str, Any]:
     total_pages = math.ceil(total / query.limit)
     return {
         "data": data,

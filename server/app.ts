@@ -65,4 +65,14 @@ app.get('/api/pokemon', (req, res) => {
   res.json(queryPokemon(pokemon, parsed.query))
 })
 
+// Same contract as the FastAPI route, for builds without VITE_API_URL.
+app.get('/api/pokemon/:id', (req, res) => {
+  const found = pokemon.find(p => String(p.id) === req.params.id)
+  if (!found) {
+    res.status(404).json({ error: `No creature #${req.params.id}` })
+    return
+  }
+  res.json(found)
+})
+
 export default app
