@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from psycopg import AsyncConnection
 
@@ -30,6 +31,15 @@ def create_app(settings: Settings) -> FastAPI:
 
     app = FastAPI(title="Pokemon Explorer API", lifespan=lifespan)
     app.state.settings = settings
+    if settings.cors_origin_regex:
+        # The frontend is served from another origin, so browsers only let it read
+        # API responses that name its origin in Access-Control-Allow-Origin.
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origin_regex=settings.cors_origin_regex,
+            allow_methods=["GET", "POST", "PUT", "DELETE"],
+            allow_headers=["Authorization", "Content-Type", "Idempotency-Key"],
+        )
     app.include_router(health.router)
     app.include_router(pokemon.router)
 
