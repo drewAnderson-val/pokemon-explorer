@@ -293,3 +293,28 @@ Template:
   user would block features without protecting anything. Slice 4 adds the gating together with the routes that need it.
 - **Rejected (for now):** login rate limiting and lockout. Named in "what I'd add at scale": per-IP and per-username
   limits in Postgres or Redis.
+
+## 2026-10-27: The battle engine is ported to Python as plain camelCase dicts
+
+- **What:** `api/app/engine/` ports `src/lib/battle/` rule for rule (wild and friend battles, stats, moves, type
+  chart, catching). State and events are plain dicts typed with `TypedDict`, using the **same camelCase keys** as the
+  TypeScript types. The TypeScript engine stays until slice 4 moves wild battles to the server.
+- **Why:** what the engine returns is exactly what Postgres stores (JSONB) and what the frontend already renders: one
+  shape, no conversion layer to keep in sync. Pure functions with an injected `rng` and no mutation of the input keep
+  the port testable and make a failed turn harmless.
+- **Rejected:** snake_case dataclasses with a to/from JSON layer (two shapes of every object, and a place for them to
+  drift); keeping the engine in TypeScript only (two languages on the server, or battles staying in the browser).
+- **Trade-off:** camelCase keys in Python code look foreign; `TypedDict` still gives the type checker every key.
+
+## 2026-10-27: The port is proven by recorded battles, not just ported tests
+
+- **What:** `src/lib/battle/golden.test.ts` plays 16 scripted battles with real creatures and exact random numbers
+  and records every event, state and how many random numbers each step used to `api/tests/golden/battles.json`. The
+  Python tests replay all of them and compare with number types included (24 is not 24.0).
+- **Why:** an extra or missing random draw shifts every later number and silently changes a battle; a rounding
+  difference changes damage by one. Comparing whole outputs catches what hand-written assertions miss. Mutation checks
+  confirmed it: drawing crit before hit, or not flipping the guest's events, fails the replay.
+- **Two traps the port hit:** JavaScript's `Math.round` rounds halves up, Python's `round` rounds them to even
+  (`round(4.5) == 4`), so the engine uses its own `js_round`; and JSON prints `0.5 × 2` as `1`, so whole-number
+  multipliers are returned as `int`.
+- **Trade-off:** the replay is as good as its 16 scenarios; unit tests ported from the TypeScript cover the rest.
