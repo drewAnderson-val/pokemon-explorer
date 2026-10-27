@@ -10,7 +10,7 @@ from psycopg import AsyncConnection
 from app.config import Settings
 from app.db.migrate import migrate
 from app.db.pool import open_pool
-from app.routes import health, pokemon
+from app.routes import auth, health, pokemon
 
 
 def create_app(settings: Settings) -> FastAPI:
@@ -42,6 +42,7 @@ def create_app(settings: Settings) -> FastAPI:
         )
     app.include_router(health.router)
     app.include_router(pokemon.router)
+    app.include_router(auth.router)
 
     # Every error is {"error": ...}, including the 401s and 404s FastAPI raises.
     @app.exception_handler(HTTPException)
