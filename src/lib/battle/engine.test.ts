@@ -234,6 +234,17 @@ describe('resolveTurn', () => {
     expect(events[3]).toMatchObject({ amount: 52, target: 'player' })
   })
 
+  it('caps the timing bonus at 1.25, like friend battles', () => {
+    const damage = (timing: number) =>
+      resolveTurn(
+        battleOf(),
+        { index: 1, timing, type: 'move' },
+        scriptedRng(0, 0, NO_CRIT, 0, 0, NO_CRIT, 0)
+      ).events[1]
+    expect(damage(100)).toEqual(damage(1.25))
+    expect(damage(-5)).toEqual(damage(1))
+  })
+
   it('records a miss', () => {
     const { events, state } = resolveTurn(
       battleOf(),

@@ -318,3 +318,17 @@ Template:
   (`round(4.5) == 4`), so the engine uses its own `js_round`; and JSON prints `0.5 × 2` as `1`, so whole-number
   multipliers are returned as `int`.
 - **Trade-off:** the replay is as good as its 16 scenarios; unit tests ported from the TypeScript cover the rest.
+
+## 2026-10-28: The engine treats actions as untrusted, and wild timing is clamped
+
+- **What:** both engines clamp the timing-bar bonus to 1–1.25 in wild battles too (before, only friend battles did),
+  and the Python engine rejects anything that isn't a well-formed move, switch or catch with a `ValueError`: a missing
+  or unknown `type`, a missing index, a bool/float/string index, a missing seat in a friend turn.
+- **Why:** the TypeScript engine trusted its own client. Once the server plays wild battles, the action comes from any
+  browser: unclamped, `timing: 1000` dealt 75,352 damage; `{"type": "run"}` silently threw a ball; `to: true` stored
+  `"active": true` in the state. A review found these by fuzzing both engines with 3,000 random battles (byte-identical
+  output for valid play) and then probing bad input.
+- **Rejected:** validating only in the route's request model. The engine is the last line before the state is
+  stored, and slice 5 reuses it from another route.
+- **Trade-off:** the TS engine now clamps wild timing too, so the two stay identical; its own timing bar never produced
+  values outside 1–1.25, so nothing changes for players.
