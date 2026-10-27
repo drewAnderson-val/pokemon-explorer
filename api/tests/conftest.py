@@ -38,7 +38,7 @@ def reset_db(test_database_url: str) -> None:
 
 @pytest.fixture
 def client(test_database_url: str, reset_db: None) -> Iterator[TestClient]:
-    app = create_app(Settings(test_database_url, "test-secret", run_migrations=False))
+    app = create_app(Settings(test_database_url, "test-secret"))
     # Used as a context manager so the app's startup and shutdown (the lifespan) run.
     with TestClient(app) as client:
         yield client
