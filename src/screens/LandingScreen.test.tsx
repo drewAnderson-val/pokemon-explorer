@@ -1,7 +1,9 @@
 import { screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
 import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
+import { authStore } from '@/lib/auth'
 import { serializeTeam } from '@/lib/team/team'
 import { stubFetch } from '@/test/fake-api'
 import { renderWithClient } from '@/test/render'
@@ -22,12 +24,13 @@ describe('LandingScreen', () => {
         .getAllByRole('link')
         .map(link => link.getAttribute('href'))
     ).toEqual(['/battle', '/create', '/explore#team'])
-    // The header doesn't repeat the start menu: just the logo, linking home.
+    // The header doesn't repeat the start menu: the logo, linking home, and
+    // the account link.
     expect(
       within(screen.getByRole('navigation', { name: 'Main' }))
         .getAllByRole('link')
         .map(link => link.getAttribute('href'))
-    ).toEqual(['/'])
+    ).toEqual(['/', '/login'])
   })
 
   it('says how big your roster is, or that there is none yet', () => {
@@ -49,5 +52,29 @@ describe('LandingScreen', () => {
     expect(
       within(startMenu()).getByRole('link', { name: /Load your roster/ })
     ).toHaveTextContent('2/6 creatures on your team.')
+  })
+})
+
+describe('LandingScreen account link', () => {
+  it('offers sign-in when signed out', () => {
+    stubFetch()
+    renderWithClient(<LandingScreen />)
+    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute(
+      'href',
+      '/login'
+    )
+  })
+
+  it('shows who is signed in, and signs out', async () => {
+    authStore.update(() => ({
+      expiresAt: Math.floor(Date.now() / 1000) + 3600,
+      token: 'tok',
+      user: { id: 'u1', username: 'Drew_1' }
+    }))
+    stubFetch()
+    renderWithClient(<LandingScreen />)
+    expect(screen.getByText('Signed in as Drew_1')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Sign out' }))
+    expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument()
   })
 })

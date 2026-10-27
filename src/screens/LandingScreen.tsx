@@ -4,7 +4,9 @@ import { DialogBox } from '@/components/DialogBox'
 import { HpBar } from '@/components/HpBar'
 import { LandingScene } from '@/components/LandingScene'
 import { TypeBadge } from '@/components/TypeBadge'
+import { useAuth } from '@/hooks/useAuth'
 import { useTeam } from '@/hooks/useTeam'
+import { logout } from '@/lib/auth'
 import { MAX_TEAM } from '@/lib/battle/engine'
 import { formatNumber } from '@/lib/format'
 import { typeStyle } from '@/lib/type-colors'
@@ -65,6 +67,7 @@ export function LandingScreen() {
             />
             Explorer
           </a>
+          <AccountLink />
         </nav>
 
         <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-12 px-6 pt-16">
@@ -103,6 +106,33 @@ export function LandingScreen() {
         respective owners.
       </footer>
     </div>
+  )
+}
+
+// Top right of the landing page: who's signed in, or a way to sign in.
+function AccountLink() {
+  const session = useAuth()
+  if (!session) {
+    return (
+      <a
+        className={cn('ml-auto text-label font-bold uppercase', onSky)}
+        href="/login"
+      >
+        Sign in
+      </a>
+    )
+  }
+  return (
+    <p className={cn('ml-auto flex items-center gap-3 text-label', onSky)}>
+      <span>Signed in as {session.user.username}</span>
+      <button
+        className="font-bold uppercase underline"
+        onClick={logout}
+        type="button"
+      >
+        Sign out
+      </button>
+    </p>
   )
 }
 

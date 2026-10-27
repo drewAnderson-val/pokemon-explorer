@@ -16,7 +16,7 @@
       "python": "${workspaceFolder}/api/.venv/bin/python",
       "env": {
         "DATABASE_URL": "postgresql://postgres:postgres@localhost:54329/pokemon",
-        "JWT_SECRET": "dev"
+        "JWT_SECRET": "dev-only-secret-not-for-production-use"
       },
       "justMyCode": true
     }

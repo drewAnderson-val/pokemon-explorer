@@ -10,7 +10,7 @@ import {
 
 // The FastAPI service. Empty in dev, where Vite proxies /api/pokemon to it; in
 // prod the build sets it to the API's own origin.
-const API_BASE = import.meta.env.VITE_API_URL ?? ''
+export const API_BASE = import.meta.env.VITE_API_URL ?? ''
 
 export type PokemonFilters = {
   search: string

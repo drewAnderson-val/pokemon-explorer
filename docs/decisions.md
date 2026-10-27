@@ -615,3 +615,12 @@ server runs the fight. Design: `docs/superpowers/specs/2026-10-22-friend-battles
 
 - **What:** decisions for the Python (FastAPI) and Postgres backend live in `docs/backend/decisions.md`, one entry
   per decision with what was rejected and the trade-off accepted. This file keeps the history of the Express app.
+
+## 2026-10-27: A sign-in link in the landing header (owner to confirm)
+
+- **What:** the landing header now has, beside the `Explorer` logo, "Sign in" (signed out) or "Signed in as <name> ·
+  Sign out" (signed in).
+- **Why:** the 2026-10-22 entry removed header links that repeated the start menu. The account link repeats nothing;
+  there was no other place for it on the landing page.
+- **Rejected:** a fourth start-menu entry (the menu is for playing, not accounts).
+- **Owner to confirm:** reverses part of an owner request; move it if the header should stay logo-only.
