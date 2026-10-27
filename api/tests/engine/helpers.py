@@ -1,6 +1,6 @@
 from typing import Any
 
-from app.engine.types import Pokemon
+from app.engine.types import Fighter, Pokemon
 
 
 def make_creature(**overrides: Any) -> Pokemon:
@@ -38,3 +38,17 @@ class ScriptedRng:
         value = self.values[self.calls]
         self.calls += 1
         return value
+
+
+def make_fighter(
+    level: int = 50,
+    *,
+    uid: str | None = None,
+    hp: int | None = None,
+    xp: int | None = None,
+    **overrides: Any,
+) -> Fighter:
+    from app.engine.wild import create_fighter
+
+    creature = make_creature(**overrides)
+    return create_fighter(creature, level, uid=uid or f"uid-{creature['id']}", hp=hp, xp=xp)
