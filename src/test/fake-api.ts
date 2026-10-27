@@ -8,6 +8,13 @@ type Handler = (url: URL) => Promise<Response> | Response
 
 // The real API logic over the real fixture data, without a server.
 export function apiResponse(url: URL): Response {
+  const byId = /^\/api\/pokemon\/(\d+)$/.exec(url.pathname)
+  if (byId) {
+    const found = pokemonData.find(p => p.id === Number(byId[1]))
+    return found
+      ? Response.json(found)
+      : Response.json({ error: `No creature #${byId[1]}` }, { status: 404 })
+  }
   const parsed = parsePokemonQuery(Object.fromEntries(url.searchParams))
   if (!parsed.ok) return Response.json({ error: parsed.error }, { status: 400 })
   return Response.json(queryPokemon(pokemonData, parsed.query))

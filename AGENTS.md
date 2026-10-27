@@ -69,6 +69,16 @@ decision, using its template); `docs/decisions.md` keeps the Express app's histo
 - Tests: Vitest + Testing Library (`pnpm test`). UI tests use `src/test/fake-api.ts`, which runs the real
   `server/query.ts` over the fixture data, so expected counts come from `src/data/pokemon.json`.
 
+## Run it locally
+
+`/api/pokemon` is served by FastAPI (`api/`); every other route is still Express inside Vite. Three things:
+
+```bash
+docker compose up -d --wait db   # Postgres (dev database `pokemon`; tests use `postgres` and wipe it)
+pnpm dev:api                     # FastAPI on :8000 (runs migrations on start)
+pnpm dev                         # Vite on :5173; proxies /api/pokemon to :8000
+```
+
 ## Verify before you say it works
 
 ```bash
