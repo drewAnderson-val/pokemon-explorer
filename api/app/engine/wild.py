@@ -203,13 +203,17 @@ def resolve_turn(state: BattleState, action: PlayerAction, rng: Rng) -> TurnResu
     if kind not in ("move", "switch", "catch"):
         raise ValueError("Unknown action")
     if kind == "move":
+        # Checked before any random draw: if the enemy is faster and faints the lead,
+        # the player's move never runs, and a bad index would go unnoticed.
+        index = int_field(action.get("index"))
+        if not 0 <= index < len(active_fighter(nxt)["moves"]):
+            raise ValueError(f"No move {index} for player")
         enemy_move = choose_enemy_move(nxt["enemy"], active_fighter(nxt), rng)
         order = turn_order(
             active_fighter(nxt)["stats"]["speed"], nxt["enemy"]["stats"]["speed"], rng
         )
         for side in order:
             if side == "player":
-                index = int_field(action.get("index"))
                 _attack(nxt, side, index, rng, events, clamp_timing(action.get("timing")))
             else:
                 _attack(nxt, side, enemy_move, rng, events)
