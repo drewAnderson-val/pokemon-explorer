@@ -4,6 +4,8 @@ services:
     image: postgres:17
     environment:
       POSTGRES_PASSWORD: postgres
+      # Dev uses this database; tests use `postgres` and wipe it, so they never touch dev data.
+      POSTGRES_DB: pokemon
     ports:
       - '54329:5432'
     healthcheck:

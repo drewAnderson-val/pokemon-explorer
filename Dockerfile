@@ -4,6 +4,9 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 COPY . .
+# The FastAPI service's origin, baked into the client bundle at build time.
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN pnpm build && pnpm prune --prod
 
 FROM node:24-slim

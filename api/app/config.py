@@ -7,6 +7,8 @@ class Settings:
     database_url: str
     jwt_secret: str
     run_migrations: bool = True
+    # Browser origins allowed to call the API (CORS). None: no CORS headers at all.
+    cors_origin_regex: str | None = None
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -14,6 +16,7 @@ class Settings:
             database_url=_require("DATABASE_URL"),
             jwt_secret=_require("JWT_SECRET"),
             run_migrations=os.environ.get("RUN_MIGRATIONS", "true").lower() != "false",
+            cors_origin_regex=os.environ.get("CORS_ORIGIN_REGEX", "").strip() or None,
         )
 
 

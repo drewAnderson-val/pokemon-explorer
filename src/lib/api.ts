@@ -2,10 +2,15 @@ import type { CreatureRequest, CreatureResponse } from './creature'
 
 import {
   PAGE_SIZE,
+  type Pokemon,
   type PokemonPage,
   type PokemonType,
   type SortKey
 } from './pokemon'
+
+// The FastAPI service. Empty in dev, where Vite proxies /api/pokemon to it; in
+// prod the build sets it to the API's own origin.
+const API_BASE = import.meta.env.VITE_API_URL ?? ''
 
 export type PokemonFilters = {
   search: string
@@ -41,14 +46,18 @@ export async function createCreature(
   return body
 }
 
-// Ids run 1…total with no gaps, so in id order creature N is on page N of a
-// one-per-page listing. The id check makes a gap fail loudly instead of
-// quietly returning a different creature.
-export async function fetchPokemonById(id: number, signal?: AbortSignal) {
-  const page = await fetchPokemonAt(id, signal)
-  const found = page.data[0]
-  if (found?.id !== id) throw new CreatureNotFoundError(`No creature #${id}`)
-  return found
+export async function fetchPokemonById(
+  id: number,
+  signal?: AbortSignal
+): Promise<Pokemon> {
+  const response = await fetch(`${API_BASE}/api/pokemon/${id}`, { signal })
+  if (response.status === 404) {
+    throw new CreatureNotFoundError(`No creature #${id}`)
+  }
+  if (!response.ok) {
+    throw new Error(`Pokemon request failed (${response.status})`)
+  }
+  return (await response.json()) as Pokemon
 }
 
 export async function fetchPokemonPage({
@@ -67,7 +76,7 @@ export async function fetchPokemonPage({
   if (search) params.set('search', search)
   if (type) params.set('type', type)
 
-  const response = await fetch(`/api/pokemon?${params}`, { signal })
+  const response = await fetch(`${API_BASE}/api/pokemon?${params}`, { signal })
   if (!response.ok) {
     throw new Error(`Pokemon request failed (${response.status})`)
   }

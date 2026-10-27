@@ -27,7 +27,7 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 
 [tool.mypy]
 strict = true
-files = ["app", "tests"]
+files = ["app", "scripts", "tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

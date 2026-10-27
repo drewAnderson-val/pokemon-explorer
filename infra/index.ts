@@ -55,11 +55,30 @@ if (isProd) {
   shared.push(registry, runtimeAccount)
 }
 
+// Cloud Run's URL hash for this project and region (in every service's URL).
+// A constant: reading it from the Express service's URI would make the API
+// depend on the frontend's deploy.
+const CLOUD_RUN_HASH = 'ogxllptvoa'
+// The prod frontend and every PR preview (pokemon-explorer-pr-<n>).
+const frontendOrigins = `^https://${appName}(-pr-\\d+)?-${CLOUD_RUN_HASH}-uc\\.a\\.run\\.app$`
+
+// The FastAPI service (api/), prod only: PR previews would share the prod
+// database, so a PR's migrations would change prod. Previews build their
+// frontend against the prod API (read-only routes so far). Its Cloud SQL
+// instance, runtime account and secrets come from the bootstrap stack.
+const apiService = isProd ? deployApi() : undefined
+const apiUri: pulumi.Output<string> = apiService
+  ? apiService.uri
+  : gcp.cloudrunv2.getServiceOutput({ location: region, name: 'pokemon-api' })
+      .uri
+
 // Built and pushed on every `pulumi up`; Cloud Run is pinned to the digest,
 // so a new revision rolls out only when the image content changes.
 const image = new dockerBuild.Image(
   'image',
   {
+    // The client bundle calls the FastAPI service at this origin.
+    buildArgs: { VITE_API_URL: apiUri },
     context: { location: '..' },
     platforms: ['linux/amd64'],
     push: true,
@@ -120,10 +139,7 @@ new gcp.cloudrunv2.ServiceIamMember('public', {
 export const url = service.uri
 export const imageRef = image.ref
 
-// The FastAPI service (api/), prod only: PR previews would share the prod
-// database, so a PR's migrations would change prod. Its Cloud SQL instance,
-// runtime account and secrets come from the bootstrap stack.
-export const apiUrl = isProd ? deployApi().uri : undefined
+export const apiUrl = apiService?.uri
 
 function deployApi() {
   const apiImageName = `${registryHost}/${project}/${appName}/api`
@@ -153,7 +169,7 @@ function deployApi() {
     valueSource: { secretKeyRef: { secret, version: 'latest' } }
   })
 
-  const apiService = new gcp.cloudrunv2.Service('api-service', {
+  const service = new gcp.cloudrunv2.Service('api-service', {
     deletionProtection: false,
     ingress: 'INGRESS_TRAFFIC_ALL',
     location: region,
@@ -162,6 +178,7 @@ function deployApi() {
       containers: [
         {
           envs: [
+            { name: 'CORS_ORIGIN_REGEX', value: frontendOrigins },
             secretEnv('DATABASE_URL', 'api-database-url'),
             secretEnv('JWT_SECRET', 'api-jwt-secret')
           ],
@@ -191,13 +208,12 @@ function deployApi() {
     }
   })
 
-
   new gcp.cloudrunv2.ServiceIamMember('api-public', {
     location: region,
     member: 'allUsers',
-    name: apiService.name,
+    name: service.name,
     role: 'roles/run.invoker'
   })
 
-  return apiService
+  return service
 }
