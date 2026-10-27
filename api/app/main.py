@@ -1,3 +1,4 @@
+import random
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -10,7 +11,7 @@ from psycopg import AsyncConnection
 from app.config import Settings
 from app.db.migrate import migrate
 from app.db.pool import open_pool
-from app.routes import auth, health, pokemon, team
+from app.routes import auth, health, pokemon, team, wild
 
 
 def create_app(settings: Settings) -> FastAPI:
@@ -31,6 +32,8 @@ def create_app(settings: Settings) -> FastAPI:
 
     app = FastAPI(title="Pokemon Explorer API", lifespan=lifespan)
     app.state.settings = settings
+    # Every random roll in battles. Tests replace it with scripted numbers.
+    app.state.rng = random.random
     if settings.cors_origin_regex:
         # The frontend is served from another origin, so browsers only let it read
         # API responses that name its origin in Access-Control-Allow-Origin.
@@ -44,6 +47,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.include_router(pokemon.router)
     app.include_router(auth.router)
     app.include_router(team.router)
+    app.include_router(wild.router)
 
     # Errors routes raise (like current_user's 401) come out as {"error": ...}. Routing
     # errors (unknown path, wrong method) are raised by Starlette and keep {"detail"}.
