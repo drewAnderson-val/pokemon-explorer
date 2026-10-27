@@ -362,3 +362,17 @@ Template:
 - **What:** teams reference `pokemon` rows, and custom creatures still live only in the browser.
 - **Trade-off:** a temporary step back in slice 4b ("Add to team" disabled for custom creatures), accepted by the
   owner to keep battles first.
+
+## 2026-10-28: Pool connections autocommit, so route transactions commit before the response
+
+- **What:** the connection pool opens connections with `autocommit=True`. A lone query commits on its own; a route's
+  `async with conn.transaction()` is a real BEGIN/COMMIT.
+- **Why:** without it, `current_user`'s query opened a transaction on the pooled connection before the route ran, so
+  every route's `transaction()` was only a savepoint, and the real COMMIT ran when the pool took the connection back:
+  after the response was sent. A review reproduced a `GET` right after a successful `PUT` returning the old team, and a
+  client could be told 200 for a write whose commit then failed. Row locks still held to the late commit, so the
+  turn check stayed correct. A test now asserts no transaction is open when a route starts.
+- **Rejected:** keeping implicit transactions and committing in the dependency's teardown (it runs after the
+  response is sent in this FastAPI version).
+- **Trade-off:** every multi-statement write must be wrapped in `conn.transaction()` explicitly; a forgotten one
+  commits statement by statement.
