@@ -19,6 +19,8 @@ const apis = [
   'iam.googleapis.com',
   'iamcredentials.googleapis.com',
   'run.googleapis.com',
+  'secretmanager.googleapis.com',
+  'sqladmin.googleapis.com',
   'sts.googleapis.com'
 ].map(
   api =>
@@ -78,6 +80,68 @@ new gcp.projects.IAMMember(
   { dependsOn: apis }
 )
 
+// The FastAPI service: its Postgres (Cloud SQL), runtime identity and secrets.
+// All owner-run and protected, like the state bucket: CI can never delete the
+// database or the secrets. The runtime account lives here, not in the app stack,
+// so its grants exist before the first deploy. Secret values (the database
+// password inside the URL, the JWT secret) are added by hand with gcloud, so they
+// never pass through code, Pulumi state or CI logs. The deployer still can deploy
+// code that runs as this account, so it isn't a wall against CI, just against
+// the values sitting anywhere readable.
+const database = new gcp.sql.DatabaseInstance(
+  'api-db',
+  {
+    databaseVersion: 'POSTGRES_17',
+    deletionProtection: true,
+    name: 'pokemon-db',
+    region,
+    settings: {
+      availabilityType: 'ZONAL',
+      backupConfiguration: { enabled: true },
+      diskSize: 10,
+      // db-f1-micro (shared core, the cheapest tier) needs the Enterprise edition.
+      edition: 'ENTERPRISE',
+      // A public IP with no authorized networks: only Cloud SQL's connector (IAM
+      // checked, encrypted) can reach it, which is how Cloud Run connects.
+      ipConfiguration: { ipv4Enabled: true },
+      tier: 'db-f1-micro'
+    }
+  },
+  { dependsOn: apis, protect: true }
+)
+new gcp.sql.Database(
+  'api-db-pokemon',
+  { instance: database.name, name: 'pokemon' },
+  { protect: true }
+)
+
+const apiRuntime = new gcp.serviceaccount.Account(
+  'api-runtime',
+  {
+    accountId: 'pokemon-api-run',
+    displayName: 'Pokemon Explorer API Cloud Run runtime'
+  },
+  { dependsOn: apis, protect: true }
+)
+const apiRuntimeMember = pulumi.interpolate`serviceAccount:${apiRuntime.email}`
+new gcp.projects.IAMMember('api-runtime-cloudsql-client', {
+  member: apiRuntimeMember,
+  project,
+  role: 'roles/cloudsql.client'
+})
+for (const secretId of ['api-database-url', 'api-jwt-secret']) {
+  const secret = new gcp.secretmanager.Secret(
+    secretId,
+    { replication: { auto: {} }, secretId },
+    { dependsOn: apis, protect: true }
+  )
+  new gcp.secretmanager.SecretIamMember(`${secretId}-accessor`, {
+    member: apiRuntimeMember,
+    role: 'roles/secretmanager.secretAccessor',
+    secretId: secret.id
+  })
+}
+
 new gcp.storage.BucketIAMMember('deployer-state', {
   bucket: stateBucket.name,
   member: deployerMember,
@@ -114,3 +178,4 @@ new gcp.serviceaccount.IAMMember('deployer-wif', {
 export const GCP_WORKLOAD_IDENTITY_PROVIDER = provider.name
 export const GCP_SERVICE_ACCOUNT = deployer.email
 export const PULUMI_BACKEND_URL = pulumi.interpolate`gs://${stateBucket.name}`
+export const API_DB_CONNECTION_NAME = database.connectionName

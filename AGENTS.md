@@ -16,12 +16,34 @@ The app lives at the repo root; `infra/AGENTS.md` adds rules for the deploy code
 - **Before changing UI**, read `docs/FINNY-requirements.md` (what to build, data gotchas) and `docs/DESIGN.md`
   (visual direction). `docs/brief.md` is FINNY's original brief; don't edit it.
 
+## Direction (from 2026-10-26)
+
+The Express backend is being rebuilt in **Python (FastAPI) on Postgres**. The React app stays and changes only where
+it meets the new API. Backend decisions and their reasons go in `docs/backend/decisions.md` (append one entry per
+decision, using its template); `docs/decisions.md` keeps the Express app's history.
+
+- **Auth is built in-house:** a users table, password hashing, signup and login routes, one 1-hour access token signed
+  with PyJWT. No refresh tokens, no Supabase Auth or Auth0. Keep it small.
+- **The owner must be able to explain every line.** Build in thin slices (data and `GET /api/pokemon` first, then
+  auth, then battles). Port from the existing TypeScript as the reference, and don't start the next slice until the
+  owner has walked through the current one. Prefer plain, explicit code over clever code or extra libraries.
+- **Frontend changes stay minimal:** fetch calls to the new API, loading and error states, the JWT on each request,
+  CORS.
+- **Every battle runs on the server**, wild included: the engine is ported to Python and the client only plays back
+  events.
+- **Postgres is Cloud SQL** (`pokemon-db`, owner-run bootstrap stack, reached through Cloud Run's built-in connector). The frontend and API deploy
+  separately, and **each slice ships live**: the API has its own Cloud Run service from slice 0.
+- **Plan:** `docs/superpowers/specs/2026-10-26-fastapi-backend-design.md` (slices, tables, endpoints). Until slice 8,
+  the Express code below still serves the React build and any endpoints not yet moved.
+
 ## Layout
 
 | Path | What |
 | --- | --- |
 | `src/` | React 19 + Vite 8 SPA (`@/` aliases `src/`; shadcn/ui primitives in `src/components/ui/`) |
 | `server/` | Express 5 API (`app.ts`) and prod entry (`index.ts`); one container in prod |
+| `api/` | FastAPI service (Python 3.13, uv): `app/` code, `app/db/migrations/` numbered SQL, `tests/` (pytest, real Postgres) |
+| `docker-compose.yml` | Local Postgres 17 on port 54329 for the API's dev and tests |
 | `infra/` | Pulumi (TypeScript): app stack (CI-run) and `bootstrap/` stack (owner-run). Own `package.json` |
 | `.github/review/rules.md` | AI reviewer's custom rules; add a rule to teach it |
 | `docs/` | Decision log, requirements, design notes, specs and plans, `ai-usage.md` |
@@ -54,6 +76,8 @@ pnpm install && pnpm lint && pnpm test && pnpm build   # lint, tests, typecheck,
 pnpm start                                             # prod server on :3000
 curl -fsS localhost:3000/api/health && curl -fsS 'localhost:3000/api/pokemon?limit=1'
 cd infra && pnpm install && pnpm types                 # Pulumi typecheck
+docker compose up -d --wait db                        # Postgres for the API
+cd api && uv sync && uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest
 ```
 
 pnpm is pinned via `packageManager` (11.x). pnpm 11 ignores `pnpm.*` build settings in `package.json`; build-script

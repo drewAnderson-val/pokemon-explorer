@@ -11,3 +11,7 @@ scripts
 .github
 .claude
 *.md
+
+# The API has its own image (api/Dockerfile)
+api
+docker-compose.yml

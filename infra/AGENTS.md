@@ -9,6 +9,10 @@ for the pipeline and `docs/decisions.md` for why it's split this way.
 | `infra/` (`pr-<n>`) | GitHub Actions per PR; destroyed on close | its own image tag + Cloud Run service; reuses prod's registry and runtime SA |
 | `infra/bootstrap/` (`prod`) | a project owner, locally, rarely | state bucket, GitHub OIDC (WIF), deployer SA + roles |
 
+The backend is moving to Python (FastAPI) on Postgres (root `AGENTS.md`, Direction). Its Postgres is Cloud SQL
+(`pokemon-db`), defined with its secrets and runtime account in `bootstrap/` (owner-run, `protect`ed); the app stack
+only adds the API's Cloud Run service, `prod` only.
+
 ## Rules
 
 - **Never run the bootstrap stack from CI**, and never give the deployer service account IAM-admin roles. CI must not

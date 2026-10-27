@@ -38,9 +38,35 @@ jobs:
       - run: pnpm test
       - run: pnpm build
 
+  # The FastAPI service in api/: lint, types and tests against a real Postgres.
+  check-api:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 2s --health-timeout 2s --health-retries 15
+    defaults:
+      run:
+        working-directory: api
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v7
+      - run: pipx install uv==0.9.7
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - run: uv run pytest
+
   # prod stack: `pulumi preview` on PRs (read-only), `pulumi up` on main.
   deploy:
-    needs: check
+    needs: [check, check-api]
     runs-on: ubuntu-latest
     # Deploys queue and never cancel mid-apply; PR previews of prod are read-only.
     concurrency:
@@ -48,6 +74,7 @@ jobs:
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     outputs:
       url: ${{ steps.pulumi.outputs.url }}
+      api-url: ${{ steps.pulumi.outputs.apiUrl }}
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -80,6 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       URL: ${{ needs.deploy.outputs.url }}
+      API_URL: ${{ needs.deploy.outputs.api-url }}
     steps:
       - name: Health check
         run: curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$URL/api/health"
@@ -93,11 +121,16 @@ jobs:
         run: |
           curl -fsS "$URL/api/pokemon?search=fire&limit=50" \
             | jq -e '.data | length > 0 and all(.[]; (.types | index("Fire")) or (.name + .description | test("fire"; "i")))' >/dev/null
+      # Last, so an API failure never hides the Express checks above.
+      - name: API health check (FastAPI, reaches the database)
+        run: |
+          curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$API_URL/api/health" \
+            | jq -e '.status == "ok"' >/dev/null
 
   # Per-PR preview environment: its own Cloud Run service from the pr-<n> stack,
   # linked from a PR comment that's updated in place, destroyed when the PR closes.
   preview-env:
-    needs: check
+    needs: [check, check-api]
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     concurrency:
