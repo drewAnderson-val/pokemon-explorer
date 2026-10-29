@@ -19,7 +19,7 @@ from app.auth.tokens import InvalidToken, read_token
 from app.db.pool import get_conn
 from app.docs import errors
 from app.matches.actions import Refused, apply_action
-from app.matches.live import GONE, LiveMatches, Stream, frame
+from app.matches.live import GONE, UNAUTHORIZED, LiveMatches, Stream, frame
 from app.matches.store import create_match, load_match, notify, save_changes, seat_of
 from app.matches.sweep import sweep
 from app.matches.views import view_for
@@ -217,7 +217,8 @@ HEARTBEAT_SECONDS = 2
     description=(
         "Always 200 text/event-stream: an EventSource can't read an error status. "
         "Events: `view` (your view, now and after every change), `gone` (no such "
-        "match, not yours, or a bad token), `replaced` (you opened a newer stream). "
+        "match, or not yours), `unauthorized` (a missing or expired token: sign in "
+        "again), `replaced` (you opened a newer stream). "
         "EventSource can't send headers, so the token goes in `?token=`."
     ),
     response_class=StreamingResponse,
@@ -237,7 +238,7 @@ async def _stream(request: Request, match_id: str, token: str) -> AsyncIterator[
     try:
         user_id = read_token(token, app.state.settings.jwt_secret)
     except InvalidToken:
-        yield GONE
+        yield UNAUTHORIZED
         return
 
     stream_id = uuid4().hex
