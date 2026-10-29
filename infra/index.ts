@@ -197,6 +197,9 @@ function deployApi() {
       ],
       scaling: { maxInstanceCount: 2, minInstanceCount: 0 },
       serviceAccount: `pokemon-api-run@${project}.iam.gserviceaccount.com`,
+      // Friend-match event streams are long requests; the client reconnects when
+      // one ends, so the hour is a ceiling, not a requirement.
+      timeout: '3600s',
       // Cloud Run's built-in Cloud SQL connector: a Unix socket under /cloudsql,
       // which DATABASE_URL points at (?host=/cloudsql/<connection name>).
       volumes: [

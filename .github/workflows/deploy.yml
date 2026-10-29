@@ -143,6 +143,8 @@ jobs:
         run: |
           curl -fsS "$API_URL/api/docs" | grep -qi swagger
           curl -fsS "$API_URL/api/openapi.json" | jq -e '.paths["/api/battles/wild/actions"].post.requestBody' >/dev/null
+      - name: API friend matches need a token
+        run: test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$API_URL/api/matches")" = 401
       - name: API team and battles need a token
         run: |
           test "$(curl -sS -o /dev/null -w '%{http_code}' "$API_URL/api/team")" = 401

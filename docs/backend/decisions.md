@@ -423,3 +423,49 @@ Template:
   checks the spec stays complete and that the documented example move really works.
 - **Rejected:** typed query and body models for documentation's sake (they'd replace this API's 400 messages with
   FastAPI's, breaking parity with the old API); ReDoc as well (one docs page is enough).
+
+## 2026-10-29: Friend matches in Postgres: seats are users, turns under a row lock
+
+- **What:** a `matches` row holds the whole match (both teams, pending actions, the engine's state as JSONB, presence).
+  Seats are user ids from the token. Every action locks the row (`SELECT … FOR UPDATE`), stores the seat's pending
+  action, and resolves the turn with the slice 3 engine when both are in.
+- **Why:** both players can press Attack in the same instant. Without the lock, each request reads "the other hasn't
+  moved", saves only its own move, and nobody resolves the turn. A test fires both moves at once for 20 rounds; with
+  the lock removed it fails every time.
+- **Rejected:** seat tokens (they worked without accounts; now the account is the seat, so a reload or another device
+  keeps your place).
+
+## 2026-10-29: Idempotency keys for match moves (turn numbers for wild battles)
+
+- **What:** moves, switches and send-outs carry an `Idempotency-Key` header. The first successful action is recorded
+  under it; a retry with the same key and body gets the same answer without being applied again; the same key with a
+  different body is 409.
+- **Why not a turn number, as wild battles use:** in a match two players act in the same turn, and a player's move
+  stays pending until the other acts, so "is this the current turn?" can't tell a retry from a second move. A key
+  identifies the request itself.
+- **Trade-off:** one row per action in `match_actions` (deleted with the match).
+
+## 2026-10-29: Live updates with LISTEN/NOTIFY, not a broker
+
+- **What:** each API instance holds one `LISTEN match_events` connection. After an action commits, `NOTIFY` carries the
+  match id; every instance with a stream for it re-reads the row and pushes each player their own view. A seat's
+  current stream id lives in the row, so a reload on another instance replaces the old stream there too.
+- **Why:** with two instances, the player who acted and the player waiting can be on different ones. The notification
+  is only a hint: the data comes from the row, Postgres sends it only after the commit, and a lost one costs nothing a
+  reconnect doesn't fix. So durable messaging isn't needed, and nothing new has to run.
+- **Rejected:** RabbitMQ (durability, acks and retries for messages that are only hints, plus a service to run and
+  defend); Redis pub/sub (one more service); sticky sessions (Cloud Run can't guarantee them, and they break when an
+  instance scales away).
+- **Trade-off:** notifications sent while an instance's listener is reconnecting are lost; streams on that instance
+  catch up on the next change or reconnect.
+
+## 2026-10-29: Presence by heartbeat, and a sweep that is safe to run twice
+
+- **What:** an open stream marks its seat present and updates `seen_at` every 2 s; closing it records `left_at`. A
+  sweep (every 5 s per instance, and first thing in every match route) marks a seat away after 5 s, forfeits it after
+  60 s (from the later of the drop and the battle's start), deletes unstarted matches after 30 min and finished ones
+  after 10 min. A stream silent for 10 s counts as dropped at its last heartbeat (its instance died without closing it).
+- **Why:** every statement matches only rows that still need the change, so two instances sweeping at once can't
+  forfeit twice: the second waits on the row lock, re-checks, and skips. A test runs two sweeps at once.
+- **A bug the tests caught:** Postgres's `greatest()` ignores NULLs, so a connected seat (`left_at` NULL) looked like
+  it had left at the battle's start; `gone` now requires `left_at` to be set.
