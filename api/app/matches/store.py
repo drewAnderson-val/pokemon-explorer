@@ -6,8 +6,9 @@ from typing import Any
 from uuid import UUID
 
 import psycopg
-from psycopg import AsyncConnection
+from psycopg import AsyncConnection, sql
 from psycopg.rows import dict_row
+from psycopg.types.json import Jsonb
 
 ID_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789"
 ID_LENGTH = 8
@@ -70,3 +71,24 @@ async def create_match(conn: AsyncConnection, host_id: UUID) -> str | int:
             return match_id
         except psycopg.errors.UniqueViolation:
             continue
+
+
+JSON_COLUMNS = {"host_pending", "guest_pending", "state", "events", "outcome"}
+COLUMNS = JSON_COLUMNS | {"host_team", "guest_team", "turn", "started_at", "finished_at"}
+
+
+async def save_changes(conn: AsyncConnection, match_id: str, changes: dict[str, Any]) -> None:
+    """Writes the columns an action changed. Column names come from a fixed set;
+    "now" for a timestamp means the database's now()."""
+    assignments = []
+    values: list[Any] = []
+    for column, value in changes.items():
+        if column not in COLUMNS:
+            raise ValueError(f"Unexpected column {column}")
+        if value == "now":
+            assignments.append(sql.SQL("{} = now()").format(sql.Identifier(column)))
+            continue
+        assignments.append(sql.SQL("{} = %s").format(sql.Identifier(column)))
+        values.append(Jsonb(value) if column in JSON_COLUMNS and value is not None else value)
+    query = sql.SQL("UPDATE matches SET {} WHERE id = %s").format(sql.SQL(", ").join(assignments))
+    await conn.execute(query, [*values, match_id])
