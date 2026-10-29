@@ -30,7 +30,20 @@ def create_app(settings: Settings) -> FastAPI:
         yield
         await pool.close()
 
-    app = FastAPI(title="Pokemon Explorer API", lifespan=lifespan)
+    app = FastAPI(
+        title="Pokemon Explorer API",
+        version="1.0",
+        description=(
+            "The catalog, accounts, teams and server-played wild battles behind "
+            "Pokemon Explorer. Sign up or log in, then press **Authorize** and paste "
+            "the token to try the routes that need an account."
+        ),
+        # Under /api, like every route, so the dev proxy and Cloud Run serve them.
+        docs_url="/api/docs",
+        openapi_url="/api/openapi.json",
+        redoc_url=None,
+        lifespan=lifespan,
+    )
     app.state.settings = settings
     # Every random roll in battles. Tests replace it with scripted numbers.
     app.state.rng = random.random

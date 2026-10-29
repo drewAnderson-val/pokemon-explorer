@@ -14,6 +14,7 @@ from pydantic import BaseModel, StrictInt
 from app.auth.deps import CurrentUser
 from app.battles.write_back import write_back
 from app.db.pool import get_conn
+from app.docs import WILD_ACTION_BODY, errors
 from app.engine.types import Fighter, Rng
 from app.engine.wild import create_battle, create_fighter, resolve_turn, send_out, wild_level
 from app.pokemon.queries import find_many
@@ -28,7 +29,13 @@ def error(message: str, status_code: int) -> JSONResponse:
     return JSONResponse({"error": message}, status_code=status_code)
 
 
-@router.post("/api/battles/wild", response_model=None)
+@router.post(
+    "/api/battles/wild",
+    response_model=None,
+    summary="Start a wild battle with your team (replaces one in progress)",
+    status_code=201,
+    responses=errors(401, 409),
+)
 async def start(request: Request, user: CurrentUser, conn: Conn) -> JSONResponse:
     rng: Rng = request.app.state.rng
     async with conn.transaction():
@@ -73,7 +80,12 @@ async def start(request: Request, user: CurrentUser, conn: Conn) -> JSONResponse
     return JSONResponse({"state": state, "turn": 0}, status_code=201)
 
 
-@router.get("/api/battles/wild", response_model=None)
+@router.get(
+    "/api/battles/wild",
+    response_model=None,
+    summary="The battle in progress, to resume it",
+    responses=errors(401, 404),
+)
 async def current(user: CurrentUser, conn: Conn) -> dict[str, Any] | JSONResponse:
     cursor = await conn.execute(
         "SELECT state, turn FROM wild_battles WHERE user_id = %s", (user.id,)
@@ -84,7 +96,12 @@ async def current(user: CurrentUser, conn: Conn) -> dict[str, Any] | JSONRespons
     return {"state": row[0], "turn": row[1]}
 
 
-@router.delete("/api/battles/wild", status_code=204)
+@router.delete(
+    "/api/battles/wild",
+    status_code=204,
+    summary="Run away: end the battle",
+    responses=errors(401),
+)
 async def run_away(user: CurrentUser, conn: Conn) -> Response:
     async with conn.transaction():
         await conn.execute("DELETE FROM wild_battles WHERE user_id = %s", (user.id,))
@@ -98,7 +115,17 @@ class TurnRequest(BaseModel):
     action: dict[str, Any]
 
 
-@router.post("/api/battles/wild/actions", response_model=None)
+@router.post(
+    "/api/battles/wild/actions",
+    response_model=None,
+    summary="Take your turn: a move, switch, catch or send-out",
+    description=(
+        "Name the battle's current turn; a repeated or stale turn gets 409. "
+        "Returns the events of the turn (to play back) and the new state."
+    ),
+    responses=errors(400, 401, 404, 409),
+    openapi_extra={"requestBody": WILD_ACTION_BODY},
+)
 async def take_turn(
     body: TurnRequest, request: Request, user: CurrentUser, conn: Conn
 ) -> dict[str, Any] | JSONResponse:

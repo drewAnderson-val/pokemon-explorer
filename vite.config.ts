@@ -14,7 +14,10 @@ const FASTAPI_ROUTES = [
   '/api/auth',
   '/api/me',
   '/api/team',
-  '/api/battles'
+  '/api/battles',
+  // Swagger UI and its spec.
+  '/api/docs',
+  '/api/openapi.json'
 ]
 
 // Whole path segments only: /api/pokemon/7 and /api/pokemon?x go to FastAPI,

@@ -4,10 +4,11 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from psycopg import AsyncConnection
-from pydantic import BaseModel, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
 
 from app.auth.deps import CurrentUser
 from app.db.pool import get_conn
+from app.docs import errors
 from app.engine.stats import START_LEVEL, xp_for_level
 from app.engine.wild import MAX_TEAM
 from app.pokemon.queries import find_many
@@ -29,6 +30,15 @@ class MemberChoice(BaseModel):
 class TeamChoice(BaseModel):
     members: list[MemberChoice]
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                # New members: just creature ids, in the order you want them.
+                {"members": [{"creatureId": 25}, {"creatureId": 1}]},
+            ]
+        }
+    )
+
 
 async def team_body(conn: AsyncConnection, members: list[TeamMember]) -> dict[str, Any]:
     """The members plus the creatures they refer to, so the client needs no lookups."""
@@ -40,12 +50,21 @@ def error(message: str) -> JSONResponse:
     return JSONResponse({"error": message}, status_code=400)
 
 
-@router.get("/api/team")
+@router.get(
+    "/api/team",
+    summary="Your team, plus the creatures on it",
+    responses=errors(401),
+)
 async def get_team(user: CurrentUser, conn: Conn) -> dict[str, Any]:
     return await team_body(conn, await load_team(conn, user.id))
 
 
-@router.put("/api/team", response_model=None)
+@router.put(
+    "/api/team",
+    response_model=None,
+    summary="Choose your team's creatures and order (the server keeps their stats)",
+    responses=errors(400, 401),
+)
 async def put_team(
     choice: TeamChoice, user: CurrentUser, conn: Conn
 ) -> dict[str, Any] | JSONResponse:
@@ -82,7 +101,11 @@ async def put_team(
     return await team_body(conn, members)
 
 
-@router.post("/api/team/rest")
+@router.post(
+    "/api/team/rest",
+    summary="Heal the whole team",
+    responses=errors(401),
+)
 async def rest_team(user: CurrentUser, conn: Conn) -> dict[str, Any]:
     async with conn.transaction():
         await lock_user(conn, user.id)
