@@ -11,7 +11,7 @@ from psycopg import AsyncConnection
 from app.config import Settings
 from app.db.migrate import migrate
 from app.db.pool import open_pool
-from app.routes import auth, health, pokemon, team, wild
+from app.routes import auth, health, matches, pokemon, team, wild
 
 
 def create_app(settings: Settings) -> FastAPI:
@@ -61,6 +61,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.include_router(auth.router)
     app.include_router(team.router)
     app.include_router(wild.router)
+    app.include_router(matches.router)
 
     # Errors routes raise (like current_user's 401) come out as {"error": ...}. Routing
     # errors (unknown path, wrong method) are raised by Starlette and keep {"detail"}.
