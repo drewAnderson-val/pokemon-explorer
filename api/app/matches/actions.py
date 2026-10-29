@@ -31,7 +31,7 @@ def _can_switch_to(state: dict[str, Any], seat: str, to: object) -> bool:
         _is_index(to)
         and to != team["active"]
         and to < len(team["party"])  # type: ignore[operator]
-        and team["party"][to]["hp"] > 0  # type: ignore[index]
+        and team["party"][to]["hp"] > 0
     )
 
 
