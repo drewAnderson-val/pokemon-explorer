@@ -9,33 +9,31 @@ import { TeamPicker } from '@/components/battle/TeamPicker'
 import { DialogBox } from '@/components/DialogBox'
 import { HomeLink } from '@/components/HomeLink'
 import { Button, buttonClass } from '@/components/ui/button'
+import { useAuth } from '@/hooks/useAuth'
 import { useFullscreen } from '@/hooks/useFullscreen'
 import { useSettings } from '@/hooks/useSettings'
-import { useTeam } from '@/hooks/useTeam'
+import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import { creatureQuery, useTeamCreatures } from '@/hooks/useTeamCreatures'
-import { useWildFighter } from '@/hooks/useWildFighter'
-import { createFighter, type Rng } from '@/lib/battle/engine'
+import { signInPath } from '@/lib/auth'
+import { fetchWildBattle, startWildBattle } from '@/lib/battle/api'
+import { createFighter } from '@/lib/battle/engine'
+import { isCustomId } from '@/lib/creature'
+import { reloadTeam, restTeam, retryTeamLoad } from '@/lib/team/serverTeam'
 import {
   addMember,
   hasCreature,
   isTeamFull,
   leadWith,
   makeUid,
-  newMember,
-  restAll,
-  saveBattle
+  newMember
 } from '@/lib/team/team'
 
 type BattleScreenProps = {
   // From `?id=N` (the ▶ Battle link): that creature leads this battle.
   playerId: null | number
-  rng?: Rng
 }
 
-export function BattleScreen({
-  playerId,
-  rng = Math.random
-}: BattleScreenProps) {
+export function BattleScreen({ playerId }: BattleScreenProps) {
   const [settings] = useSettings()
   const stageRef = useRef<HTMLDivElement>(null)
   const fullscreen = useFullscreen(stageRef)
@@ -70,7 +68,12 @@ export function BattleScreen({
           </button>
         )}
         <Handheld classic={settings.classic}>
-          <BattleLoader playerId={playerId} rng={rng} />
+          <BattleLoader
+            // Custom creatures can't join a server team until slice 6.
+            playerId={
+              playerId !== null && isCustomId(playerId) ? null : playerId
+            }
+          />
         </Handheld>
       </div>
     </main>
@@ -83,13 +86,9 @@ export function parsePlayerId(search: string) {
   return /^\d+$/.test(raw) && Number(raw) >= 1 ? Number(raw) : null
 }
 
-function BattleLoader({
-  playerId,
-  rng
-}: {
-  playerId: null | number
-  rng: Rng
-}) {
+function BattleLoader({ playerId }: { playerId: null | number }) {
+  // Battles and teams live on the server, under the signed-in account.
+  const session = useAuth()
   const [team, setTeam] = useTeam()
   const [round, setRound] = useState(0)
   // The player chose to battle with their team as it is (from the full-team
@@ -104,11 +103,13 @@ function BattleLoader({
 
   // "▶ Battle with X": X leads, joining the team if there's room. leadWith
   // is a no-op once X is in front, so a double effect can't add it twice.
+  // Waits for the team: before it has loaded from the API, a change can't apply.
+  const { error: teamError, loaded } = useTeamStatus()
   useEffect(() => {
-    if (!pick.data) return
+    if (!pick.data || !loaded) return
     const creature = pick.data
     setTeam(current => leadWith(current, creature, makeUid()))
-  }, [setTeam, pick.data])
+  }, [setTeam, pick.data, loaded])
 
   // A full team without X can't take it: say so rather than quietly battling
   // with someone else. Otherwise wait until X is in front before starting.
@@ -146,19 +147,46 @@ function BattleLoader({
   const canFight = party.some(fighter => fighter.hp > 0)
   // An empty team (and no ▶ Battle pick on its way) opens the picker, which
   // then stays until START, not just until the first creature joins.
-  const needsTeam = team.length === 0 && (playerId === null || pick.isError)
+  // Only once the team has loaded from the API: until then it looks empty.
+  const needsTeam =
+    loaded && team.length === 0 && (playerId === null || pick.isError)
   useEffect(() => {
     if (needsTeam) setPicking(true)
   }, [needsTeam])
   const showPicker = picking || needsTeam
-  const wild = useWildFighter({
+  // Bumped when the arena loses track of the battle: reload it from the server.
+  const [resync, setResync] = useState(0)
+  // The server picks the wild creature and keeps the battle. The first round,
+  // and any resync, resumes one in progress (a reload mid-battle); later rounds
+  // start fresh. A finished battle is never resumed.
+  const wild = useQuery({
     enabled: ready && canFight && !showPicker,
-    excludeIds: team.map(member => member.creatureId),
-    levels: party.map(fighter => fighter.level),
-    rng,
-    round
+    gcTime: 0,
+    queryFn: async () => {
+      const resume = round === 0 || resync > 0
+      const current = resume ? await fetchWildBattle() : null
+      return current && !current.state.winner ? current : startWildBattle()
+    },
+    queryKey: ['battle', 'wild', round, resync],
+    retry: false,
+    staleTime: Infinity
   })
 
+  if (!session) {
+    const here = playerId === null ? '/battle' : `/battle?id=${playerId}`
+    return (
+      <ConsoleScreen>
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg">
+            Your team and battles are saved to your account.
+          </p>
+          <a className={buttonClass()} href={signInPath(here)}>
+            Sign in to battle
+          </a>
+        </DialogBox>
+      </ConsoleScreen>
+    )
+  }
   if (showPicker) {
     return (
       <ConsoleScreen className="justify-start">
@@ -186,13 +214,12 @@ function BattleLoader({
   if (wild.data) {
     return (
       <BattleArena
-        enemy={wild.data}
-        key={round}
+        initial={wild.data}
+        key={`${round}-${resync}`}
         onBattleAgain={() => setRound(r => r + 1)}
         onChangeTeam={changeTeam}
-        onSave={state => setTeam(current => saveBattle(current, state))}
-        party={party}
-        rng={rng}
+        onResync={() => setResync(r => r + 1)}
+        onTurn={() => void reloadTeam()}
         teamSize={team.length}
       />
     )
@@ -201,6 +228,27 @@ function BattleLoader({
 
   // Everything short of a battle: a message on the console's screen.
   function message() {
+    // The pick (or another team change) was refused: say why rather than wait.
+    if (teamError && !ownTeam && playerId !== null) {
+      return (
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg font-bold text-danger" role="alert">
+            {teamError}
+          </p>
+          <Button onClick={() => setOwnTeam(true)}>Battle with my team</Button>
+        </DialogBox>
+      )
+    }
+    if (!loaded && teamError) {
+      return (
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg font-bold text-danger" role="alert">
+            {teamError}
+          </p>
+          <Button onClick={() => void retryTeamLoad()}>Try again</Button>
+        </DialogBox>
+      )
+    }
     if (team.length === 0) return <Searching />
     if (pickBlocked && !ownTeam) {
       return (
@@ -256,7 +304,7 @@ function BattleLoader({
             Your team is too tired to battle. Rest first!
           </p>
           <div className="flex flex-wrap justify-center gap-3" data-arrow-nav>
-            <Button onClick={() => setTeam(restAll)}>Rest</Button>
+            <Button onClick={() => void restTeam()}>Rest</Button>
             <Button onClick={changeTeam} variant="secondary">
               Change team
             </Button>

@@ -3,22 +3,27 @@ import { useState } from 'react'
 import { DialogBox } from '@/components/DialogBox'
 import { HpBar } from '@/components/HpBar'
 import { Button, buttonClass } from '@/components/ui/button'
-import { useTeam } from '@/hooks/useTeam'
+import { useAuth } from '@/hooks/useAuth'
+import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import { useTeamCreatures } from '@/hooks/useTeamCreatures'
+import { signInPath } from '@/lib/auth'
 import { MAX_TEAM } from '@/lib/battle/engine'
+import { restTeam, retryTeamLoad } from '@/lib/team/serverTeam'
 import {
   memberHp,
   memberMaxHp,
   moveMember,
-  removeMember,
-  restAll
+  removeMember
 } from '@/lib/team/team'
 import { cn } from '@/lib/utils'
 
 // The creatures travelling with you: level and HP for each, REST to heal
 // everyone, ◀ ▶ to change the order, × to let one go, and a way into battle.
 export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
+  const session = useAuth()
   const [team, setTeam] = useTeam()
+  // Why the server refused the last change (the team is shown as it was).
+  const { error, loaded } = useTeamStatus()
   const { creatures, missing } = useTeamCreatures(team)
   const hurt = team.some(member => member.hp !== null)
   // Pointing at ▶ Battle marks who goes out first: the battle sends the first
@@ -28,6 +33,27 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
     const creature = creatures.get(member.creatureId)
     return creature !== undefined && memberHp(member, creature) > 0
   })
+
+  if (!session) {
+    return (
+      <DialogBox
+        aria-labelledby="team-heading"
+        className="flex scroll-mt-6 flex-col items-start gap-3"
+        id="team"
+        role="region"
+      >
+        <h2 className="text-card-title font-bold uppercase" id="team-heading">
+          Your team
+        </h2>
+        <p className="text-body">
+          Teams are saved to your account, so they follow you to any device.
+        </p>
+        <a className={buttonClass()} href={signInPath('/explore#team')}>
+          Sign in to build a team
+        </a>
+      </DialogBox>
+    )
+  }
 
   return (
     <DialogBox
@@ -48,8 +74,9 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
           <Button
             disabled={!hurt}
             onClick={() => {
-              setTeam(restAll)
-              onNotice('Your team is rested!')
+              void restTeam().then(rested => {
+                if (rested) onNotice('Your team is rested!')
+              })
             }}
             variant="secondary"
           >
@@ -68,6 +95,17 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
             </a>
           )}
         </div>
+        {error && (
+          <div className="flex flex-wrap items-center gap-2" role="alert">
+            <p className="text-body font-bold text-danger">{error}</p>
+            {/* The team never loaded: nothing else on this panel can work. */}
+            {!loaded && (
+              <Button onClick={() => void retryTeamLoad()} variant="secondary">
+                Try again
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       {team.length === 0 ? (
         <p className="text-body text-ink-muted">

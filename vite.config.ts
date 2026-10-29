@@ -9,7 +9,13 @@ import { defineConfig } from 'vite'
 import app from './server/app'
 
 // API routes served by the FastAPI service (api/) instead of Express.
-const FASTAPI_ROUTES = ['/api/pokemon', '/api/auth', '/api/me']
+const FASTAPI_ROUTES = [
+  '/api/pokemon',
+  '/api/auth',
+  '/api/me',
+  '/api/team',
+  '/api/battles'
+]
 
 // Whole path segments only: /api/pokemon/7 and /api/pokemon?x go to FastAPI,
 // /api/pokemonX doesn't.

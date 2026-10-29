@@ -4,13 +4,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import type { CreatedCreature } from '@/lib/creature'
 
-import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
 import {
   clearCreations,
   loadCreations,
   saveCreation
 } from '@/lib/creation-store'
-import { parseTeam } from '@/lib/team/team'
 import { stubFetch } from '@/test/fake-api'
 import { renderWithClient } from '@/test/render'
 
@@ -34,9 +32,6 @@ const creature: CreatedCreature = {
 }
 
 afterEach(() => clearCreations())
-
-const teamIds = () =>
-  parseTeam(localStorage.getItem(TEAM_STORAGE_KEY)).map(m => m.creatureId)
 
 async function createEmbercub() {
   const user = userEvent.setup()
@@ -119,23 +114,20 @@ describe('CreatorScreen', () => {
     expect(within(card()).getByText('Embercub')).toBeInTheDocument()
   })
 
-  it('adds a custom card to the battle team, and deleting it leaves the team', async () => {
+  it("can't add a custom card to the team or battle with it yet", async () => {
+    // Teams live on the server, which doesn't know custom creatures until the
+    // Creature Lab moves there too.
     await saveCreation({ ...creature, id: 1001 })
     stubFetch()
     renderWithClient(<CreatorScreen />)
-    const user = userEvent.setup()
-
-    await user.click(
-      await screen.findByRole('button', { name: 'Add Embercub to team' })
-    )
-    expect(screen.getByRole('button', { name: 'On your team' })).toBeDisabled()
     expect(
-      screen.getByRole('link', { name: 'Battle with Embercub' })
-    ).toHaveAttribute('href', '/battle?id=1001')
-    expect(teamIds()).toEqual([1001])
-
-    await user.click(screen.getByRole('button', { name: 'Delete Embercub' }))
-    expect(teamIds()).toEqual([])
+      await screen.findByRole('button', {
+        name: 'Custom creatures can join teams soon'
+      })
+    ).toBeDisabled()
+    expect(
+      screen.queryByRole('link', { name: 'Battle with Embercub' })
+    ).toBeNull()
   })
 
   it('allows at most two types', async () => {

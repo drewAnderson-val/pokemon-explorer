@@ -1,24 +1,29 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
-import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
-import { serializeTeam, type TeamMember } from '@/lib/team/team'
-import { stubFetch } from '@/test/fake-api'
+import { type TeamMember } from '@/lib/team/team'
+import { apiResponse, stubFetch } from '@/test/fake-api'
+import { seedTeam } from '@/test/fake-server'
 import { renderWithClient } from '@/test/render'
+import { signIn } from '@/test/session'
 
 import { TeamBar } from './TeamBar'
 
-const save = (members: TeamMember[]) =>
-  localStorage.setItem(TEAM_STORAGE_KEY, serializeTeam(members))
+// The signed-in user's team on the (fake) server.
+const save = (members: TeamMember[]) => {
+  seedTeam(members)
+  signIn()
+}
 
 describe('TeamBar', () => {
-  it('invites you to add creatures when empty', () => {
+  it('invites you to add creatures when empty', async () => {
+    signIn()
     stubFetch()
     renderWithClient(<TeamBar onNotice={() => {}} />)
-    expect(screen.getByRole('region', { name: /Your team/ })).toHaveTextContent(
-      '0/6'
-    )
+    expect(
+      await screen.findByRole('region', { name: /Your team/ })
+    ).toHaveTextContent('0/6')
     expect(
       screen.getByText(/Open a card and add a creature/)
     ).toBeInTheDocument()
@@ -33,7 +38,7 @@ describe('TeamBar', () => {
     ])
     const onNotice = vi.fn()
     renderWithClient(<TeamBar onNotice={onNotice} />)
-    const list = screen.getByRole('list', { name: 'Team members' })
+    const list = await screen.findByRole('list', { name: 'Team members' })
     expect(await within(list).findByText('Geovanni')).toBeInTheDocument()
     // Geovanni base HP 28 at Lv5 → 17 max.
     expect(list).toHaveTextContent('3/17')
@@ -44,14 +49,14 @@ describe('TeamBar', () => {
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Rest' }))
-    expect(list).toHaveTextContent('17/17')
+    await waitFor(() => expect(list).toHaveTextContent('17/17'))
     expect(onNotice).toHaveBeenCalledWith('Your team is rested!')
     expect(screen.getByRole('button', { name: 'Rest' })).toBeDisabled()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Remove Britney from team' })
     )
-    expect(within(list).queryByText('Britney')).toBeNull()
+    await waitFor(() => expect(within(list).queryByText('Britney')).toBeNull())
   })
 
   it('shows a creature that is no longer on file as missing', async () => {
@@ -75,7 +80,7 @@ describe('TeamBar', () => {
       { creatureId: 3, hp: null, level: 5, uid: 'c', xp: 125 }
     ])
     renderWithClient(<TeamBar onNotice={() => {}} />)
-    const list = screen.getByRole('list', { name: 'Team members' })
+    const list = await screen.findByRole('list', { name: 'Team members' })
     await within(list).findByText('Hershel')
     expect(screen.queryByText('Goes first')).toBeNull()
 
@@ -102,5 +107,60 @@ describe('TeamBar', () => {
     ).toBeDisabled()
     await userEvent.hover(screen.getByRole('link', { name: '▶ Battle' }))
     expect(items()[0]).toHaveTextContent('Goes first')
+  })
+})
+
+describe('TeamBar errors', () => {
+  it('shows why the server refused a change, and keeps the team as it was', async () => {
+    save([{ creatureId: 1, hp: null, level: 5, uid: 'a', xp: 125 }])
+    stubFetch((url, init) =>
+      init?.method === 'PUT'
+        ? Response.json(
+            { error: 'Each creature can only be on the team once' },
+            { status: 400 }
+          )
+        : apiResponse(url, init)
+    )
+    renderWithClient(<TeamBar onNotice={() => {}} />)
+    const list = await screen.findByRole('list', { name: 'Team members' })
+    await within(list).findByText('Geovanni')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove Geovanni from team' })
+    )
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Each creature can only be on the team once'
+    )
+    // Rolled back: the list (gone while the team looked empty) is back.
+    const restored = screen.getByRole('list', { name: 'Team members' })
+    expect(within(restored).getByText('Geovanni')).toBeInTheDocument()
+  })
+})
+
+describe('TeamBar signed out', () => {
+  it('asks you to sign in to build a team', async () => {
+    stubFetch()
+    renderWithClient(<TeamBar onNotice={() => {}} />)
+    expect(
+      await screen.findByRole('link', { name: 'Sign in to build a team' })
+    ).toHaveAttribute('href', '/login?next=%2Fexplore%23team')
+  })
+})
+
+describe('TeamBar load failure', () => {
+  it('offers to try loading the team again', async () => {
+    save([{ creatureId: 1, hp: null, level: 5, uid: 'a', xp: 125 }])
+    let fail = true
+    stubFetch((url, init) => {
+      if (url.pathname === '/api/team' && fail) {
+        fail = false
+        return Response.json({ error: 'down' }, { status: 503 })
+      }
+      return apiResponse(url, init)
+    })
+    renderWithClient(<TeamBar onNotice={() => {}} />)
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Try again' })
+    )
+    expect(await screen.findByText('Geovanni')).toBeInTheDocument()
   })
 })

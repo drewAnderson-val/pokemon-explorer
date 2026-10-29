@@ -1,12 +1,13 @@
 import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
 import { clearCreations, saveCreation } from '@/lib/creation-store'
 import { apiResponse, searchParamOf, stubFetch } from '@/test/fake-api'
+import { serverTeam } from '@/test/fake-server'
 import { setIntersecting } from '@/test/intersection-observer'
 import { renderWithClient } from '@/test/render'
+import { signIn } from '@/test/session'
 
 import { ExplorerScreen } from './ExplorerScreen'
 
@@ -240,6 +241,7 @@ describe('ExplorerScreen', () => {
   })
 
   it('adds a creature to the team from its card', async () => {
+    signIn()
     stubFetch()
     const { user } = await renderLoaded()
     await user.click(within(grid()).getAllByRole('button')[0])
@@ -249,8 +251,37 @@ describe('ExplorerScreen', () => {
     const team = screen.getByRole('list', { name: 'Team members' })
     expect(await within(team).findByText('Geovanni')).toBeInTheDocument()
     expect(screen.getByText('Geovanni joined your team!')).toBeInTheDocument()
-    expect(localStorage.getItem(TEAM_STORAGE_KEY)).toContain('"creatureId":1')
+    await waitFor(() =>
+      expect(serverTeam().map(m => m.creatureId)).toEqual([1])
+    )
     expect(screen.getByRole('button', { name: 'On your team' })).toBeDisabled()
+  })
+
+  it('sends you to sign in to add a creature when signed out', async () => {
+    stubFetch()
+    const assign = vi.fn()
+    vi.stubGlobal('location', { ...window.location, assign })
+    const { user } = await renderLoaded()
+    await user.click(within(grid()).getAllByRole('button')[0])
+    await user.click(
+      screen.getByRole('button', { name: 'Add Geovanni to team' })
+    )
+    expect(assign).toHaveBeenCalledWith('/login?next=%2Fexplore')
+  })
+
+  it("doesn't say a creature joined when the team hasn't loaded yet", async () => {
+    signIn()
+    stubFetch((url, init) =>
+      url.pathname === '/api/team'
+        ? new Promise<Response>(() => {})
+        : apiResponse(url, init)
+    )
+    const { user } = await renderLoaded()
+    await user.click(within(grid()).getAllByRole('button')[0])
+    await user.click(
+      screen.getByRole('button', { name: 'Add Geovanni to team' })
+    )
+    expect(screen.queryByText('Geovanni joined your team!')).toBeNull()
   })
 
   it('focuses search with /', async () => {

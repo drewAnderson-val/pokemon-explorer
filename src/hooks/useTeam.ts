@@ -1,23 +1,48 @@
-import { useSyncExternalStore } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 
-import { createLocalStore } from '@/lib/localStore'
-import { parseTeam, serializeTeam, type TeamMember } from '@/lib/team/team'
+import {
+  changeTeam,
+  ensureTeamLoaded,
+  reloadTeam,
+  teamStatus
+} from '@/lib/team/serverTeam'
 
-export const TEAM_STORAGE_KEY = 'pokemon-explorer:team'
+import { useAuth } from './useAuth'
 
-const EMPTY: TeamMember[] = []
+export const updateTeam = changeTeam
 
-const store = createLocalStore<TeamMember[]>({
-  empty: EMPTY,
-  key: TEAM_STORAGE_KEY,
-  parse: parseTeam,
-  serialize: serializeTeam
-})
-
-export const updateTeam = store.update
-
-// The saved team, shared by every screen and kept in sync across tabs.
+// The signed-in user's team (empty when signed out), shared by every screen.
+// The setter takes the same "current team → new team" function as before; it
+// shows the change at once, saves it to the API, and returns whether it applied.
 export function useTeam() {
-  const team = useSyncExternalStore(store.subscribe, store.read, () => EMPTY)
-  return [team, updateTeam] as const
+  const status = useTeamStatus()
+  const token = useAuth()?.token
+  useEffect(() => {
+    ensureTeamLoaded()
+  }, [token])
+  // Another tab (or device) may have changed the team: fetch it again when this
+  // tab comes back, so a stale copy can't overwrite those changes.
+  useEffect(() => {
+    if (!token) return
+    const refresh = () => {
+      if (document.visibilityState === 'visible' && teamStatus.read().loaded) {
+        void reloadTeam()
+      }
+    }
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      window.removeEventListener('focus', refresh)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [token])
+  return [status.members, changeTeam] as const
+}
+
+export function useTeamStatus() {
+  return useSyncExternalStore(
+    teamStatus.subscribe,
+    teamStatus.read,
+    teamStatus.read
+  )
 }

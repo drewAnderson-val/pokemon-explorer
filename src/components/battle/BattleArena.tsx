@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 
 import { DialogBox } from '@/components/DialogBox'
 import { TypeBadge } from '@/components/TypeBadge'
@@ -7,16 +7,13 @@ import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useSettings } from '@/hooks/useSettings'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import {
-  activeFighter,
-  type BattleEvent,
-  type BattleState,
-  createBattle,
-  type Fighter,
-  MAX_TEAM,
-  resolveTurn,
-  type Rng,
-  sendOut
-} from '@/lib/battle/engine'
+  abandonWildBattle,
+  BattleRequestError,
+  sendWildAction,
+  type WildAction,
+  type WildBattle
+} from '@/lib/battle/api'
+import { activeFighter, MAX_TEAM } from '@/lib/battle/engine'
 import {
   currentStep,
   flowReducer,
@@ -36,34 +33,49 @@ import { BattleScene } from './BattleScene'
 import { TimingBar } from './TimingBar'
 
 type BattleArenaProps = {
-  enemy: Fighter
+  // The battle as the server has it: a new one, or one resumed after a reload.
+  initial: WildBattle
   onBattleAgain: () => void
   onChangeTeam?: () => void
-  // Called after every turn so HP, XP and catches survive a closed tab.
-  onSave: (state: BattleState) => void
-  party: Fighter[]
-  rng: Rng
-  // The saved team can be bigger than `party` (members no longer on file),
+  // The client lost track of the battle (an answer that never arrived, a turn
+  // the server already played): start over from the server's copy.
+  onResync: () => void
+  // After every turn: the server has saved HP, XP and catches to the team.
+  onTurn: () => void
+  // The saved team can be bigger than the party (members no longer on file),
   // and a catch only sticks if the saved team has room.
   teamSize: number
 }
 
-type Result = { events: BattleEvent[]; state: BattleState }
-
 // One battle from "A wild X appeared!" to the end screen. Remount (new `key`)
 // to start over.
 export function BattleArena({
-  enemy,
+  initial,
   onBattleAgain,
   onChangeTeam,
-  onSave,
-  party,
-  rng,
+  onResync,
+  onTurn,
   teamSize
 }: BattleArenaProps) {
   const [flow, dispatch] = useReducer(flowReducer, null, () =>
-    startFlow(createBattle(party, enemy))
+    startFlow(initial.state)
   )
+  const enemy = initial.state.enemy
+  // The turn the next action is for; the server rejects any other (a double
+  // click or a stale retry).
+  const turn = useRef(initial.turn)
+  // A request is on its way: the menus wait for its answer.
+  const [busy, setBusy] = useState(false)
+  // Why the last request failed, and whether "Try again" can help.
+  const [failed, setFailed] = useState<null | {
+    message: string
+    // Not for a plain refusal (400): retrying it can't succeed.
+    retry: boolean
+  }>(null)
+  const retryRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (failed?.retry) retryRef.current?.focus()
+  }, [failed])
   const instant = usePrefersReducedMotion()
   const [settings] = useSettings()
   // The timing bar needs motion; reduced motion falls back to plain moves.
@@ -100,9 +112,48 @@ export function BattleArena({
 
   useBodyAdvance(canAdvance, advance)
 
-  const act = (result: Result) => {
-    dispatch({ type: 'resolved', ...result })
-    onSave(result.state)
+  // One action to the server, then its events into the message flow.
+  const act = (action: WildAction) => {
+    setBusy(true)
+    setFailed(null)
+    sendWildAction(turn.current, action)
+      .then(
+        result => {
+          turn.current = result.turn
+          dispatch({
+            events: result.events,
+            state: result.state,
+            type: 'resolved'
+          })
+          onTurn()
+        },
+        (error: unknown) => {
+          // A 400 is a refusal with a reason. Anything else (no answer, a 5xx,
+          // a turn the server already played) means this screen may be out of
+          // date, so "Try again" reloads the battle from the server rather than
+          // resending: the turn may have happened even though the answer was lost.
+          const status = error instanceof BattleRequestError ? error.status : 0
+          setFailed(
+            status === 400
+              ? { message: (error as Error).message, retry: false }
+              : { message: "Couldn't reach the server", retry: true }
+          )
+        }
+      )
+      .finally(() => setBusy(false))
+  }
+
+  // Running away ends the battle on the server first, so "Battle again" can't
+  // race it (and a reload can't bring back a battle you left).
+  const runAway = () => {
+    setBusy(true)
+    setFailed(null)
+    abandonWildBattle()
+      .then(
+        () => dispatch({ type: 'run' }),
+        () => setFailed({ message: "Couldn't reach the server", retry: true })
+      )
+      .finally(() => setBusy(false))
   }
 
   const teamFull = Math.max(battle.party.length, teamSize) >= MAX_TEAM
@@ -118,9 +169,13 @@ export function BattleArena({
       disabled: teamFull,
       key: 'catch',
       label: 'Catch',
-      onSelect: () => act(resolveTurn(battle, { type: 'catch' }, rng))
+      onSelect: () => act({ type: 'catch' })
     },
-    { key: 'run', label: 'Run', onSelect: () => dispatch({ type: 'run' }) }
+    {
+      key: 'run',
+      label: 'Run',
+      onSelect: runAway
+    }
   ]
   const moveItems: MenuItem[] = active.moves.map((move, index) => ({
     detail: (
@@ -134,7 +189,7 @@ export function BattleArena({
     onSelect: () => {
       lastMove.current = index
       if (timingOn) setPending(index)
-      else act(resolveTurn(battle, { index, type: 'move' }, rng))
+      else act({ index, type: 'move' })
     }
   }))
   const teamItems: MenuItem[] = battle.party.map((fighter, index) => {
@@ -152,11 +207,7 @@ export function BattleArena({
       key: fighter.uid,
       label: fighter.creature.name,
       onSelect: () =>
-        act(
-          phase === 'switch'
-            ? sendOut(battle, index)
-            : resolveTurn(battle, { to: index, type: 'switch' }, rng)
-        )
+        act({ to: index, type: phase === 'switch' ? 'sendOut' : 'switch' })
     }
   })
 
@@ -181,13 +232,7 @@ export function BattleArena({
         onCancel={() => setPending(null)}
         onDone={bonus => {
           setPending(null)
-          act(
-            resolveTurn(
-              battle,
-              { index: pending, timing: bonus, type: 'move' },
-              rng
-            )
-          )
+          act({ index: pending, timing: bonus, type: 'move' })
         }}
       />
     )
@@ -195,6 +240,7 @@ export function BattleArena({
     menu = (
       <BattleMenu
         cols={2}
+        disabled={busy}
         items={moveItems}
         label="Moves"
         onBack={() => dispatch({ type: 'back' })}
@@ -205,6 +251,7 @@ export function BattleArena({
     menu = (
       <BattleMenu
         cols={2}
+        disabled={busy}
         items={teamItems}
         label="Team"
         // A forced switch has no way back: someone must go out.
@@ -216,7 +263,7 @@ export function BattleArena({
     menu = (
       <BattleMenu
         cols={2}
-        disabled={phase !== 'menu'}
+        disabled={busy || phase !== 'menu'}
         items={mainItems}
         label="Actions"
         ref={menuRef}
@@ -285,7 +332,21 @@ export function BattleArena({
               />
             )}
           </DialogBox>
-          <DialogBox className="p-2 sm:p-3">{menu}</DialogBox>
+          <DialogBox className="flex flex-col gap-2 p-2 sm:p-3">
+            {failed && (
+              <div className="flex flex-wrap items-center gap-2" role="alert">
+                <p className="text-body font-bold text-danger">
+                  {failed.message}
+                </p>
+                {failed.retry && (
+                  <Button onClick={onResync} ref={retryRef} variant="secondary">
+                    Try again
+                  </Button>
+                )}
+              </div>
+            )}
+            {menu}
+          </DialogBox>
         </div>
       )}
     </section>
