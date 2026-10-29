@@ -144,9 +144,11 @@ def test_two_sweeps_at_once_forfeit_once(client: TestClient, test_database_url: 
     sql(
         test_database_url,
         "UPDATE matches SET started_at = now() - interval '5 min',"
-        " guest_left_at = now() - interval '61 s' WHERE id = %s",
+        " guest_left_at = now() - interval '61 s', guest_away = true WHERE id = %s",
         match_id,
     )
+    # Already away, so the forfeit is the only change left. Otherwise one sweep can
+    # mark the seat away while the other forfeits it, and both report the match.
 
     async def both() -> list[list[str]]:
         return list(
