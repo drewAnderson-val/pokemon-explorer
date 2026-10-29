@@ -423,3 +423,78 @@ Template:
   checks the spec stays complete and that the documented example move really works.
 - **Rejected:** typed query and body models for documentation's sake (they'd replace this API's 400 messages with
   FastAPI's, breaking parity with the old API); ReDoc as well (one docs page is enough).
+
+## 2026-10-29: Friend matches in Postgres: seats are users, turns under a row lock
+
+- **What:** a `matches` row holds the whole match (both teams, pending actions, the engine's state as JSONB, presence).
+  Seats are user ids from the token. Every action locks the row (`SELECT … FOR UPDATE`), stores the seat's pending
+  action, and resolves the turn with the slice 3 engine when both are in.
+- **Why:** both players can press Attack in the same instant. Without the lock, each request reads "the other hasn't
+  moved", saves only its own move, and nobody resolves the turn. A test fires both moves at once for 20 rounds; with
+  the lock removed it fails every time.
+- **Rejected:** seat tokens (they worked without accounts; now the account is the seat, so a reload or another device
+  keeps your place).
+
+## 2026-10-29: Idempotency keys for match moves (turn numbers for wild battles)
+
+- **What:** moves, switches and send-outs carry an `Idempotency-Key` header. The first successful action is recorded
+  under it; a retry with the same key and body gets the same answer without being applied again; the same key with a
+  different body is 409.
+- **Why not a turn number, as wild battles use:** in a match two players act in the same turn, and a player's move
+  stays pending until the other acts, so "is this the current turn?" can't tell a retry from a second move. A key
+  identifies the request itself.
+- **Trade-off:** one row per action in `match_actions` (deleted with the match).
+
+## 2026-10-29: Live updates with LISTEN/NOTIFY, not a broker
+
+- **What:** each API instance holds one `LISTEN match_events` connection. After an action commits, `NOTIFY` carries the
+  match id; every instance with a stream for it re-reads the row and pushes each player their own view. A seat's
+  current stream id lives in the row, so a reload on another instance replaces the old stream there too.
+- **Why:** with two instances, the player who acted and the player waiting can be on different ones. The notification
+  is only a hint: the data comes from the row, Postgres sends it only after the commit, and a lost one costs nothing a
+  reconnect doesn't fix. So durable messaging isn't needed, and nothing new has to run.
+- **Rejected:** RabbitMQ (durability, acks and retries for messages that are only hints, plus a service to run and
+  defend); Redis pub/sub (one more service); sticky sessions (Cloud Run can't guarantee them, and they break when an
+  instance scales away).
+- **Trade-off:** notifications sent while an instance's listener is reconnecting are lost; streams on that instance
+  catch up on the next change or reconnect.
+
+## 2026-10-29: Presence by heartbeat, and a sweep that is safe to run twice
+
+- **What:** an open stream marks its seat present and updates `seen_at` every 2 s; closing it records `left_at`. A
+  sweep (every 5 s per instance, and first thing in every match route) marks a seat away after 5 s, forfeits it after
+  60 s (from the later of the drop and the battle's start), deletes unstarted matches after 30 min and finished ones
+  after 10 min. A stream silent for 10 s counts as dropped at its last heartbeat (its instance died without closing it).
+- **Why:** every statement matches only rows that still need the change, so two instances sweeping at once can't
+  forfeit twice: the second waits on the row lock, re-checks, and skips. A test runs two sweeps at once.
+- **A bug the tests caught:** Postgres's `greatest()` ignores NULLs, so a connected seat (`left_at` NULL) looked like
+  it had left at the battle's start; `gone` now requires `left_at` to be set.
+
+## 2026-10-28: Pool connections autocommit, so route transactions commit before the response
+
+- **What:** the connection pool opens connections with `autocommit=True`. A lone query commits on its own; a route's
+  `async with conn.transaction()` is a real BEGIN/COMMIT.
+- **Why:** without it, `current_user`'s query opened a transaction on the pooled connection before the route ran, so
+  every route's `transaction()` was only a savepoint, and the real COMMIT ran when the pool took the connection back:
+  after the response was sent. A review reproduced a `GET` right after a successful `PUT` returning the old team, and a
+  client could be told 200 for a write whose commit then failed. Row locks still held to the late commit, so the
+  turn check stayed correct. A test now asserts no transaction is open when a route starts.
+- **Rejected:** keeping implicit transactions and committing in the dependency's teardown (it runs after the
+  response is sent in this FastAPI version).
+- **Trade-off:** every multi-statement write must be wrapped in `conn.transaction()` explicitly; a forgotten one
+  commits statement by statement.
+
+## 2026-10-29: Slice 5a review fixes: real disconnects, heartbeat gaps, a sturdier listener
+
+- **A closed stream marks its seat dropped at once.** On a real server, a client disconnect cancels the stream
+  generator, and the "dropped" write in its `finally` was cancelled with it; every tab close looked like a crashed
+  instance (away after ~15 s instead of 5). That write is now shielded from the cancellation. Caught only against real
+  uvicorn: a test now starts one.
+- **A heartbeat restores presence.** If a stall (slow database, busy instance) let a sweep mark a still-open stream's
+  seat away or gone, the next heartbeat brings it back and tells the opponent, instead of the player being forfeited
+  while connected.
+- **The listener survives a failed push and catches up after reconnecting.** A push error is logged instead of
+  dropping the `LISTEN` connection (which lost every match's updates until it reconnected), and after each `LISTEN` it
+  pushes every match it holds streams for.
+- **The 4a fixes reached main here.** The review found route transactions committing after the response; the fix (an
+  autocommit pool) had been made in slice 4a but pushed after that PR merged, so it never shipped. It's in this PR.

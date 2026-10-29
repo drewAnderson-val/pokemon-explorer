@@ -16,7 +16,14 @@ from app.battles.write_back import write_back
 from app.db.pool import get_conn
 from app.docs import WILD_ACTION_BODY, errors
 from app.engine.types import Fighter, Rng
-from app.engine.wild import create_battle, create_fighter, resolve_turn, send_out, wild_level
+from app.engine.wild import (
+    MAX_TEAM,
+    create_battle,
+    create_fighter,
+    resolve_turn,
+    send_out,
+    wild_level,
+)
 from app.pokemon.queries import find_many
 from app.teams.store import load_team, lock_user, save_members
 
@@ -151,6 +158,14 @@ async def take_turn(
             return error("Send out another creature first", 409)
         if sending_out and not state["mustSwitch"]:
             return error("Nothing to send out", 409)
+        # The engine only knows the party the battle started with; the team may have
+        # changed since. Refuse a catch that would succeed and then have nowhere to go.
+        members = await load_team(conn, user.id)
+        if action.get("type") == "catch":
+            if len(members) >= MAX_TEAM:
+                return error("Your team is full", 409)
+            if any(m["creatureId"] == state["enemy"]["creature"]["id"] for m in members):
+                return error("That creature is already on your team", 409)
         try:
             result = (
                 send_out(state, action.get("to"))  # type: ignore[arg-type]
@@ -166,6 +181,5 @@ async def take_turn(
             (Jsonb(result["state"]), user.id),
         )
         # In the same transaction: the team and the battle never disagree.
-        members = await load_team(conn, user.id)
         await save_members(conn, user.id, write_back(members, result["state"]))
     return {"events": result["events"], "state": result["state"], "turn": turn + 1}

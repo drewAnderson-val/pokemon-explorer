@@ -1,3 +1,5 @@
+import asyncio
+import contextlib
 import random
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -7,11 +9,14 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from psycopg import AsyncConnection
+from psycopg_pool import AsyncConnectionPool
 
 from app.config import Settings
 from app.db.migrate import migrate
 from app.db.pool import open_pool
-from app.routes import auth, health, pokemon, team, wild
+from app.matches.live import LiveMatches
+from app.matches.sweep import sweep
+from app.routes import auth, health, matches, pokemon, team, wild
 
 
 def create_app(settings: Settings) -> FastAPI:
@@ -27,7 +32,11 @@ def create_app(settings: Settings) -> FastAPI:
         pool = open_pool(settings.database_url)
         await pool.open(wait=False)
         app.state.pool = pool
+        await app.state.live.start(settings.database_url, pool)
+        sweeper = asyncio.create_task(sweep_forever(pool))
         yield
+        sweeper.cancel()
+        await app.state.live.stop()
         await pool.close()
 
     app = FastAPI(
@@ -47,6 +56,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.state.settings = settings
     # Every random roll in battles. Tests replace it with scripted numbers.
     app.state.rng = random.random
+    app.state.live = LiveMatches()
     if settings.cors_origin_regex:
         # The frontend is served from another origin, so browsers only let it read
         # API responses that name its origin in Access-Control-Allow-Origin.
@@ -61,6 +71,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.include_router(auth.router)
     app.include_router(team.router)
     app.include_router(wild.router)
+    app.include_router(matches.router)
 
     # Errors routes raise (like current_user's 401) come out as {"error": ...}. Routing
     # errors (unknown path, wrong method) are raised by Starlette and keep {"detail"}.
@@ -77,3 +88,17 @@ def create_app(settings: Settings) -> FastAPI:
         return JSONResponse({"error": f"{field}: {first['msg']}"}, status_code=400)
 
     return app
+
+
+SWEEP_SECONDS = 5
+
+
+async def sweep_forever(pool: AsyncConnectionPool) -> None:
+    """Runs the match sweep every few seconds while this instance is up. Cloud Run can
+    scale to zero, so routes also sweep first; this covers matches nobody is asking
+    about (a player who left while the other just waits)."""
+    while True:
+        await asyncio.sleep(SWEEP_SECONDS)
+        with contextlib.suppress(Exception):
+            async with pool.connection() as conn:
+                await sweep(conn)

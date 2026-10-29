@@ -66,14 +66,28 @@ def test_a_catch_joins_the_team_once(client: TestClient) -> None:
     assert ids == [1, battle["state"]["enemy"]["creature"]["id"]]
 
 
-def test_no_catch_joins_a_full_team(client: TestClient) -> None:
+def test_no_catch_into_a_full_team(client: TestClient) -> None:
     h = sign_up(client)
     start(client, h, [1, 2, 3, 4, 5], [0.0, 0.5])
-    client.put("/api/team", json={"members": client.get("/api/team", headers=h).json()["members"]
-                                  + [{"creatureId": 900}]}, headers=h)  # fmt: skip
-    # The battle started with 5; the team now has 6, so a catch has no room.
-    act(client, h, 0, {"type": "catch"}, [0, 0, 0, 0])
-    assert len(client.get("/api/team", headers=h).json()["members"]) == 6
+    members = client.get("/api/team", headers=h).json()["members"]
+    client.put("/api/team", json={"members": [*members, {"creatureId": 900}]}, headers=h)
+    # The battle started with 5; the team now has 6. A catch would say "caught" and
+    # then have nowhere to go, so it's refused before the ball is thrown.
+    response = act(client, h, 0, {"type": "catch"}, [0, 0, 0, 0])
+    assert response.status_code == 409
+    assert response.json() == {"error": "Your team is full"}
+    assert client.get("/api/battles/wild", headers=h).json()["turn"] == 0
+
+
+def test_no_catch_of_a_creature_already_on_the_team(client: TestClient) -> None:
+    h = sign_up(client)
+    battle = start(client, h, [1], [0.0, 0.5])
+    enemy_id = battle["state"]["enemy"]["creature"]["id"]
+    members = client.get("/api/team", headers=h).json()["members"]
+    client.put("/api/team", json={"members": [*members, {"creatureId": enemy_id}]}, headers=h)
+    response = act(client, h, 0, {"type": "catch"}, [0, 0, 0, 0])
+    assert response.status_code == 409
+    assert response.json() == {"error": "That creature is already on your team"}
 
 
 def test_timing_is_capped(client: TestClient) -> None:

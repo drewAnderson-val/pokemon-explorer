@@ -86,3 +86,17 @@ def test_versus_send_out_rejects_non_index(to: object) -> None:
 def test_versus_rejects_malformed_actions(actions: dict[str, dict[str, object]]) -> None:
     with pytest.raises(ValueError):
         resolve_versus_turn(versus(), actions, ScriptedRng(*[0.5] * 10))  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("index", ["garbage", 9, -1, None])
+def test_a_bad_move_is_rejected_even_if_the_enemy_would_faint_the_lead_first(
+    index: object,
+) -> None:
+    # Enemy faster, lead at 1 HP: the player never gets to act this turn, so the
+    # index must be checked before anything happens, not when the player's go comes.
+    party = [make_fighter(id=1, speed=10, hp=1, uid="a"), make_fighter(id=3, uid="b")]
+    state = create_battle(party, make_fighter(id=2, speed=200, uid="w"))
+    rng = ScriptedRng(*[0.1, 0.0, 0.9, 0.5] * 3)
+    with pytest.raises(ValueError):
+        resolve_turn(state, {"index": index, "type": "move"}, rng)
+    assert rng.calls == 0
