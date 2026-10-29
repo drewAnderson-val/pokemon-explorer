@@ -527,3 +527,14 @@ Template:
   another name).
 - **Trade-off:** someone 50 minutes into their session is asked to sign in again before a match. A match that runs
   past 15 minutes can still hit the expiry.
+
+## 2026-10-29: CORS allows both of the frontend's Cloud Run URLs
+
+- **What:** the API's allowed origins match the frontend at `<name>-ogxllptvoa-uc.a.run.app` and at
+  `<name>-605570978921.us-central1.run.app`, plus the PR previews at either.
+- **Why:** Cloud Run serves every service at both URLs. Only the first was allowed, so on the second every API call
+  failed in the browser as "Failed to fetch" (a preflight from it got a 400 with no allow-origin header). A smoke test
+  now sends a preflight from both.
+- **Rejected:** reading the URLs from the frontend service's outputs (it would make the API's deploy depend on the
+  frontend's); a wildcard on `*.run.app` (any Cloud Run app on the internet could call the API as a signed-in user's
+  browser).

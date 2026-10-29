@@ -143,6 +143,14 @@ jobs:
         run: |
           curl -fsS "$API_URL/api/docs" | grep -qi swagger
           curl -fsS "$API_URL/api/openapi.json" | jq -e '.paths["/api/battles/wild/actions"].post.requestBody' >/dev/null
+      # A browser on either of the frontend's Cloud Run URLs must be able to call the API.
+      - name: API allows the frontend's origins (CORS)
+        run: |
+          for origin in "$URL" "https://pokemon-explorer-605570978921.us-central1.run.app"; do
+            curl -sS -o /dev/null -D - -X OPTIONS "$API_URL/api/auth/signup" -H "Origin: $origin" \
+              -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' \
+              | grep -qi "^access-control-allow-origin: $origin" || { echo "CORS refused $origin"; exit 1; }
+          done
       - name: API friend matches need a token
         run: test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$API_URL/api/matches")" = 401
       - name: API team and battles need a token

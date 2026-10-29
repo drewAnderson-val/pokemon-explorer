@@ -59,8 +59,11 @@ if (isProd) {
 // A constant: reading it from the Express service's URI would make the API
 // depend on the frontend's deploy.
 const CLOUD_RUN_HASH = 'ogxllptvoa'
-// The prod frontend and every PR preview (pokemon-explorer-pr-<n>).
-const frontendOrigins = `^https://${appName}(-pr-\\d+)?-${CLOUD_RUN_HASH}-uc\\.a\\.run\\.app$`
+// Every Cloud Run service also answers at <name>-<project number>.<region>.run.app,
+// and a browser on that URL sends it as its origin.
+const PROJECT_NUMBER = '605570978921'
+// The prod frontend and every PR preview (pokemon-explorer-pr-<n>), at either URL.
+const frontendOrigins = `^https://${appName}(-pr-\\d+)?-(${CLOUD_RUN_HASH}-uc\\.a|${PROJECT_NUMBER}\\.${region})\\.run\\.app$`
 
 // The FastAPI service (api/), prod only: PR previews would share the prod
 // database, so a PR's migrations would change prod. Previews build their
