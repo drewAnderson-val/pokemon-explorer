@@ -5,8 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Pokemon } from '@/lib/pokemon'
 
 import pokemon from '@/data/pokemon.json'
+import { authStore } from '@/lib/auth'
 import { battleViewFor, createVersusTeam } from '@/lib/battle/versus'
-import { loadToken, type MatchView, tokenKey } from '@/lib/versus-api'
+import { type MatchView } from '@/lib/versus-api'
 import { apiResponse, stubFetch } from '@/test/fake-api'
 import { FakeEventSource, stubEventSource } from '@/test/fake-event-source'
 import { seedTeam, serverTeam } from '@/test/fake-server'
@@ -41,9 +42,12 @@ const view = (extra: Partial<MatchView> = {}): MatchView => ({
 // Handlers see only the URL; the init is on the mock's calls.
 const matchApi = (url: URL, init?: RequestInit) => {
   if (url.pathname === '/api/matches') {
-    return Response.json({ matchId: ID, token: 'tok' })
+    return Response.json({ matchId: ID })
   }
-  if (url.pathname.startsWith('/api/matches/')) return Response.json({})
+  if (url.pathname.endsWith('/join')) return Response.json({ seat: 'guest' })
+  if (url.pathname.startsWith('/api/matches/')) {
+    return new Response(null, { status: 204 })
+  }
   return apiResponse(url, init)
 }
 
@@ -51,6 +55,7 @@ const emit = (data: MatchView) =>
   act(() => FakeEventSource.last?.emit('view', data))
 
 beforeEach(() => {
+  signIn()
   stubEventSource()
   sessionStorage.clear()
   window.history.pushState({}, '', '/battle/vs')
@@ -79,7 +84,7 @@ describe('parseMatchId', () => {
 })
 
 describe('VersusScreen', () => {
-  it('creates a match, moves to its URL and keeps the token', async () => {
+  it('creates a match and moves to its URL', async () => {
     const fetchMock = stubFetch(matchApi)
     renderWithClient(<VersusScreen matchId={null} />)
     expect(screen.getByText('Battle a friend')).toBeInTheDocument()
@@ -88,15 +93,17 @@ describe('VersusScreen', () => {
     await waitFor(() =>
       expect(window.location.pathname).toBe(`/battle/vs/${ID}`)
     )
-    expect(sessionStorage.getItem(tokenKey(ID))).toBe('tok')
-    expect(fetchMock).toHaveBeenCalledWith('/api/matches', { method: 'POST' })
+    expect(
+      fetchMock.mock.calls.some(
+        ([url, init]) => url === '/api/matches' && init?.method === 'POST'
+      )
+    ).toBe(true)
     // The host is in: the screen follows the new match's stream.
     await waitFor(() => expect(FakeEventSource.last?.url).toContain(ID))
   })
 
   it('shows the share link while the host waits, and copies it', async () => {
     stubFetch(matchApi)
-    sessionStorage.setItem(tokenKey(ID), 'tok')
     const writeText = vi.fn(() => Promise.resolve())
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -128,7 +135,6 @@ describe('VersusScreen', () => {
 
   it('keeps the share link after the host locks in before a friend joins', async () => {
     stubFetch(matchApi)
-    sessionStorage.setItem(tokenKey(ID), 'tok')
     renderWithClient(<VersusScreen matchId={ID} />)
     await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
     emit(
@@ -156,7 +162,6 @@ describe('VersusScreen', () => {
   describe('picking', () => {
     async function renderPicking() {
       const fetchMock = stubFetch(matchApi)
-      sessionStorage.setItem(tokenKey(ID), 'tok')
       renderWithClient(<VersusScreen matchId={ID} />)
       await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
       emit(view())
@@ -184,8 +189,7 @@ describe('VersusScreen', () => {
         )
         expect(call).toBeDefined()
         expect(JSON.parse(String(call?.[1]?.body))).toEqual({
-          action: { creatureIds: [2], type: 'team' },
-          token: 'tok'
+          action: { creatureIds: [2], type: 'team' }
         })
       })
       expect(JSON.stringify(serverTeam())).toBe(before)
@@ -239,7 +243,6 @@ describe('VersusScreen', () => {
 
   it('hands a started battle to the arena', async () => {
     stubFetch(matchApi)
-    sessionStorage.setItem(tokenKey(ID), 'tok')
     renderWithClient(<VersusScreen matchId={ID} />)
     await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
     const state = {
@@ -261,10 +264,10 @@ describe('VersusScreen', () => {
   })
 
   it('says the match is full when joining answers 409', async () => {
-    stubFetch(url =>
+    stubFetch((url, init) =>
       url.pathname.endsWith('/join')
         ? Response.json({ error: 'full' }, { status: 409 })
-        : apiResponse(url)
+        : apiResponse(url, init)
     )
     renderWithClient(<VersusScreen matchId={ID} />)
     expect(
@@ -274,12 +277,10 @@ describe('VersusScreen', () => {
       'href',
       '/battle'
     )
-    expect(loadToken(ID)).toBeNull()
   })
 
   it('says the match is over when the server reports it gone', async () => {
     stubFetch(matchApi)
-    sessionStorage.setItem(tokenKey(ID), 'tok')
     renderWithClient(<VersusScreen matchId={ID} />)
     await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
     act(() => FakeEventSource.last?.emit('gone'))
@@ -294,7 +295,6 @@ describe('VersusScreen', () => {
 
   it('keeps the end screen when the finished match is dropped', async () => {
     stubFetch(matchApi)
-    sessionStorage.setItem(tokenKey(ID), 'tok')
     renderWithClient(<VersusScreen matchId={ID} />)
     await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
     const state = {
@@ -321,7 +321,6 @@ describe('VersusScreen', () => {
 
   it('says the match is open in another tab when replaced', async () => {
     stubFetch(matchApi)
-    sessionStorage.setItem(tokenKey(ID), 'tok')
     renderWithClient(<VersusScreen matchId={ID} />)
     await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
     emit(view())
@@ -337,12 +336,12 @@ describe('VersusScreen', () => {
   it('offers a retry when the server cannot be reached', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     let broken = true
-    stubFetch(url =>
+    stubFetch((url, init) =>
       url.pathname.endsWith('/join')
         ? broken
           ? Response.json({ error: 'boom' }, { status: 500 })
-          : Response.json({ token: 'tok' })
-        : apiResponse(url)
+          : Response.json({ seat: 'guest' })
+        : apiResponse(url, init)
     )
     renderWithClient(<VersusScreen matchId={ID} />)
     expect(
@@ -363,5 +362,49 @@ describe('VersusScreen', () => {
       })
     )
     expect(screen.getByText('Waiting for a friend…')).toBeInTheDocument()
+  })
+})
+
+describe('VersusScreen sign-in', () => {
+  it('asks a signed-out friend to sign in, then comes back to the match', async () => {
+    authStore.update(() => null)
+    stubFetch(matchApi)
+    renderWithClient(<VersusScreen matchId={ID} />)
+    expect(
+      await screen.findByRole('link', { name: 'Sign in to battle a friend' })
+    ).toHaveAttribute('href', `/login?next=%2Fbattle%2Fvs%2F${ID}`)
+  })
+
+  it('asks you to sign in to start a match', async () => {
+    authStore.update(() => null)
+    stubFetch(matchApi)
+    renderWithClient(<VersusScreen matchId={null} />)
+    expect(
+      await screen.findByRole('link', { name: 'Sign in to battle a friend' })
+    ).toHaveAttribute('href', '/login?next=%2Fbattle%2Fvs')
+  })
+
+  it('asks you to sign in again before creating a match if your session ends soon', async () => {
+    authStore.update(() => ({
+      expiresAt: Math.floor(Date.now() / 1000) + 10 * 60,
+      token: 'test-token',
+      user: { id: 'u1', username: 'Drew_1' }
+    }))
+    stubFetch(matchApi)
+    renderWithClient(<VersusScreen matchId={null} />)
+    expect(
+      await screen.findByRole('link', { name: 'Sign in to battle a friend' })
+    ).toHaveAttribute('href', '/login?next=%2Fbattle%2Fvs')
+    expect(screen.getByText(/runs out soon/)).toBeInTheDocument()
+  })
+
+  it('asks you to sign in again when your session expires mid-match', async () => {
+    stubFetch(matchApi)
+    renderWithClient(<VersusScreen matchId={ID} />)
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+    act(() => FakeEventSource.last?.emit('unauthorized'))
+    expect(
+      await screen.findByRole('link', { name: 'Sign in to battle a friend' })
+    ).toBeInTheDocument()
   })
 })

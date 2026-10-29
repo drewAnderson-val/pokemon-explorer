@@ -30,7 +30,7 @@ export class FakeEventSource {
     this.readyState = FakeEventSource.CLOSED
   }
 
-  emit(type: 'gone' | 'replaced' | 'view', data?: unknown) {
+  emit(type: 'gone' | 'replaced' | 'unauthorized' | 'view', data?: unknown) {
     const event = new MessageEvent(type, { data: JSON.stringify(data ?? null) })
     for (const listener of this.listeners.get(type) ?? []) listener(event)
   }

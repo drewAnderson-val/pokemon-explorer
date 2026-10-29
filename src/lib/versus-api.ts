@@ -1,6 +1,9 @@
 import type { BattleEvent, BattleState } from './battle/engine'
 import type { Seat } from './battle/versus'
 
+import { API_BASE } from './api'
+import { authFetch } from './auth'
+
 // Wire types shared by the match routes and the friend battle client.
 export type MatchAction =
   | { creatureIds: number[]; type: 'team' }
@@ -40,26 +43,28 @@ export type MatchView = {
   you: Seat
 }
 
-export const tokenKey = (matchId: string) => `pokemon-explorer:match:${matchId}`
-
 export const matchPath = (matchId: string) => `/battle/vs/${matchId}`
 
+// The match's live views. EventSource can't send headers, so the account's
+// token goes in the query string (it's only ever this user's own view).
+export const matchEventsUrl = (matchId: string, token: string) =>
+  `${API_BASE}/api/matches/${matchId}/events?token=${encodeURIComponent(token)}`
+
 // Errors carry the API's message, which is written for people to read.
-export async function createMatch(): Promise<{
-  matchId: string
-  token: string
-}> {
-  const response = await fetch('/api/matches', { method: 'POST' })
+export async function createMatch(): Promise<{ matchId: string }> {
+  const response = await authFetch('/api/matches', { method: 'POST' })
   if (!response.ok) {
     throw new Error(await errorMessage(response, 'Could not create the match'))
   }
-  return (await response.json()) as { matchId: string; token: string }
+  return (await response.json()) as { matchId: string }
 }
 
+// Takes the guest seat, or confirms the seat you already have (joining again
+// is harmless, so a reload or a second tab just carries on).
 export async function joinMatch(
   matchId: string
-): Promise<{ status: 'full' | 'gone' } | { token: string }> {
-  const response = await fetch(`/api/matches/${matchId}/join`, {
+): Promise<{ seat: Seat } | { status: 'full' | 'gone' }> {
+  const response = await authFetch(`/api/matches/${matchId}/join`, {
     method: 'POST'
   })
   if (response.status === 404) return { status: 'gone' }
@@ -67,41 +72,38 @@ export async function joinMatch(
   if (!response.ok) {
     throw new Error(await errorMessage(response, 'Could not join the match'))
   }
-  return (await response.json()) as { token: string }
+  return (await response.json()) as { seat: Seat }
 }
 
-// Seat tokens live in sessionStorage so each tab holds its own seat. When
-// storage is blocked they live in memory instead (and a reload loses them).
-const tokens = new Map<string, string>()
-
-export function loadToken(matchId: string): null | string {
-  try {
-    const saved = window.sessionStorage.getItem(tokenKey(matchId))
-    if (saved) return saved
-  } catch {
-    // Blocked storage: fall back to memory.
-  }
-  return tokens.get(matchId) ?? null
-}
-
-export function saveToken(matchId: string, token: string) {
-  try {
-    window.sessionStorage.setItem(tokenKey(matchId), token)
-  } catch {
-    tokens.set(matchId, token)
-  }
-}
-
+// Moves, switches and send-outs carry an idempotency key. If the network drops
+// the request, it's sent once more with the same key: when the first one did
+// reach the server, the server answers the retry without playing it twice.
 export async function sendAction(
   matchId: string,
-  token: string,
   action: MatchAction
 ): Promise<void> {
-  const response = await fetch(`/api/matches/${matchId}/actions`, {
-    body: JSON.stringify({ action, token }),
-    headers: { 'content-type': 'application/json' },
-    method: 'POST'
-  })
+  const key =
+    action.type === 'move' ||
+    action.type === 'switch' ||
+    action.type === 'sendOut'
+      ? crypto.randomUUID()
+      : null
+  const send = () =>
+    authFetch(`/api/matches/${matchId}/actions`, {
+      body: JSON.stringify({ action }),
+      headers: {
+        'content-type': 'application/json',
+        ...(key ? { 'Idempotency-Key': key } : {})
+      },
+      method: 'POST'
+    })
+  let response: Response
+  try {
+    response = await send()
+  } catch (error) {
+    if (!key) throw error
+    response = await send()
+  }
   if (!response.ok) {
     throw new Error(await errorMessage(response, 'Could not send that move'))
   }

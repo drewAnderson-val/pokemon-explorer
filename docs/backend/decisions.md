@@ -498,3 +498,32 @@ Template:
   pushes every match it holds streams for.
 - **The 4a fixes reached main here.** The review found route transactions committing after the response; the fix (an
   autocommit pool) had been made in slice 4a but pushed after that PR merged, so it never shipped. It's in this PR.
+
+## 2026-10-29: The browser plays friend matches as its account; the stream takes the token in the URL
+
+- **What:** create and join go through the signed-in account (`authFetch`); the per-match seat token the Express API
+  handed out, and the browser kept in `sessionStorage`, is gone. Signed out, `/battle/vs` and an invite link show a
+  sign-in link that comes back to the match.
+- **The stream's token is a query parameter** (`/events?token=`), because the browser's `EventSource` can't send an
+  `Authorization` header. The token expires after an hour, so the stream answers an expired or invalid token with an
+  `unauthorized` event (sign in again) and only a stranger or a deleted match with `gone`. Merging the two would tell
+  a player whose session lapsed mid-match that the match had ended.
+- **A move's Idempotency-Key is made once per click** and reused when a dropped request is sent again, so the retry
+  can't play the move twice.
+- **Rejected:** a `fetch`-based SSE reader that can send headers (more code, and it gives up the browser's own
+  reconnect, which is how a Cloud Run request timeout is survived); a short-lived stream ticket (another endpoint and
+  table for the same hour-long risk).
+- **Trade-off:** the token can land in access logs. It is the same token the browser already holds and it expires in
+  an hour; a stream ticket is the upgrade if that ever matters.
+
+## 2026-10-29: A friend match needs 15 minutes of sign-in left
+
+- **What:** creating or joining a match asks you to sign in again first when your token expires within 15 minutes.
+- **Why:** there's no refresh token. A token that expires mid-match makes the next move a 401, which signs you out;
+  if signing back in takes longer than the 60 s disconnect window, you forfeit. Signing in again up front gives a
+  fresh hour, longer than almost any match.
+- **Rejected:** refresh tokens (the auth decision keeps one 1-hour token); a warning banner during the match (it still
+  lets the match outlive the token); extending the token on every move (a sliding session is a refresh token by
+  another name).
+- **Trade-off:** someone 50 minutes into their session is asked to sign in again before a match. A match that runs
+  past 15 minutes can still hit the expiry.

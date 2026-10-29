@@ -101,7 +101,7 @@ def test_a_change_on_one_instance_reaches_a_stream_on_the_other(
 
 
 @pytest.mark.parametrize("who", ["garbage", "expired", "stranger"])
-def test_anyone_but_a_player_just_gets_gone(two: tuple[TestClient, TestClient], who: str) -> None:
+def test_anyone_but_a_player_gets_no_view(two: tuple[TestClient, TestClient], who: str) -> None:
     from datetime import UTC, datetime, timedelta
     from uuid import uuid4
 
@@ -118,7 +118,10 @@ def test_anyone_but_a_player_just_gets_gone(two: tuple[TestClient, TestClient], 
     }
     with stream(a, match_id, tokens[who]) as response:
         assert response.status_code == 200
-        assert Events(response).next()[0] == "gone"
+        # A bad or expired token is told apart from "no such match", so the
+        # client knows to sign in again rather than give up on the match.
+        expected = "gone" if who == "stranger" else "unauthorized"
+        assert Events(response).next()[0] == expected
 
 
 def test_the_opponent_sees_you_connect(two: tuple[TestClient, TestClient]) -> None:

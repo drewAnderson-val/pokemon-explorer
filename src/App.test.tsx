@@ -5,6 +5,7 @@ import App from './App'
 import { apiResponse, stubFetch } from './test/fake-api'
 import { stubEventSource } from './test/fake-event-source'
 import { renderWithClient } from './test/render'
+import { signIn } from './test/session'
 
 afterEach(() => window.history.pushState({}, '', '/'))
 
@@ -33,11 +34,12 @@ describe('App', () => {
   )
 
   it('renders the friend battle at /battle/vs/<id>, the wild battle at /battle', () => {
+    signIn()
     stubEventSource()
-    stubFetch(url =>
+    stubFetch((url, init) =>
       url.pathname.endsWith('/join')
         ? Response.json({ error: 'full' }, { status: 409 })
-        : apiResponse(url)
+        : apiResponse(url, init)
     )
     window.history.pushState({}, '', '/battle/vs/abcd2345')
     const { unmount } = renderWithClient(<App />)

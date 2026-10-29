@@ -31,6 +31,8 @@ def frame(event: str, data: Any) -> str:
 
 
 GONE = frame("gone", {})
+# A missing, malformed or expired token: sign in again, the match may be fine.
+UNAUTHORIZED = frame("unauthorized", {})
 REPLACED = frame("replaced", {})
 
 
