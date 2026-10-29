@@ -15,6 +15,7 @@ const FASTAPI_ROUTES = [
   '/api/me',
   '/api/team',
   '/api/battles',
+  '/api/matches',
   // Swagger UI and its spec.
   '/api/docs',
   '/api/openapi.json'

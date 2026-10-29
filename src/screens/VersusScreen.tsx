@@ -10,10 +10,12 @@ import { VersusArena } from '@/components/battle/VersusArena'
 import { DialogBox } from '@/components/DialogBox'
 import { HomeLink } from '@/components/HomeLink'
 import { Button, buttonClass } from '@/components/ui/button'
+import { useAuth } from '@/hooks/useAuth'
 import { useFullscreen } from '@/hooks/useFullscreen'
 import { useMatch } from '@/hooks/useMatch'
 import { useSettings } from '@/hooks/useSettings'
 import { useTeam } from '@/hooks/useTeam'
+import { signInPath } from '@/lib/auth'
 import { isCustomId } from '@/lib/creature'
 import {
   addMember,
@@ -22,7 +24,7 @@ import {
   newMember,
   type TeamMember
 } from '@/lib/team/team'
-import { createMatch, matchPath, saveToken } from '@/lib/versus-api'
+import { createMatch, matchPath } from '@/lib/versus-api'
 
 const SECRET = "Your friend's team is a secret"
 
@@ -77,8 +79,7 @@ function Create({ onCreated }: { onCreated: (matchId: string) => void }) {
     setBusy(true)
     setError(null)
     try {
-      const { matchId, token } = await createMatch()
-      saveToken(matchId, token)
+      const { matchId } = await createMatch()
       window.history.replaceState(null, '', matchPath(matchId))
       onCreated(matchId)
     } catch (caught) {
@@ -141,6 +142,7 @@ function Lobby({
       </ConsoleScreen>
     )
   }
+  if (status === 'signin') return <SignIn next={matchPath(matchId)} />
   if (status === 'error') {
     return (
       <Message>
@@ -269,8 +271,12 @@ function Match({
   // The URL moves to the new match without a navigation, so the id it makes
   // is kept here.
   const [created, setCreated] = useState<null | string>(null)
+  const signedIn = useAuth() !== null
   const id = matchId ?? created
-  if (id === null) return <Create onCreated={setCreated} />
+  if (id === null) {
+    if (!signedIn) return <SignIn next="/battle/vs" />
+    return <Create onCreated={setCreated} />
+  }
   return <Lobby inviteSlot={inviteSlot} key={id} matchId={id} />
 }
 
@@ -321,5 +327,19 @@ function ShareLink({ matchId }: { matchId: string }) {
         Waiting for a friend…
       </p>
     </section>
+  )
+}
+
+// Matches are between accounts: the server seats you by who you're signed in as.
+function SignIn({ next }: { next: string }) {
+  return (
+    <Message>
+      <p className="text-body-lg">
+        Friend battles are played from your account.
+      </p>
+      <a className={buttonClass()} href={signInPath(next)}>
+        Sign in to battle a friend
+      </a>
+    </Message>
   )
 }
