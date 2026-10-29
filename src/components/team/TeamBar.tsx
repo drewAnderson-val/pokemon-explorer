@@ -3,15 +3,15 @@ import { useState } from 'react'
 import { DialogBox } from '@/components/DialogBox'
 import { HpBar } from '@/components/HpBar'
 import { Button, buttonClass } from '@/components/ui/button'
-import { useTeam } from '@/hooks/useTeam'
+import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import { useTeamCreatures } from '@/hooks/useTeamCreatures'
 import { MAX_TEAM } from '@/lib/battle/engine'
+import { restTeam } from '@/lib/team/serverTeam'
 import {
   memberHp,
   memberMaxHp,
   moveMember,
-  removeMember,
-  restAll
+  removeMember
 } from '@/lib/team/team'
 import { cn } from '@/lib/utils'
 
@@ -19,6 +19,8 @@ import { cn } from '@/lib/utils'
 // everyone, ◀ ▶ to change the order, × to let one go, and a way into battle.
 export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
   const [team, setTeam] = useTeam()
+  // Why the server refused the last change (the team is shown as it was).
+  const { error } = useTeamStatus()
   const { creatures, missing } = useTeamCreatures(team)
   const hurt = team.some(member => member.hp !== null)
   // Pointing at ▶ Battle marks who goes out first: the battle sends the first
@@ -48,8 +50,7 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
           <Button
             disabled={!hurt}
             onClick={() => {
-              setTeam(restAll)
-              onNotice('Your team is rested!')
+              void restTeam().then(() => onNotice('Your team is rested!'))
             }}
             variant="secondary"
           >
@@ -68,6 +69,11 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
             </a>
           )}
         </div>
+        {error && (
+          <p className="text-body font-bold text-danger" role="alert">
+            {error}
+          </p>
+        )}
       </div>
       {team.length === 0 ? (
         <p className="text-body text-ink-muted">

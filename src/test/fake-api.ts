@@ -3,11 +3,14 @@ import { vi } from 'vitest'
 import pokemonData from '@/data/pokemon.json'
 
 import { parsePokemonQuery, queryPokemon } from '../../server/query'
+import { fakeServerResponse } from './fake-server'
 
-type Handler = (url: URL) => Promise<Response> | Response
+type Handler = (url: URL, init?: RequestInit) => Promise<Response> | Response
 
 // The real API logic over the real fixture data, without a server.
-export function apiResponse(url: URL): Response {
+export function apiResponse(url: URL, init?: RequestInit): Response {
+  const fromServer = fakeServerResponse(url, init)
+  if (fromServer) return fromServer
   const byId = /^\/api\/pokemon\/(\d+)$/.exec(url.pathname)
   if (byId) {
     const found = pokemonData.find(p => p.id === Number(byId[1]))
@@ -34,7 +37,7 @@ export function stubFetch(handler: Handler = apiResponse) {
         if (signal?.aborted) return abort()
         signal?.addEventListener('abort', abort, { once: true })
         Promise.resolve(
-          handler(new URL(String(input), 'http://localhost'))
+          handler(new URL(String(input), 'http://localhost'), init)
         ).then(resolve, reject)
       })
   )

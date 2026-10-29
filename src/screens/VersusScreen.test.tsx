@@ -5,13 +5,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Pokemon } from '@/lib/pokemon'
 
 import pokemon from '@/data/pokemon.json'
-import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
 import { battleViewFor, createVersusTeam } from '@/lib/battle/versus'
-import { serializeTeam } from '@/lib/team/team'
 import { loadToken, type MatchView, tokenKey } from '@/lib/versus-api'
 import { apiResponse, stubFetch } from '@/test/fake-api'
 import { FakeEventSource, stubEventSource } from '@/test/fake-event-source'
+import { seedTeam, serverTeam } from '@/test/fake-server'
 import { renderWithClient } from '@/test/render'
+import { signIn } from '@/test/session'
 
 import { parseMatchId, VersusScreen } from './VersusScreen'
 
@@ -39,12 +39,12 @@ const view = (extra: Partial<MatchView> = {}): MatchView => ({
 })
 
 // Handlers see only the URL; the init is on the mock's calls.
-const matchApi = (url: URL) => {
+const matchApi = (url: URL, init?: RequestInit) => {
   if (url.pathname === '/api/matches') {
     return Response.json({ matchId: ID, token: 'tok' })
   }
   if (url.pathname.startsWith('/api/matches/')) return Response.json({})
-  return apiResponse(url)
+  return apiResponse(url, init)
 }
 
 const emit = (data: MatchView) =>
@@ -171,11 +171,11 @@ describe('VersusScreen', () => {
         screen.getByLabelText("Your friend's team is a secret")
       ).toBeInTheDocument()
 
-      const before = localStorage.getItem(TEAM_STORAGE_KEY)
+      const before = JSON.stringify(serverTeam())
       await userEvent.click(
         await screen.findByRole('button', { name: /Britney/ })
       )
-      expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(before)
+      expect(JSON.stringify(serverTeam())).toBe(before)
       await userEvent.click(screen.getByRole('button', { name: 'Start' }))
 
       await waitFor(() => {
@@ -188,7 +188,7 @@ describe('VersusScreen', () => {
           token: 'tok'
         })
       })
-      expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(before)
+      expect(JSON.stringify(serverTeam())).toBe(before)
     })
 
     it('leaves Creature Lab members of the saved team out', async () => {
@@ -199,10 +199,8 @@ describe('VersusScreen', () => {
         uid,
         xp: 0
       })
-      localStorage.setItem(
-        TEAM_STORAGE_KEY,
-        serializeTeam([saved('a', 1001), saved('b', 2)])
-      )
+      seedTeam([saved('a', 1001), saved('b', 2)])
+      signIn()
       const fetchMock = await renderPicking()
       expect(
         await screen.findByRole('tab', { name: 'Team 1/6' })

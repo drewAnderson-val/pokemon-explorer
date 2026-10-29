@@ -2,11 +2,12 @@ import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
 import { clearCreations, saveCreation } from '@/lib/creation-store'
 import { apiResponse, searchParamOf, stubFetch } from '@/test/fake-api'
+import { serverTeam } from '@/test/fake-server'
 import { setIntersecting } from '@/test/intersection-observer'
 import { renderWithClient } from '@/test/render'
+import { signIn } from '@/test/session'
 
 import { ExplorerScreen } from './ExplorerScreen'
 
@@ -240,6 +241,7 @@ describe('ExplorerScreen', () => {
   })
 
   it('adds a creature to the team from its card', async () => {
+    signIn()
     stubFetch()
     const { user } = await renderLoaded()
     await user.click(within(grid()).getAllByRole('button')[0])
@@ -249,7 +251,9 @@ describe('ExplorerScreen', () => {
     const team = screen.getByRole('list', { name: 'Team members' })
     expect(await within(team).findByText('Geovanni')).toBeInTheDocument()
     expect(screen.getByText('Geovanni joined your team!')).toBeInTheDocument()
-    expect(localStorage.getItem(TEAM_STORAGE_KEY)).toContain('"creatureId":1')
+    await waitFor(() =>
+      expect(serverTeam().map(m => m.creatureId)).toEqual([1])
+    )
     expect(screen.getByRole('button', { name: 'On your team' })).toBeDisabled()
   })
 

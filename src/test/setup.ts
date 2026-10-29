@@ -4,6 +4,9 @@ import 'fake-indexeddb/auto'
 import { cleanup } from '@testing-library/react'
 import { afterEach } from 'vitest'
 
+import { resetTeamForTests } from '@/lib/team/serverTeam'
+
+import { resetFakeServer } from './fake-server'
 import {
   MockIntersectionObserver,
   resetIntersectionObservers
@@ -16,4 +19,6 @@ afterEach(() => {
   // Server tests run in Node, which has no window storage.
   if (typeof window !== 'undefined') window.localStorage.clear()
   resetIntersectionObservers()
+  resetFakeServer()
+  resetTeamForTests()
 })

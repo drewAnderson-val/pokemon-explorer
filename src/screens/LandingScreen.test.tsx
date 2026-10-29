@@ -1,12 +1,12 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
-import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
 import { authStore } from '@/lib/auth'
-import { serializeTeam } from '@/lib/team/team'
 import { stubFetch } from '@/test/fake-api'
+import { seedTeam } from '@/test/fake-server'
 import { renderWithClient } from '@/test/render'
+import { signIn } from '@/test/session'
 
 import { LandingScreen } from './LandingScreen'
 
@@ -33,7 +33,7 @@ describe('LandingScreen', () => {
     ).toEqual(['/', '/login'])
   })
 
-  it('says how big your roster is, or that there is none yet', () => {
+  it('says how big your roster is, or that there is none yet', async () => {
     stubFetch()
     const { unmount } = renderWithClient(<LandingScreen />)
     expect(
@@ -41,17 +41,17 @@ describe('LandingScreen', () => {
     ).toHaveTextContent('No team yet')
     unmount()
 
-    localStorage.setItem(
-      TEAM_STORAGE_KEY,
-      serializeTeam([
-        { creatureId: 1, hp: null, level: 5, uid: 'a', xp: 125 },
-        { creatureId: 2, hp: null, level: 5, uid: 'b', xp: 125 }
-      ])
-    )
+    seedTeam([
+      { creatureId: 1, hp: null, level: 5, uid: 'a', xp: 125 },
+      { creatureId: 2, hp: null, level: 5, uid: 'b', xp: 125 }
+    ])
+    signIn()
     renderWithClient(<LandingScreen />)
-    expect(
-      within(startMenu()).getByRole('link', { name: /Load your roster/ })
-    ).toHaveTextContent('2/6 creatures on your team.')
+    await waitFor(() =>
+      expect(
+        within(startMenu()).getByRole('link', { name: /Load your roster/ })
+      ).toHaveTextContent('2/6 creatures on your team.')
+    )
   })
 })
 

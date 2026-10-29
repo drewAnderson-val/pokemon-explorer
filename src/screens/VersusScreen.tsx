@@ -121,10 +121,13 @@ function Lobby({
   const { retry, send, status, view } = useMatch(matchId)
   // The friend match's own team: seeded from the saved one (minus Creature
   // Lab creatures, which the server can't know), never written back to it.
+  // Until you change it, it is the saved team (which loads from the API a moment
+  // after the screen opens); from your first change on, it's this match's own.
   const [saved] = useTeam()
-  const [team, setTeam] = useState<TeamMember[]>(() =>
-    saved.filter(member => !isCustomId(member.creatureId))
-  )
+  const [picked, setPicked] = useState<null | TeamMember[]>(null)
+  const team = picked ?? saved.filter(member => !isCustomId(member.creatureId))
+  const setTeam = (change: (current: TeamMember[]) => TeamMember[]) =>
+    setPicked(change(team))
   const [sendError, setSendError] = useState(false)
 
   if (status === 'connecting' || (status === 'live' && !view)) {
