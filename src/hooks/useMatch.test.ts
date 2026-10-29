@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { MatchView } from '@/lib/versus-api'
 
+import { authStore } from '@/lib/auth'
 import { stubFetch } from '@/test/fake-api'
 import { FakeEventSource, stubEventSource } from '@/test/fake-event-source'
 import { signIn } from '@/test/session'
@@ -134,9 +135,9 @@ describe('useMatch', () => {
       if (calls === 1) throw new TypeError('Failed to fetch')
       return new Response(null, { status: 204 })
     })
-    stubEventSource()
+    const Source = stubEventSource()
     const { result } = renderHook(() => useMatch('abc'))
-    await waitFor(() => expect(result.current.status).not.toBe('signin'))
+    await waitFor(() => expect(Source.last).not.toBeNull())
     await act(() => result.current.send({ index: 0, timing: 1, type: 'move' }))
     const sends = fetchMock.mock.calls.filter(([url]) =>
       String(url).endsWith('/actions')
@@ -173,5 +174,92 @@ describe('useMatch', () => {
     await waitFor(() => expect(Source.last).not.toBeNull())
     unmount()
     expect(Source.last?.closed).toBe(true)
+  })
+})
+
+describe('useMatch sessions and sends', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+  })
+
+  it('asks you to sign in again, before joining, when your session ends within 15 minutes', async () => {
+    authStore.update(() => ({
+      expiresAt: Math.floor(Date.now() / 1000) + 10 * 60,
+      token: 'test-token',
+      user: { id: 'u1', username: 'Drew_1' }
+    }))
+    const fetchMock = stubFetch(joined)
+    stubEventSource()
+    const { result } = renderHook(() => useMatch('abc'))
+    await waitFor(() => expect(result.current.status).toBe('signin'))
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('goes to sign in when you sign out mid-match, and rejoins when you sign back in', async () => {
+    signIn()
+    stubFetch(joined)
+    const Source = stubEventSource()
+    const { result } = renderHook(() => useMatch('abc'))
+    await waitFor(() => expect(Source.last).not.toBeNull())
+    const first = Source.last
+    act(() => authStore.update(() => null))
+    await waitFor(() => expect(result.current.status).toBe('signin'))
+    expect(first?.closed).toBe(true)
+    act(() => signIn())
+    await waitFor(() => expect(Source.last).not.toBe(first))
+  })
+
+  it('goes to sign in when a move comes back 401', async () => {
+    signIn()
+    stubFetch(url =>
+      url.pathname.endsWith('/join')
+        ? joined()
+        : Response.json({ error: 'expired' }, { status: 401 })
+    )
+    const Source = stubEventSource()
+    const { result } = renderHook(() => useMatch('abc'))
+    await waitFor(() => expect(Source.last).not.toBeNull())
+    await act(() =>
+      result.current.send({ index: 0, timing: 1, type: 'move' }).catch(() => {})
+    )
+    await waitFor(() => expect(result.current.status).toBe('signin'))
+  })
+
+  it('does not resend a move the server answered with an error', async () => {
+    signIn()
+    const fetchMock = stubFetch(url =>
+      url.pathname.endsWith('/join')
+        ? joined()
+        : Response.json({ error: 'boom' }, { status: 500 })
+    )
+    const Source = stubEventSource()
+    const { result } = renderHook(() => useMatch('abc'))
+    await waitFor(() => expect(Source.last).not.toBeNull())
+    await expect(
+      result.current.send({ index: 0, timing: 1, type: 'move' })
+    ).rejects.toThrow()
+    expect(
+      fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/actions'))
+    ).toHaveLength(1)
+  })
+
+  it('sends a team lock-in once, with no idempotency key', async () => {
+    signIn()
+    const fetchMock = stubFetch(url => {
+      if (url.pathname.endsWith('/join')) return joined()
+      throw new TypeError('Failed to fetch')
+    })
+    const Source = stubEventSource()
+    const { result } = renderHook(() => useMatch('abc'))
+    await waitFor(() => expect(Source.last).not.toBeNull())
+    await expect(
+      result.current.send({ creatureIds: [1], type: 'team' })
+    ).rejects.toThrow()
+    const sends = fetchMock.mock.calls.filter(([url]) =>
+      String(url).endsWith('/actions')
+    )
+    expect(sends).toHaveLength(1)
+    expect(new Headers(sends[0][1]?.headers).get('Idempotency-Key')).toBeNull()
   })
 })

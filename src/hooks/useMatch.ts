@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { currentSession } from '@/lib/auth'
+import { currentSession, type Session } from '@/lib/auth'
 import {
   joinMatch,
   type MatchAction,
@@ -20,6 +20,13 @@ export type MatchStatus =
   | 'replaced'
   // Signed out, or the account's token expired: sign in to carry on.
   | 'signin'
+
+// There's no refresh token, and a 401 mid-match signs you out; a player still
+// signing back in 60 s later forfeits. So a match needs this much session left.
+const MATCH_TIME = 15 * 60 * 1000
+
+export const lastsAMatch = (session: null | Session, now = Date.now()) =>
+  session !== null && session.expiresAt * 1000 - now >= MATCH_TIME
 
 // One join per match at a time, so StrictMode's second effect run awaits the
 // first run's join instead of posting again.
@@ -83,7 +90,7 @@ export function useMatch(matchId: string) {
 
     async function start() {
       const session = currentSession()
-      if (!session) {
+      if (!session || !lastsAMatch(session)) {
         setState({ status: 'signin', view: null })
         return
       }

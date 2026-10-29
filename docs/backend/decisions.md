@@ -515,3 +515,15 @@ Template:
   table for the same hour-long risk).
 - **Trade-off:** the token can land in access logs. It is the same token the browser already holds and it expires in
   an hour; a stream ticket is the upgrade if that ever matters.
+
+## 2026-10-29: A friend match needs 15 minutes of sign-in left
+
+- **What:** creating or joining a match asks you to sign in again first when your token expires within 15 minutes.
+- **Why:** there's no refresh token. A token that expires mid-match makes the next move a 401, which signs you out;
+  if signing back in takes longer than the 60 s disconnect window, you forfeit. Signing in again up front gives a
+  fresh hour, longer than almost any match.
+- **Rejected:** refresh tokens (the auth decision keeps one 1-hour token); a warning banner during the match (it still
+  lets the match outlive the token); extending the token on every move (a sliding session is a refresh token by
+  another name).
+- **Trade-off:** someone 50 minutes into their session is asked to sign in again before a match. A match that runs
+  past 15 minutes can still hit the expiry.

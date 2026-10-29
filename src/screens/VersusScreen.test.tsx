@@ -384,6 +384,20 @@ describe('VersusScreen sign-in', () => {
     ).toHaveAttribute('href', '/login?next=%2Fbattle%2Fvs')
   })
 
+  it('asks you to sign in again before creating a match if your session ends soon', async () => {
+    authStore.update(() => ({
+      expiresAt: Math.floor(Date.now() / 1000) + 10 * 60,
+      token: 'test-token',
+      user: { id: 'u1', username: 'Drew_1' }
+    }))
+    stubFetch(matchApi)
+    renderWithClient(<VersusScreen matchId={null} />)
+    expect(
+      await screen.findByRole('link', { name: 'Sign in to battle a friend' })
+    ).toHaveAttribute('href', '/login?next=%2Fbattle%2Fvs')
+    expect(screen.getByText(/runs out soon/)).toBeInTheDocument()
+  })
+
   it('asks you to sign in again when your session expires mid-match', async () => {
     stubFetch(matchApi)
     renderWithClient(<VersusScreen matchId={ID} />)
