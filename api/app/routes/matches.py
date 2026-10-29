@@ -9,6 +9,7 @@ from collections.abc import AsyncIterator
 from typing import Annotated, Any
 from uuid import uuid4
 
+import anyio
 from fastapi import APIRouter, Depends, Header, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from psycopg import AsyncConnection, sql
@@ -283,7 +284,7 @@ async def _stream(request: Request, match_id: str, token: str) -> AsyncIterator[
             now = time.monotonic()
             if now - last_beat >= HEARTBEAT_SECONDS:
                 last_beat = now
-                await _mark(pool, match_id, seat, stream_id, "{seen} = now()")
+                await _heartbeat(pool, match_id, seat, stream_id)
             if now - last_ping >= ping_every:
                 last_ping = now
                 # A comment line: keeps proxies from closing an idle stream.
@@ -292,7 +293,9 @@ async def _stream(request: Request, match_id: str, token: str) -> AsyncIterator[
         live.remove(stream)
         # Dropped (unless a newer stream already took the seat): the sweep marks the
         # seat away after 5 s and forfeits it after 60 s.
-        with contextlib.suppress(Exception):
+        # Shielded: when the client disconnects, the server cancels this generator,
+        # and an unshielded await here would be cancelled before it ran.
+        with anyio.CancelScope(shield=True), contextlib.suppress(Exception):
             await _mark(pool, match_id, seat, stream_id, "{left} = now()")
 
 
@@ -304,3 +307,32 @@ async def _mark(pool: Any, match_id: str, seat: str, stream_id: str, assignment:
     )
     async with pool.connection() as conn:
         await conn.execute(query, (match_id, stream_id))
+
+
+async def _heartbeat(pool: Any, match_id: str, seat: str, stream_id: str) -> None:
+    """This stream is still alive. If a sweep marked the seat away or gone during a
+    stall (a slow database, a busy instance), the stream never closed, so the seat
+    is back: restore it and tell the opponent."""
+    names = {
+        "seen": sql.Identifier(f"{seat}_seen_at"),
+        "left": sql.Identifier(f"{seat}_left_at"),
+        "away": sql.Identifier(f"{seat}_away"),
+        "stream": sql.Identifier(f"{seat}_stream"),
+    }
+    async with pool.connection() as conn, conn.transaction():
+        cursor = await conn.execute(
+            sql.SQL(
+                "UPDATE matches SET {away} = false, {left} = NULL"
+                " WHERE id = %s AND {stream} = %s AND ({away} OR {left} IS NOT NULL)"
+                " RETURNING id"
+            ).format(**names),
+            (match_id, stream_id),
+        )
+        if await cursor.fetchone():
+            await notify(conn, match_id)
+        await conn.execute(
+            sql.SQL("UPDATE matches SET {seen} = now() WHERE id = %s AND {stream} = %s").format(
+                **names
+            ),
+            (match_id, stream_id),
+        )

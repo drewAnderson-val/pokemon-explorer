@@ -93,6 +93,14 @@ class LiveMatches:
             else:
                 stream.send(frame("view", view_for(match, stream.seat)))
 
+    async def _push_safely(self, match_id: str) -> None:
+        # One failed push (a busy pool, a database blip) must not drop the listening
+        # connection, which would lose every other match's updates until it's back.
+        try:
+            await self.push(match_id)
+        except Exception:
+            log.exception("Couldn't push match %s", match_id)
+
     async def _listen(self, database_url: str) -> None:
         # Reconnects if the listening connection drops: notifications sent while it
         # was down are lost, and the next one (or a reconnecting client) catches up.
@@ -100,8 +108,12 @@ class LiveMatches:
             try:
                 async with await AsyncConnection.connect(database_url, autocommit=True) as conn:
                     await conn.execute(f"LISTEN {CHANNEL}")
+                    # Changes made while we weren't listening were never announced
+                    # to us: bring every stream here up to date.
+                    for match_id in list(self.streams):
+                        await self._push_safely(match_id)
                     async for note in conn.notifies():
-                        await self.push(note.payload)
+                        await self._push_safely(note.payload)
             except asyncio.CancelledError:
                 raise
             except Exception:

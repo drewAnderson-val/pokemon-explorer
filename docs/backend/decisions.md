@@ -483,3 +483,18 @@ Template:
   response is sent in this FastAPI version).
 - **Trade-off:** every multi-statement write must be wrapped in `conn.transaction()` explicitly; a forgotten one
   commits statement by statement.
+
+## 2026-10-29: Slice 5a review fixes: real disconnects, heartbeat gaps, a sturdier listener
+
+- **A closed stream marks its seat dropped at once.** On a real server, a client disconnect cancels the stream
+  generator, and the "dropped" write in its `finally` was cancelled with it; every tab close looked like a crashed
+  instance (away after ~15 s instead of 5). That write is now shielded from the cancellation. Caught only against real
+  uvicorn: a test now starts one.
+- **A heartbeat restores presence.** If a stall (slow database, busy instance) let a sweep mark a still-open stream's
+  seat away or gone, the next heartbeat brings it back and tells the opponent, instead of the player being forfeited
+  while connected.
+- **The listener survives a failed push and catches up after reconnecting.** A push error is logged instead of
+  dropping the `LISTEN` connection (which lost every match's updates until it reconnected), and after each `LISTEN` it
+  pushes every match it holds streams for.
+- **The 4a fixes reached main here.** The review found route transactions committing after the response; the fix (an
+  autocommit pool) had been made in slice 4a but pushed after that PR merged, so it never shipped. It's in this PR.
