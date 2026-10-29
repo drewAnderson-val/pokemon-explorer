@@ -408,3 +408,18 @@ Template:
 - **The old browser-saved team (`pokemon-explorer:team` in `localStorage`) is no longer read.** There's no import:
   progress belongs to accounts now, and an import would let a client claim any levels it liked (see "The server owns a
   team's levels, XP and HP").
+
+## 2026-10-29: Interactive API docs at /api/docs
+
+- **What:** FastAPI's Swagger UI at `/api/docs` (spec at `/api/openapi.json`), with a summary for every route,
+  `/api/pokemon`'s parameters and defaults, an example for every request body (one per battle action), every error
+  response in the `{"error"}` shape, and an **Authorize** button for the Bearer token.
+- **Why:** anyone (a reviewer, an interviewer, future me) can try the whole API from a browser: sign up, paste the
+  token, build a team, start a battle and take turns, without reading code.
+- **How, without changing behavior:** `/api/pokemon` still parses its query string by hand (repeated parameters stay a
+  400), so its parameters are described with `openapi_extra`; battle actions stay a plain dict for the engine to
+  validate, with their shapes and examples described the same way. `current_user` declares `HTTPBearer(auto_error=False)`
+  only so the docs know about the token; it still reads the header itself, so error messages are unchanged. A test
+  checks the spec stays complete and that the documented example move really works.
+- **Rejected:** typed query and body models for documentation's sake (they'd replace this API's 400 messages with
+  FastAPI's, breaking parity with the old API); ReDoc as well (one docs page is enough).

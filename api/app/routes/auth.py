@@ -4,7 +4,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from psycopg import AsyncConnection
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from starlette.concurrency import run_in_threadpool
 
 from app.auth.deps import CurrentUser
@@ -12,6 +12,7 @@ from app.auth.passwords import DUMMY_HASH, hash_password, verify_password
 from app.auth.tokens import issue_token
 from app.auth.users import User, UsernameTaken, create_user, find_login
 from app.db.pool import get_conn
+from app.docs import errors
 
 router = APIRouter()
 
@@ -25,6 +26,10 @@ PASSWORD_LENGTH = range(8, 129)
 class Credentials(BaseModel):
     username: str
     password: str
+
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"username": "ash_k", "password": "pikachu-rules"}]}
+    )
 
 
 def valid(credentials: Credentials) -> bool:
@@ -48,7 +53,12 @@ def error(message: str, status_code: int) -> JSONResponse:
     return JSONResponse({"error": message}, status_code=status_code)
 
 
-@router.post("/api/auth/signup")
+@router.post(
+    "/api/auth/signup",
+    summary="Create an account; returns a 1-hour token",
+    status_code=201,
+    responses=errors(400, 409),
+)
 async def signup(credentials: Credentials, request: Request, conn: Conn) -> JSONResponse:
     if not USERNAME.fullmatch(credentials.username):
         return error("username must be 3-20 letters, digits or underscores", 400)
@@ -65,7 +75,11 @@ async def signup(credentials: Credentials, request: Request, conn: Conn) -> JSON
     return session(request, user, status_code=201)
 
 
-@router.post("/api/auth/login")
+@router.post(
+    "/api/auth/login",
+    summary="Sign in; returns a 1-hour token",
+    responses=errors(400, 401),
+)
 async def login(credentials: Credentials, request: Request, conn: Conn) -> JSONResponse:
     if not valid(credentials):
         # No account can match. Still one verify (of a short fixed password, never the
@@ -84,6 +98,6 @@ async def login(credentials: Credentials, request: Request, conn: Conn) -> JSONR
     return session(request, found[0])
 
 
-@router.get("/api/me")
+@router.get("/api/me", summary="The signed-in account", responses=errors(401))
 async def me(user: CurrentUser) -> dict[str, str]:
     return {"id": str(user.id), "username": user.username}

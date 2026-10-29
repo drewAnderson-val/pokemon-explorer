@@ -3,13 +3,19 @@ from fastapi.responses import JSONResponse
 from psycopg import Error as DatabaseError
 from psycopg_pool import AsyncConnectionPool, PoolTimeout
 
+from app.docs import errors
+
 router = APIRouter()
 
 # Below Cloud Run's probe budget, so a dead database answers 503 instead of hanging.
 DB_TIMEOUT_SECONDS = 2.0
 
 
-@router.get("/api/health")
+@router.get(
+    "/api/health",
+    summary="Is the API up and can it reach the database?",
+    responses=errors(503),
+)
 async def health(request: Request) -> JSONResponse:
     pool: AsyncConnectionPool = request.app.state.pool
     try:

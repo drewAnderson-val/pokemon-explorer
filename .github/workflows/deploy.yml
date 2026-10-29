@@ -139,6 +139,10 @@ jobs:
           jq -e '.error == "Wrong username or password"' /tmp/login.json >/dev/null
       - name: API /api/me needs a token
         run: test "$(curl -sS -o /dev/null -w '%{http_code}' "$API_URL/api/me")" = 401
+      - name: API docs are served
+        run: |
+          curl -fsS "$API_URL/api/docs" | grep -qi swagger
+          curl -fsS "$API_URL/api/openapi.json" | jq -e '.paths["/api/battles/wild/actions"].post.requestBody' >/dev/null
       - name: API team and battles need a token
         run: |
           test "$(curl -sS -o /dev/null -w '%{http_code}' "$API_URL/api/team")" = 401

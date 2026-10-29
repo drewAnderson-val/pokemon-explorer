@@ -3,6 +3,7 @@
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from psycopg import AsyncConnection
 
 from app.auth.tokens import InvalidToken, read_token
@@ -17,8 +18,16 @@ UNAUTHORIZED = HTTPException(
 )
 
 
+# Declares the Bearer scheme so the docs show an Authorize button and mark these
+# routes as needing a token. auto_error=False: the header is still read below, so
+# a missing or malformed one gets this API's own 401 message.
+bearer = HTTPBearer(auto_error=False, description="The token from signup or login")
+
+
 async def current_user(
-    request: Request, conn: Annotated[AsyncConnection, Depends(get_conn)]
+    request: Request,
+    conn: Annotated[AsyncConnection, Depends(get_conn)],
+    _documented: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)] = None,
 ) -> User:
     scheme, _, token = request.headers.get("Authorization", "").partition(" ")
     if scheme.lower() != "bearer" or not token or " " in token:
