@@ -13,6 +13,8 @@ PUBLIC = {
     ("get", "/api/pokemon/{pokemon_id}"),
     ("post", "/api/auth/signup"),
     ("post", "/api/auth/login"),
+    # EventSource can't send headers: the stream checks a ?token= itself.
+    ("get", "/api/matches/{match_id}/events"),
 }
 
 

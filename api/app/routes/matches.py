@@ -1,17 +1,24 @@
 """Friend matches: two signed-in players, simultaneous turns, live views."""
 
+import asyncio
+import contextlib
 import hashlib
 import json
+import time
+from collections.abc import AsyncIterator
 from typing import Annotated, Any
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Header, Request, Response
-from fastapi.responses import JSONResponse
-from psycopg import AsyncConnection
+from fastapi.responses import JSONResponse, StreamingResponse
+from psycopg import AsyncConnection, sql
 
 from app.auth.deps import CurrentUser
+from app.auth.tokens import InvalidToken, read_token
 from app.db.pool import get_conn
 from app.docs import errors
 from app.matches.actions import Refused, apply_action
+from app.matches.live import GONE, LiveMatches, Stream, frame
 from app.matches.store import create_match, load_match, notify, save_changes, seat_of
 from app.matches.views import view_for
 from app.pokemon.queries import find_many
@@ -193,3 +200,102 @@ async def take_action(
             )
         await notify(conn, match_id)
     return Response(status_code=204)
+
+
+HEARTBEAT_SECONDS = 2
+
+
+@router.get(
+    "/api/matches/{match_id}/events",
+    summary="Live views of a match (server-sent events)",
+    description=(
+        "Always 200 text/event-stream: an EventSource can't read an error status. "
+        "Events: `view` (your view, now and after every change), `gone` (no such "
+        "match, not yours, or a bad token), `replaced` (you opened a newer stream). "
+        "EventSource can't send headers, so the token goes in `?token=`."
+    ),
+    response_class=StreamingResponse,
+)
+async def match_events(match_id: str, request: Request, token: str = "") -> StreamingResponse:
+    return StreamingResponse(
+        _stream(request, match_id, token),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+async def _stream(request: Request, match_id: str, token: str) -> AsyncIterator[str]:
+    app = request.app
+    pool = app.state.pool
+    live: LiveMatches = app.state.live
+    try:
+        user_id = read_token(token, app.state.settings.jwt_secret)
+    except InvalidToken:
+        yield GONE
+        return
+
+    stream_id = uuid4().hex
+    async with pool.connection() as conn, conn.transaction():
+        match = await load_match(conn, match_id, lock=True)
+        seat = match and seat_of(match, user_id)
+        if seat:
+            # This stream is now the seat's one: present, and the older stream
+            # (if any, on any instance) learns it's been replaced.
+            await conn.execute(
+                sql.SQL(
+                    "UPDATE matches SET {stream} = %s, {away} = false, {left} = NULL,"
+                    " {seen} = now() WHERE id = %s"
+                ).format(
+                    stream=sql.Identifier(f"{seat}_stream"),
+                    away=sql.Identifier(f"{seat}_away"),
+                    left=sql.Identifier(f"{seat}_left_at"),
+                    seen=sql.Identifier(f"{seat}_seen_at"),
+                ),
+                (stream_id, match_id),
+            )
+            await notify(conn, match_id)
+            match = await load_match(conn, match_id)
+    if not match or not seat:
+        yield GONE
+        return
+
+    stream = Stream(match_id, seat, stream_id)
+    live.add(stream)
+    try:
+        first = frame("view", view_for(match, seat))
+        stream.last_sent = first
+        yield first
+        ping_every = getattr(app.state, "sse_ping_seconds", 25)
+        last_ping = last_beat = time.monotonic()
+        while not await request.is_disconnected():
+            try:
+                data, last = await asyncio.wait_for(stream.queue.get(), timeout=min(ping_every, 1))
+                yield data
+                if last:
+                    return
+            except TimeoutError:
+                pass
+            now = time.monotonic()
+            if now - last_beat >= HEARTBEAT_SECONDS:
+                last_beat = now
+                await _mark(pool, match_id, seat, stream_id, "{seen} = now()")
+            if now - last_ping >= ping_every:
+                last_ping = now
+                # A comment line: keeps proxies from closing an idle stream.
+                yield ": ping\n\n"
+    finally:
+        live.remove(stream)
+        # Dropped (unless a newer stream already took the seat): the sweep marks the
+        # seat away after 5 s and forfeits it after 60 s.
+        with contextlib.suppress(Exception):
+            await _mark(pool, match_id, seat, stream_id, "{left} = now()")
+
+
+async def _mark(pool: Any, match_id: str, seat: str, stream_id: str, assignment: str) -> None:
+    query = sql.SQL("UPDATE matches SET " + assignment + " WHERE id = %s AND {stream} = %s").format(
+        seen=sql.Identifier(f"{seat}_seen_at"),
+        left=sql.Identifier(f"{seat}_left_at"),
+        stream=sql.Identifier(f"{seat}_stream"),
+    )
+    async with pool.connection() as conn:
+        await conn.execute(query, (match_id, stream_id))

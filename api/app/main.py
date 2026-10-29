@@ -11,6 +11,7 @@ from psycopg import AsyncConnection
 from app.config import Settings
 from app.db.migrate import migrate
 from app.db.pool import open_pool
+from app.matches.live import LiveMatches
 from app.routes import auth, health, matches, pokemon, team, wild
 
 
@@ -27,7 +28,9 @@ def create_app(settings: Settings) -> FastAPI:
         pool = open_pool(settings.database_url)
         await pool.open(wait=False)
         app.state.pool = pool
+        await app.state.live.start(settings.database_url, pool)
         yield
+        await app.state.live.stop()
         await pool.close()
 
     app = FastAPI(
@@ -47,6 +50,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.state.settings = settings
     # Every random roll in battles. Tests replace it with scripted numbers.
     app.state.rng = random.random
+    app.state.live = LiveMatches()
     if settings.cors_origin_regex:
         # The frontend is served from another origin, so browsers only let it read
         # API responses that name its origin in Access-Control-Allow-Origin.

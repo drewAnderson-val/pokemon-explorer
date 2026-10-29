@@ -24,6 +24,10 @@ CREATE TABLE matches (
     guest_left_at timestamptz,
     host_seen_at timestamptz,
     guest_seen_at timestamptz,
+    -- The seat's current stream. A newer stream (a reload, another tab, on any
+    -- instance) replaces it; the older one sees it's no longer current and closes.
+    host_stream text,
+    guest_stream text,
     created_at timestamptz NOT NULL DEFAULT now(),
     started_at timestamptz,
     finished_at timestamptz
