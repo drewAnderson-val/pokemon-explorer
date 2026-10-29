@@ -3,8 +3,10 @@ import { useState } from 'react'
 import { DialogBox } from '@/components/DialogBox'
 import { HpBar } from '@/components/HpBar'
 import { Button, buttonClass } from '@/components/ui/button'
+import { useAuth } from '@/hooks/useAuth'
 import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import { useTeamCreatures } from '@/hooks/useTeamCreatures'
+import { signInPath } from '@/lib/auth'
 import { MAX_TEAM } from '@/lib/battle/engine'
 import { restTeam } from '@/lib/team/serverTeam'
 import {
@@ -18,6 +20,7 @@ import { cn } from '@/lib/utils'
 // The creatures travelling with you: level and HP for each, REST to heal
 // everyone, ◀ ▶ to change the order, × to let one go, and a way into battle.
 export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
+  const session = useAuth()
   const [team, setTeam] = useTeam()
   // Why the server refused the last change (the team is shown as it was).
   const { error } = useTeamStatus()
@@ -30,6 +33,27 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
     const creature = creatures.get(member.creatureId)
     return creature !== undefined && memberHp(member, creature) > 0
   })
+
+  if (!session) {
+    return (
+      <DialogBox
+        aria-labelledby="team-heading"
+        className="flex scroll-mt-6 flex-col items-start gap-3"
+        id="team"
+        role="region"
+      >
+        <h2 className="text-card-title font-bold uppercase" id="team-heading">
+          Your team
+        </h2>
+        <p className="text-body">
+          Teams are saved to your account, so they follow you to any device.
+        </p>
+        <a className={buttonClass()} href={signInPath('/explore#team')}>
+          Sign in to build a team
+        </a>
+      </DialogBox>
+    )
+  }
 
   return (
     <DialogBox

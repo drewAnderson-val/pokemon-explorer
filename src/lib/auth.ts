@@ -69,3 +69,7 @@ async function startSession(path: string, username: string, password: string) {
   authStore.update(() => body)
   return body
 }
+
+// The sign-in screen, coming back to `next` (a path on this site) afterwards.
+export const signInPath = (next: string) =>
+  `/login?next=${encodeURIComponent(next)}`

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SETTINGS_STORAGE_KEY } from '@/hooks/useSettings'
+import { authStore } from '@/lib/auth'
 import { clearCreations, saveCreation } from '@/lib/creation-store'
 import { type TeamMember } from '@/lib/team/team'
 import { apiResponse, stubFetch } from '@/test/fake-api'
@@ -550,5 +551,16 @@ describe('BattleScreen on the server', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }))
     await readUntil(/^Wild Britney used .+!$/)
+  })
+})
+
+describe('BattleScreen signed out', () => {
+  it('asks you to sign in, and comes back here after', async () => {
+    authStore.update(() => null)
+    stubFetch()
+    renderWithClient(<BattleScreen playerId={null} />)
+    expect(
+      await screen.findByRole('link', { name: 'Sign in to battle' })
+    ).toHaveAttribute('href', '/login?next=%2Fbattle')
   })
 })

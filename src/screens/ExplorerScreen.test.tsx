@@ -1,6 +1,6 @@
 import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { clearCreations, saveCreation } from '@/lib/creation-store'
 import { apiResponse, searchParamOf, stubFetch } from '@/test/fake-api'
@@ -255,6 +255,18 @@ describe('ExplorerScreen', () => {
       expect(serverTeam().map(m => m.creatureId)).toEqual([1])
     )
     expect(screen.getByRole('button', { name: 'On your team' })).toBeDisabled()
+  })
+
+  it('sends you to sign in to add a creature when signed out', async () => {
+    stubFetch()
+    const assign = vi.fn()
+    vi.stubGlobal('location', { ...window.location, assign })
+    const { user } = await renderLoaded()
+    await user.click(within(grid()).getAllByRole('button')[0])
+    await user.click(
+      screen.getByRole('button', { name: 'Add Geovanni to team' })
+    )
+    expect(assign).toHaveBeenCalledWith('/login?next=%2Fexplore')
   })
 
   it('focuses search with /', async () => {

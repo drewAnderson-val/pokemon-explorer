@@ -17,12 +17,13 @@ const save = (members: TeamMember[]) => {
 }
 
 describe('TeamBar', () => {
-  it('invites you to add creatures when empty', () => {
+  it('invites you to add creatures when empty', async () => {
+    signIn()
     stubFetch()
     renderWithClient(<TeamBar onNotice={() => {}} />)
-    expect(screen.getByRole('region', { name: /Your team/ })).toHaveTextContent(
-      '0/6'
-    )
+    expect(
+      await screen.findByRole('region', { name: /Your team/ })
+    ).toHaveTextContent('0/6')
     expect(
       screen.getByText(/Open a card and add a creature/)
     ).toBeInTheDocument()
@@ -132,5 +133,15 @@ describe('TeamBar errors', () => {
     // Rolled back: the list (gone while the team looked empty) is back.
     const restored = screen.getByRole('list', { name: 'Team members' })
     expect(within(restored).getByText('Geovanni')).toBeInTheDocument()
+  })
+})
+
+describe('TeamBar signed out', () => {
+  it('asks you to sign in to build a team', async () => {
+    stubFetch()
+    renderWithClient(<TeamBar onNotice={() => {}} />)
+    expect(
+      await screen.findByRole('link', { name: 'Sign in to build a team' })
+    ).toHaveAttribute('href', '/login?next=%2Fexplore%23team')
   })
 })

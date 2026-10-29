@@ -9,10 +9,12 @@ import { TeamPicker } from '@/components/battle/TeamPicker'
 import { DialogBox } from '@/components/DialogBox'
 import { HomeLink } from '@/components/HomeLink'
 import { Button, buttonClass } from '@/components/ui/button'
+import { useAuth } from '@/hooks/useAuth'
 import { useFullscreen } from '@/hooks/useFullscreen'
 import { useSettings } from '@/hooks/useSettings'
 import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import { creatureQuery, useTeamCreatures } from '@/hooks/useTeamCreatures'
+import { signInPath } from '@/lib/auth'
 import { fetchWildBattle, startWildBattle } from '@/lib/battle/api'
 import { createFighter } from '@/lib/battle/engine'
 import { isCustomId } from '@/lib/creature'
@@ -85,6 +87,8 @@ export function parsePlayerId(search: string) {
 }
 
 function BattleLoader({ playerId }: { playerId: null | number }) {
+  // Battles and teams live on the server, under the signed-in account.
+  const session = useAuth()
   const [team, setTeam] = useTeam()
   const [round, setRound] = useState(0)
   // The player chose to battle with their team as it is (from the full-team
@@ -161,6 +165,21 @@ function BattleLoader({ playerId }: { playerId: null | number }) {
     staleTime: Infinity
   })
 
+  if (!session) {
+    const here = playerId === null ? '/battle' : `/battle?id=${playerId}`
+    return (
+      <ConsoleScreen>
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg">
+            Your team and battles are saved to your account.
+          </p>
+          <a className={buttonClass()} href={signInPath(here)}>
+            Sign in to battle
+          </a>
+        </DialogBox>
+      </ConsoleScreen>
+    )
+  }
   if (showPicker) {
     return (
       <ConsoleScreen className="justify-start">

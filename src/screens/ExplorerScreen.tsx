@@ -14,6 +14,7 @@ import { useLoadMoreSentinel } from '@/hooks/useLoadMoreSentinel'
 import { useCatalogTotal, usePokemonPages } from '@/hooks/usePokemonPages'
 import { useSlashToFocus } from '@/hooks/useSlashToFocus'
 import { useTeam } from '@/hooks/useTeam'
+import { currentSession, signInPath } from '@/lib/auth'
 import {
   type Pokemon,
   POKEMON_TYPES,
@@ -43,6 +44,11 @@ export function ExplorerScreen() {
   const [teamNotice, setTeamNotice] = useState('')
   const addToTeam = useCallback(
     (creature: Pokemon) => {
+      // Teams are saved to an account: sign in first, then come back here.
+      if (!currentSession()) {
+        window.location.assign(signInPath('/explore'))
+        return
+      }
       setTeam(current => addMember(current, newMember(creature, makeUid())))
       setTeamNotice(`${creature.name} joined your team!`)
     },
