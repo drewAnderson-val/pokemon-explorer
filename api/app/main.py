@@ -1,3 +1,5 @@
+import asyncio
+import contextlib
 import random
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -7,11 +9,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from psycopg import AsyncConnection
+from psycopg_pool import AsyncConnectionPool
 
 from app.config import Settings
 from app.db.migrate import migrate
 from app.db.pool import open_pool
 from app.matches.live import LiveMatches
+from app.matches.sweep import sweep
 from app.routes import auth, health, matches, pokemon, team, wild
 
 
@@ -29,7 +33,9 @@ def create_app(settings: Settings) -> FastAPI:
         await pool.open(wait=False)
         app.state.pool = pool
         await app.state.live.start(settings.database_url, pool)
+        sweeper = asyncio.create_task(sweep_forever(pool))
         yield
+        sweeper.cancel()
         await app.state.live.stop()
         await pool.close()
 
@@ -82,3 +88,17 @@ def create_app(settings: Settings) -> FastAPI:
         return JSONResponse({"error": f"{field}: {first['msg']}"}, status_code=400)
 
     return app
+
+
+SWEEP_SECONDS = 5
+
+
+async def sweep_forever(pool: AsyncConnectionPool) -> None:
+    """Runs the match sweep every few seconds while this instance is up. Cloud Run can
+    scale to zero, so routes also sweep first; this covers matches nobody is asking
+    about (a player who left while the other just waits)."""
+    while True:
+        await asyncio.sleep(SWEEP_SECONDS)
+        with contextlib.suppress(Exception):
+            async with pool.connection() as conn:
+                await sweep(conn)

@@ -20,6 +20,7 @@ from app.docs import errors
 from app.matches.actions import Refused, apply_action
 from app.matches.live import GONE, LiveMatches, Stream, frame
 from app.matches.store import create_match, load_match, notify, save_changes, seat_of
+from app.matches.sweep import sweep
 from app.matches.views import view_for
 from app.pokemon.queries import find_many
 
@@ -44,6 +45,7 @@ def error(message: str, status_code: int) -> JSONResponse:
     responses=errors(401, 503),
 )
 async def create(user: CurrentUser, conn: Conn) -> JSONResponse:
+    await sweep(conn)
     created = await create_match(conn, user.id)
     if isinstance(created, int):
         return error(LIMIT_MESSAGES[created], created)
@@ -56,6 +58,7 @@ async def create(user: CurrentUser, conn: Conn) -> JSONResponse:
     responses=errors(401, 404, 409),
 )
 async def join(match_id: str, user: CurrentUser, conn: Conn) -> JSONResponse:
+    await sweep(conn)
     async with conn.transaction():
         match = await load_match(conn, match_id, lock=True)
         if match is None:
@@ -84,6 +87,7 @@ async def join(match_id: str, user: CurrentUser, conn: Conn) -> JSONResponse:
 async def current_view(
     match_id: str, user: CurrentUser, conn: Conn
 ) -> dict[str, Any] | JSONResponse:
+    await sweep(conn)
     match = await load_match(conn, match_id)
     seat = match and seat_of(match, user.id)
     # Not a player: the same 404 as no match, so outsiders learn nothing.
@@ -148,6 +152,7 @@ async def take_action(
     conn: Conn,
     idempotency_key: Annotated[str | None, Header()] = None,
 ) -> Response:
+    await sweep(conn)
     raw = await request.body()
     if len(raw) > MAX_BODY:
         return error("That request is too big", 413)
