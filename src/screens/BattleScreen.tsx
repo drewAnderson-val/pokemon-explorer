@@ -18,7 +18,7 @@ import { signInPath } from '@/lib/auth'
 import { fetchWildBattle, startWildBattle } from '@/lib/battle/api'
 import { createFighter } from '@/lib/battle/engine'
 import { isCustomId } from '@/lib/creature'
-import { reloadTeam, restTeam } from '@/lib/team/serverTeam'
+import { reloadTeam, restTeam, retryTeamLoad } from '@/lib/team/serverTeam'
 import {
   addMember,
   hasCreature,
@@ -103,11 +103,13 @@ function BattleLoader({ playerId }: { playerId: null | number }) {
 
   // "▶ Battle with X": X leads, joining the team if there's room. leadWith
   // is a no-op once X is in front, so a double effect can't add it twice.
+  // Waits for the team: before it has loaded from the API, a change can't apply.
+  const { error: teamError, loaded } = useTeamStatus()
   useEffect(() => {
-    if (!pick.data) return
+    if (!pick.data || !loaded) return
     const creature = pick.data
     setTeam(current => leadWith(current, creature, makeUid()))
-  }, [setTeam, pick.data])
+  }, [setTeam, pick.data, loaded])
 
   // A full team without X can't take it: say so rather than quietly battling
   // with someone else. Otherwise wait until X is in front before starting.
@@ -146,21 +148,26 @@ function BattleLoader({ playerId }: { playerId: null | number }) {
   // An empty team (and no ▶ Battle pick on its way) opens the picker, which
   // then stays until START, not just until the first creature joins.
   // Only once the team has loaded from the API: until then it looks empty.
-  const { loaded } = useTeamStatus()
   const needsTeam =
     loaded && team.length === 0 && (playerId === null || pick.isError)
   useEffect(() => {
     if (needsTeam) setPicking(true)
   }, [needsTeam])
   const showPicker = picking || needsTeam
-  // The server picks the wild creature and keeps the battle. The first round
-  // resumes one in progress (a reload mid-battle); later rounds start fresh.
+  // Bumped when the arena loses track of the battle: reload it from the server.
+  const [resync, setResync] = useState(0)
+  // The server picks the wild creature and keeps the battle. The first round,
+  // and any resync, resumes one in progress (a reload mid-battle); later rounds
+  // start fresh. A finished battle is never resumed.
   const wild = useQuery({
     enabled: ready && canFight && !showPicker,
     gcTime: 0,
-    queryFn: async () =>
-      (round === 0 ? await fetchWildBattle() : null) ?? startWildBattle(),
-    queryKey: ['battle', 'wild', round],
+    queryFn: async () => {
+      const resume = round === 0 || resync > 0
+      const current = resume ? await fetchWildBattle() : null
+      return current && !current.state.winner ? current : startWildBattle()
+    },
+    queryKey: ['battle', 'wild', round, resync],
     retry: false,
     staleTime: Infinity
   })
@@ -208,9 +215,10 @@ function BattleLoader({ playerId }: { playerId: null | number }) {
     return (
       <BattleArena
         initial={wild.data}
-        key={round}
+        key={`${round}-${resync}`}
         onBattleAgain={() => setRound(r => r + 1)}
         onChangeTeam={changeTeam}
+        onResync={() => setResync(r => r + 1)}
         onTurn={() => void reloadTeam()}
         teamSize={team.length}
       />
@@ -220,6 +228,27 @@ function BattleLoader({ playerId }: { playerId: null | number }) {
 
   // Everything short of a battle: a message on the console's screen.
   function message() {
+    // The pick (or another team change) was refused: say why rather than wait.
+    if (teamError && !ownTeam && playerId !== null) {
+      return (
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg font-bold text-danger" role="alert">
+            {teamError}
+          </p>
+          <Button onClick={() => setOwnTeam(true)}>Battle with my team</Button>
+        </DialogBox>
+      )
+    }
+    if (!loaded && teamError) {
+      return (
+        <DialogBox className="flex flex-col items-center gap-4 text-center">
+          <p className="text-body-lg font-bold text-danger" role="alert">
+            {teamError}
+          </p>
+          <Button onClick={() => void retryTeamLoad()}>Try again</Button>
+        </DialogBox>
+      )
+    }
     if (team.length === 0) return <Searching />
     if (pickBlocked && !ownTeam) {
       return (

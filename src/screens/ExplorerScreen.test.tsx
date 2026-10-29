@@ -269,6 +269,21 @@ describe('ExplorerScreen', () => {
     expect(assign).toHaveBeenCalledWith('/login?next=%2Fexplore')
   })
 
+  it("doesn't say a creature joined when the team hasn't loaded yet", async () => {
+    signIn()
+    stubFetch((url, init) =>
+      url.pathname === '/api/team'
+        ? new Promise<Response>(() => {})
+        : apiResponse(url, init)
+    )
+    const { user } = await renderLoaded()
+    await user.click(within(grid()).getAllByRole('button')[0])
+    await user.click(
+      screen.getByRole('button', { name: 'Add Geovanni to team' })
+    )
+    expect(screen.queryByText('Geovanni joined your team!')).toBeNull()
+  })
+
   it('focuses search with /', async () => {
     stubFetch()
     const { user } = await renderLoaded()

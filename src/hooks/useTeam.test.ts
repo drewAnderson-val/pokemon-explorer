@@ -1,9 +1,10 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import { teamStatus } from '@/lib/team/serverTeam'
+import { authStore } from '@/lib/auth'
+import { retryTeamLoad, teamStatus } from '@/lib/team/serverTeam'
 import { addMember, type TeamMember } from '@/lib/team/team'
-import { stubFetch } from '@/test/fake-api'
+import { apiResponse, stubFetch } from '@/test/fake-api'
 import { seedTeam, serverTeam } from '@/test/fake-server'
 import { signIn } from '@/test/session'
 
@@ -86,5 +87,84 @@ describe('useTeam', () => {
     await waitFor(() =>
       expect(result.current[0].map(m => m.creatureId)).toEqual([1, 2])
     )
+  })
+})
+
+describe('useTeam review fixes', () => {
+  it('never sends one user’s queued change as another user', async () => {
+    signIn('alice')
+    let releasePut: () => void = () => {}
+    const fetchMock = stubFetch(async (url, init) => {
+      if (init?.method === 'PUT') {
+        await new Promise<void>(resolve => (releasePut = resolve))
+      }
+      return apiResponse(url, init)
+    })
+    const { rerender, result } = renderHook(() => useTeam())
+    await waitFor(() => expect(teamStatus.read().loaded).toBe(true))
+    act(() => {
+      result.current[1](team => addMember(team, member(1, 'a')))
+      result.current[1](team => addMember(team, member(2, 'b')))
+    })
+    // Bob signs in while alice's first change is on its way (sent, unanswered)
+    // and her second is still queued.
+    await waitFor(() =>
+      expect(
+        fetchMock.mock.calls.filter(([, init]) => init?.method === 'PUT')
+      ).toHaveLength(1)
+    )
+    act(() =>
+      authStore.update(() => ({
+        expiresAt: Math.floor(Date.now() / 1000) + 3600,
+        token: 'bob-token',
+        user: { id: 'u2', username: 'bob' }
+      }))
+    )
+    rerender()
+    act(() => releasePut())
+    await waitFor(() => expect(teamStatus.read().loaded).toBe(true))
+    const puts = fetchMock.mock.calls.filter(
+      ([, init]) => init?.method === 'PUT'
+    )
+    expect(puts).toHaveLength(1)
+    expect(new Headers(puts[0][1]?.headers).get('Authorization')).toBe(
+      'Bearer test-token'
+    )
+  })
+
+  it('can retry a team that failed to load', async () => {
+    signIn()
+    let fail = true
+    stubFetch((url, init) => {
+      if (url.pathname === '/api/team' && fail) {
+        fail = false
+        return Response.json({ error: 'down' }, { status: 503 })
+      }
+      return apiResponse(url, init)
+    })
+    renderHook(() => useTeam())
+    await waitFor(() => expect(teamStatus.read().error).not.toBeNull())
+    expect(teamStatus.read().loaded).toBe(false)
+    await act(() => retryTeamLoad())
+    await waitFor(() => expect(teamStatus.read().loaded).toBe(true))
+  })
+
+  it('says whether a change was applied', async () => {
+    const { result } = renderHook(() => useTeam())
+    let applied = true
+    act(() => {
+      applied = result.current[1](team => addMember(team, member(1)))
+    })
+    expect(applied).toBe(false)
+  })
+
+  it('picks up changes made in another tab when you come back', async () => {
+    signIn()
+    stubFetch()
+    const { result } = renderHook(() => useTeam())
+    await waitFor(() => expect(teamStatus.read().loaded).toBe(true))
+    seedTeam([member(7)])
+    act(() => window.dispatchEvent(new Event('focus')))
+    await waitFor(() => expect(result.current[0]).toEqual([member(7)]))
   })
 })

@@ -37,6 +37,9 @@ type BattleArenaProps = {
   initial: WildBattle
   onBattleAgain: () => void
   onChangeTeam?: () => void
+  // The client lost track of the battle (an answer that never arrived, a turn
+  // the server already played): start over from the server's copy.
+  onResync: () => void
   // After every turn: the server has saved HP, XP and catches to the team.
   onTurn: () => void
   // The saved team can be bigger than the party (members no longer on file),
@@ -50,6 +53,7 @@ export function BattleArena({
   initial,
   onBattleAgain,
   onChangeTeam,
+  onResync,
   onTurn,
   teamSize
 }: BattleArenaProps) {
@@ -62,11 +66,16 @@ export function BattleArena({
   const turn = useRef(initial.turn)
   // A request is on its way: the menus wait for its answer.
   const [busy, setBusy] = useState(false)
-  // The action that failed and why, for "Try again".
+  // Why the last request failed, and whether "Try again" can help.
   const [failed, setFailed] = useState<null | {
-    action: WildAction
     message: string
+    // Not for a plain refusal (400): retrying it can't succeed.
+    retry: boolean
   }>(null)
+  const retryRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (failed?.retry) retryRef.current?.focus()
+  }, [failed])
   const instant = usePrefersReducedMotion()
   const [settings] = useSettings()
   // The timing bar needs motion; reduced motion falls back to plain moves.
@@ -119,14 +128,30 @@ export function BattleArena({
           onTurn()
         },
         (error: unknown) => {
-          // A refusal (4xx) says why; anything else is the server or network.
-          const refused =
-            error instanceof BattleRequestError && error.status < 500
-          setFailed({
-            action,
-            message: refused ? error.message : "Couldn't reach the server"
-          })
+          // A 400 is a refusal with a reason. Anything else (no answer, a 5xx,
+          // a turn the server already played) means this screen may be out of
+          // date, so "Try again" reloads the battle from the server rather than
+          // resending: the turn may have happened even though the answer was lost.
+          const status = error instanceof BattleRequestError ? error.status : 0
+          setFailed(
+            status === 400
+              ? { message: (error as Error).message, retry: false }
+              : { message: "Couldn't reach the server", retry: true }
+          )
         }
+      )
+      .finally(() => setBusy(false))
+  }
+
+  // Running away ends the battle on the server first, so "Battle again" can't
+  // race it (and a reload can't bring back a battle you left).
+  const runAway = () => {
+    setBusy(true)
+    setFailed(null)
+    abandonWildBattle()
+      .then(
+        () => dispatch({ type: 'run' }),
+        () => setFailed({ message: "Couldn't reach the server", retry: true })
       )
       .finally(() => setBusy(false))
   }
@@ -149,10 +174,7 @@ export function BattleArena({
     {
       key: 'run',
       label: 'Run',
-      onSelect: () => {
-        void abandonWildBattle()
-        dispatch({ type: 'run' })
-      }
+      onSelect: runAway
     }
   ]
   const moveItems: MenuItem[] = active.moves.map((move, index) => ({
@@ -316,9 +338,11 @@ export function BattleArena({
                 <p className="text-body font-bold text-danger">
                   {failed.message}
                 </p>
-                <Button onClick={() => act(failed.action)} variant="secondary">
-                  Try again
-                </Button>
+                {failed.retry && (
+                  <Button onClick={onResync} ref={retryRef} variant="secondary">
+                    Try again
+                  </Button>
+                )}
               </div>
             )}
             {menu}

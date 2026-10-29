@@ -145,3 +145,22 @@ describe('TeamBar signed out', () => {
     ).toHaveAttribute('href', '/login?next=%2Fexplore%23team')
   })
 })
+
+describe('TeamBar load failure', () => {
+  it('offers to try loading the team again', async () => {
+    save([{ creatureId: 1, hp: null, level: 5, uid: 'a', xp: 125 }])
+    let fail = true
+    stubFetch((url, init) => {
+      if (url.pathname === '/api/team' && fail) {
+        fail = false
+        return Response.json({ error: 'down' }, { status: 503 })
+      }
+      return apiResponse(url, init)
+    })
+    renderWithClient(<TeamBar onNotice={() => {}} />)
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Try again' })
+    )
+    expect(await screen.findByText('Geovanni')).toBeInTheDocument()
+  })
+})

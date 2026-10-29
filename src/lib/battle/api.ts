@@ -26,7 +26,13 @@ export class BattleRequestError extends Error {
 }
 
 export async function abandonWildBattle() {
-  await authFetch('/api/battles/wild', { method: 'DELETE' })
+  const response = await authFetch('/api/battles/wild', { method: 'DELETE' })
+  if (!response.ok) {
+    throw new BattleRequestError(
+      `Couldn't leave the battle (${response.status})`,
+      response.status
+    )
+  }
 }
 
 // The battle in progress, or null when there isn't one.

@@ -49,8 +49,11 @@ export function ExplorerScreen() {
         window.location.assign(signInPath('/explore'))
         return
       }
-      setTeam(current => addMember(current, newMember(creature, makeUid())))
-      setTeamNotice(`${creature.name} joined your team!`)
+      // Only when it applied (not while the team is still loading).
+      const added = setTeam(current =>
+        addMember(current, newMember(creature, makeUid()))
+      )
+      if (added) setTeamNotice(`${creature.name} joined your team!`)
     },
     [setTeam]
   )

@@ -8,7 +8,7 @@ import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import { useTeamCreatures } from '@/hooks/useTeamCreatures'
 import { signInPath } from '@/lib/auth'
 import { MAX_TEAM } from '@/lib/battle/engine'
-import { restTeam } from '@/lib/team/serverTeam'
+import { restTeam, retryTeamLoad } from '@/lib/team/serverTeam'
 import {
   memberHp,
   memberMaxHp,
@@ -23,7 +23,7 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
   const session = useAuth()
   const [team, setTeam] = useTeam()
   // Why the server refused the last change (the team is shown as it was).
-  const { error } = useTeamStatus()
+  const { error, loaded } = useTeamStatus()
   const { creatures, missing } = useTeamCreatures(team)
   const hurt = team.some(member => member.hp !== null)
   // Pointing at ▶ Battle marks who goes out first: the battle sends the first
@@ -74,7 +74,9 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
           <Button
             disabled={!hurt}
             onClick={() => {
-              void restTeam().then(() => onNotice('Your team is rested!'))
+              void restTeam().then(rested => {
+                if (rested) onNotice('Your team is rested!')
+              })
             }}
             variant="secondary"
           >
@@ -94,9 +96,15 @@ export function TeamBar({ onNotice }: { onNotice: (text: string) => void }) {
           )}
         </div>
         {error && (
-          <p className="text-body font-bold text-danger" role="alert">
-            {error}
-          </p>
+          <div className="flex flex-wrap items-center gap-2" role="alert">
+            <p className="text-body font-bold text-danger">{error}</p>
+            {/* The team never loaded: nothing else on this panel can work. */}
+            {!loaded && (
+              <Button onClick={() => void retryTeamLoad()} variant="secondary">
+                Try again
+              </Button>
+            )}
+          </div>
         )}
       </div>
       {team.length === 0 ? (

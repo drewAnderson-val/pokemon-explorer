@@ -564,3 +564,114 @@ describe('BattleScreen signed out', () => {
     ).toHaveAttribute('href', '/login?next=%2Fbattle')
   })
 })
+
+describe('BattleScreen review fixes', () => {
+  it('starts a new battle instead of resuming a finished one', async () => {
+    save([member('a', 1)])
+    stubFetch()
+    const first = renderWithClient(<BattleScreen playerId={null} />)
+    await expectMessage('A wild Britney appeared!')
+    await readUntil(/What will .+ do\?/)
+    await userEvent.click(screen.getByRole('button', { name: /Catch/ }))
+    await readUntil('Britney joined your team.')
+    const finished = serverBattle()
+    expect(finished?.state.winner).toBe('player')
+    first.unmount()
+
+    renderWithClient(<BattleScreen playerId={null} />)
+    await expectMessage(/A wild .+ appeared!/)
+    await readUntil(/What will .+ do\?/)
+    expect(serverBattle()).not.toBe(finished)
+    expect(serverBattle()?.state.winner).toBeNull()
+  })
+
+  it('leads with ▶ Battle X even when the team loads after the pick', async () => {
+    save([member('ten', 10)])
+    stubFetch(async (url, init) => {
+      if (url.pathname === '/api/team' && (init?.method ?? 'GET') === 'GET') {
+        await new Promise(resolve => setTimeout(resolve, 50))
+      }
+      return apiResponse(url, init)
+    })
+    renderWithClient(<BattleScreen playerId={1} />)
+    await expectMessage('A wild Britney appeared!')
+    expect(savedTeam().map(m => m.creatureId)).toEqual([1, 10])
+  })
+
+  it('says why when ▶ Battle X is refused, instead of searching forever', async () => {
+    save([member('ten', 10)])
+    stubFetch((url, init) =>
+      init?.method === 'PUT'
+        ? Response.json({ error: 'No creature #1' }, { status: 400 })
+        : apiResponse(url, init)
+    )
+    renderWithClient(<BattleScreen playerId={1} />)
+    expect(await screen.findByRole('alert')).toHaveTextContent('No creature #1')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Battle with my team' })
+    )
+    await expectMessage(/A wild .+ appeared!/)
+  })
+
+  it('catches up after a turn whose answer was lost', async () => {
+    save([member('a', 1)])
+    let dropNext = true
+    stubFetch((url, init) => {
+      const response = apiResponse(url, init)
+      if (url.pathname === '/api/battles/wild/actions' && dropNext) {
+        // The server applied the turn; the answer never arrived.
+        dropNext = false
+        return new Response('Bad gateway', { status: 502 })
+      }
+      return response
+    })
+    renderWithClient(<BattleScreen playerId={null} />)
+    await expectMessage('A wild Britney appeared!')
+    await readUntil(/What will .+ do\?/)
+    await userEvent.keyboard('{Enter}{ArrowDown}{Enter}')
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Try again' })
+    )
+    await readUntil(/What will .+ do\?/)
+    expect(screen.queryByText('That turn is over')).toBeNull()
+    // Caught up to the server's turn 1, not replayed (which would be turn 2).
+    expect(serverBattle()?.turn).toBe(1)
+  })
+
+  it('moves focus to Try again when a turn fails', async () => {
+    save([member('a', 1)])
+    stubFetch((url, init) =>
+      url.pathname === '/api/battles/wild/actions'
+        ? Response.json({ error: 'Server unavailable' }, { status: 503 })
+        : apiResponse(url, init)
+    )
+    renderWithClient(<BattleScreen playerId={null} />)
+    await expectMessage('A wild Britney appeared!')
+    await readUntil(/What will .+ do\?/)
+    await userEvent.keyboard('{Enter}{ArrowDown}{Enter}')
+    const retry = await screen.findByRole('button', { name: 'Try again' })
+    await waitFor(() => expect(retry).toHaveFocus())
+  })
+
+  it('runs away on the server before Battle again starts a new one', async () => {
+    save([member('a', 1)])
+    const fetchMock = stubFetch()
+    renderWithClient(<BattleScreen playerId={null} />)
+    await expectMessage('A wild Britney appeared!')
+    await readUntil(/What will .+ do\?/)
+    await userEvent.click(screen.getByRole('button', { name: 'Run' }))
+    await readUntil('You fled the battle.')
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Battle again' })
+    )
+    await expectMessage(/A wild .+ appeared!/)
+    const calls = fetchMock.mock.calls.map(
+      ([url, init]) =>
+        `${init?.method ?? 'GET'} ${new URL(String(url), 'http://x').pathname}`
+    )
+    const deleted = calls.indexOf('DELETE /api/battles/wild')
+    const restarted = calls.lastIndexOf('POST /api/battles/wild')
+    expect(deleted).toBeGreaterThan(-1)
+    expect(restarted).toBeGreaterThan(deleted)
+  })
+})

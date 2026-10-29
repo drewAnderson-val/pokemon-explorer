@@ -394,3 +394,17 @@ Template:
   them meant giving them a server that plays the same game. The slice 3 golden battles already prove the two engines
   match.
 - **Trade-off:** the fake could drift from the real API; its rules mirror the Python route tests.
+
+## 2026-10-28: Slice 4b review fixes: resyncing, account switches, and the old local team
+
+- **A lost answer resyncs from the server.** Any failed battle request other than a plain 400 refusal offers "Try
+  again", which reloads the battle from the server instead of resending: the turn may have happened even though the
+  answer never arrived (resending got a permanent 409). A finished battle is never resumed; Run waits for the server
+  to abandon the battle before "Battle again".
+- **Team requests are tied to the account they were made under.** Queued work carries a generation number and is
+  dropped before it's sent (and its late answer ignored) if the signed-in user changed; a test fails without the check.
+- **The team reloads when the tab comes back into view**, so a stale tab can't overwrite a creature caught or released
+  in another tab by sending its old list.
+- **The old browser-saved team (`pokemon-explorer:team` in `localStorage`) is no longer read.** There's no import:
+  progress belongs to accounts now, and an import would let a client claim any levels it liked (see "The server owns a
+  team's levels, XP and HP").
