@@ -113,7 +113,8 @@ function startBattle() {
     return error('Add a creature to your team first', 409)
   if (members.every(m => m.hp === 0))
     return error('Your team needs a rest', 409)
-  const party = members.map(m =>
+  // The real tables can't hold an unknown creature; seeded test teams can.
+  const party = members.filter(m => byId.has(m.creatureId)).map(m =>
     createFighter(byId.get(m.creatureId)!, m.level, {
       hp: m.hp,
       uid: m.uid,

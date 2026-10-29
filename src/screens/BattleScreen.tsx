@@ -11,31 +11,27 @@ import { HomeLink } from '@/components/HomeLink'
 import { Button, buttonClass } from '@/components/ui/button'
 import { useFullscreen } from '@/hooks/useFullscreen'
 import { useSettings } from '@/hooks/useSettings'
-import { useTeam } from '@/hooks/useTeam'
+import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import { creatureQuery, useTeamCreatures } from '@/hooks/useTeamCreatures'
-import { useWildFighter } from '@/hooks/useWildFighter'
-import { createFighter, type Rng } from '@/lib/battle/engine'
+import { fetchWildBattle, startWildBattle } from '@/lib/battle/api'
+import { createFighter } from '@/lib/battle/engine'
+import { isCustomId } from '@/lib/creature'
+import { reloadTeam, restTeam } from '@/lib/team/serverTeam'
 import {
   addMember,
   hasCreature,
   isTeamFull,
   leadWith,
   makeUid,
-  newMember,
-  restAll,
-  saveBattle
+  newMember
 } from '@/lib/team/team'
 
 type BattleScreenProps = {
   // From `?id=N` (the ▶ Battle link): that creature leads this battle.
   playerId: null | number
-  rng?: Rng
 }
 
-export function BattleScreen({
-  playerId,
-  rng = Math.random
-}: BattleScreenProps) {
+export function BattleScreen({ playerId }: BattleScreenProps) {
   const [settings] = useSettings()
   const stageRef = useRef<HTMLDivElement>(null)
   const fullscreen = useFullscreen(stageRef)
@@ -70,7 +66,12 @@ export function BattleScreen({
           </button>
         )}
         <Handheld classic={settings.classic}>
-          <BattleLoader playerId={playerId} rng={rng} />
+          <BattleLoader
+            // Custom creatures can't join a server team until slice 6.
+            playerId={
+              playerId !== null && isCustomId(playerId) ? null : playerId
+            }
+          />
         </Handheld>
       </div>
     </main>
@@ -83,13 +84,7 @@ export function parsePlayerId(search: string) {
   return /^\d+$/.test(raw) && Number(raw) >= 1 ? Number(raw) : null
 }
 
-function BattleLoader({
-  playerId,
-  rng
-}: {
-  playerId: null | number
-  rng: Rng
-}) {
+function BattleLoader({ playerId }: { playerId: null | number }) {
   const [team, setTeam] = useTeam()
   const [round, setRound] = useState(0)
   // The player chose to battle with their team as it is (from the full-team
@@ -146,17 +141,24 @@ function BattleLoader({
   const canFight = party.some(fighter => fighter.hp > 0)
   // An empty team (and no ▶ Battle pick on its way) opens the picker, which
   // then stays until START, not just until the first creature joins.
-  const needsTeam = team.length === 0 && (playerId === null || pick.isError)
+  // Only once the team has loaded from the API: until then it looks empty.
+  const { loaded } = useTeamStatus()
+  const needsTeam =
+    loaded && team.length === 0 && (playerId === null || pick.isError)
   useEffect(() => {
     if (needsTeam) setPicking(true)
   }, [needsTeam])
   const showPicker = picking || needsTeam
-  const wild = useWildFighter({
+  // The server picks the wild creature and keeps the battle. The first round
+  // resumes one in progress (a reload mid-battle); later rounds start fresh.
+  const wild = useQuery({
     enabled: ready && canFight && !showPicker,
-    excludeIds: team.map(member => member.creatureId),
-    levels: party.map(fighter => fighter.level),
-    rng,
-    round
+    gcTime: 0,
+    queryFn: async () =>
+      (round === 0 ? await fetchWildBattle() : null) ?? startWildBattle(),
+    queryKey: ['battle', 'wild', round],
+    retry: false,
+    staleTime: Infinity
   })
 
   if (showPicker) {
@@ -186,13 +188,11 @@ function BattleLoader({
   if (wild.data) {
     return (
       <BattleArena
-        enemy={wild.data}
+        initial={wild.data}
         key={round}
         onBattleAgain={() => setRound(r => r + 1)}
         onChangeTeam={changeTeam}
-        onSave={state => setTeam(current => saveBattle(current, state))}
-        party={party}
-        rng={rng}
+        onTurn={() => void reloadTeam()}
         teamSize={team.length}
       />
     )
@@ -256,7 +256,7 @@ function BattleLoader({
             Your team is too tired to battle. Rest first!
           </p>
           <div className="flex flex-wrap justify-center gap-3" data-arrow-nav>
-            <Button onClick={() => setTeam(restAll)}>Rest</Button>
+            <Button onClick={() => void restTeam()}>Rest</Button>
             <Button onClick={changeTeam} variant="secondary">
               Change team
             </Button>

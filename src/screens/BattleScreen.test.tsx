@@ -3,15 +3,21 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SETTINGS_STORAGE_KEY } from '@/hooks/useSettings'
-import { TEAM_STORAGE_KEY } from '@/hooks/useTeam'
 import { clearCreations, saveCreation } from '@/lib/creation-store'
-import { parseTeam, serializeTeam, type TeamMember } from '@/lib/team/team'
-import { stubFetch } from '@/test/fake-api'
+import { type TeamMember } from '@/lib/team/team'
+import { apiResponse, stubFetch } from '@/test/fake-api'
+import {
+  seedTeam,
+  serverBattle,
+  serverTeam,
+  setServerRng
+} from '@/test/fake-server'
 import { renderWithClient } from '@/test/render'
+import { signIn } from '@/test/session'
 
 import { BattleScreen, parsePlayerId } from './BattleScreen'
 
-// rng always 0: the wild creature is #2 Britney (Fighting) at the team level
+// The server's rng always 0: the wild creature is #2 Britney (Fighting) at the team level
 // − 2 (Lv3, 23 HP, speed 15), the AI picks its best move, every move hits and
 // crits, rolls are minimum and throws always succeed. At Lv5 #1 Geovanni
 // (speed 18) and #3 Hershel (19) move first; their Flying/Fairy moves would
@@ -26,9 +32,9 @@ const liveRegion = () => {
 }
 const expectMessage = (text: RegExp | string) =>
   waitFor(() => expect(liveRegion()).toHaveTextContent(text))
-const savedTeam = () => parseTeam(localStorage.getItem(TEAM_STORAGE_KEY))
-const save = (members: TeamMember[]) =>
-  localStorage.setItem(TEAM_STORAGE_KEY, serializeTeam(members))
+// The team and battle live on the (fake) server now.
+const savedTeam = () => serverTeam()
+const save = (members: TeamMember[]) => seedTeam(members)
 const member = (
   uid: string,
   creatureId: number,
@@ -43,6 +49,8 @@ const member = (
 })
 
 beforeEach(() => {
+  signIn()
+  setServerRng(alwaysZero)
   // Reduced motion: text appears whole and HP bars jump, so tests don't wait.
   vi.stubGlobal('matchMedia', (query: string) => ({
     addEventListener: () => {},
@@ -53,7 +61,7 @@ beforeEach(() => {
 
 async function open(playerId: null | number = null) {
   stubFetch()
-  renderWithClient(<BattleScreen playerId={playerId} rng={alwaysZero} />)
+  renderWithClient(<BattleScreen playerId={playerId} />)
   await expectMessage('A wild Britney appeared!')
   await readUntil(/What will .+ do\?/)
 }
@@ -72,7 +80,9 @@ async function readUntil(text: RegExp | string) {
 afterEach(() => clearCreations())
 
 describe('BattleScreen', () => {
-  it('battles with a custom card from the Creature Lab', async () => {
+  it("ignores a ▶ Battle link to a custom card, which can't battle yet", async () => {
+    // Custom creatures live in this browser; the server can't put them on a
+    // team until the Creature Lab moves there (slice 6). The picker opens.
     await saveCreation({
       attack: 80,
       defense: 70,
@@ -90,20 +100,18 @@ describe('BattleScreen', () => {
       weight: 9.5
     })
     stubFetch()
-    renderWithClient(<BattleScreen playerId={1001} rng={alwaysZero} />)
-    // Custom ids aren't in the catalog, so the wild pick skips nothing: #1.
-    await expectMessage('A wild Geovanni appeared!')
-    expect(savedTeam()).toEqual([expect.objectContaining({ creatureId: 1001 })])
+    renderWithClient(<BattleScreen playerId={1001} />)
     expect(
-      screen.getByRole('region', { name: 'Your creature' })
-    ).toHaveTextContent('Embercub')
+      await screen.findByRole('group', { name: 'Choose your team' })
+    ).toBeInTheDocument()
+    expect(savedTeam()).toEqual([])
   })
 
   // The bug: ▶ Battle on a card sent out whoever already led the team.
   it('leads with the picked creature when the team already has others', async () => {
     save([member('ten', 10)])
     stubFetch()
-    renderWithClient(<BattleScreen playerId={1} rng={alwaysZero} />)
+    renderWithClient(<BattleScreen playerId={1} />)
     await expectMessage('A wild Britney appeared!')
     expect(savedTeam().map(m => m.creatureId)).toEqual([1, 10])
     expect(
@@ -114,7 +122,7 @@ describe('BattleScreen', () => {
   it('says so when a full team has no room for the pick, then can battle anyway', async () => {
     save(Array.from({ length: 6 }, (_, i) => member(`m${i}`, 20 + i)))
     stubFetch()
-    renderWithClient(<BattleScreen playerId={1} rng={alwaysZero} />)
+    renderWithClient(<BattleScreen playerId={1} />)
     expect(
       await screen.findByText(/Your team is full, so Geovanni can't join/)
     ).toBeInTheDocument()
@@ -335,7 +343,7 @@ describe('BattleScreen', () => {
   it('explains a team whose creatures are all missing instead of asking to rest', async () => {
     stubFetch()
     save([member('gone', 5000)])
-    renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
+    renderWithClient(<BattleScreen playerId={null} />)
     expect(await screen.findByText(/no longer on file/)).toBeInTheDocument()
     expect(screen.queryByText(/too tired/)).toBeNull()
   })
@@ -404,7 +412,7 @@ describe('BattleScreen', () => {
 
     it('starts an empty team on the ALL list, then battles from START', async () => {
       stubFetch()
-      renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
+      renderWithClient(<BattleScreen playerId={null} />)
       expect(
         await screen.findByRole('group', { name: 'Choose your team' })
       ).toBeInTheDocument()
@@ -422,7 +430,7 @@ describe('BattleScreen', () => {
 
     it('plays with the D-pad: ◀▶ lists, ▲▼ rows, A toggles, START', async () => {
       stubFetch()
-      renderWithClient(<BattleScreen playerId={null} rng={alwaysZero} />)
+      renderWithClient(<BattleScreen playerId={null} />)
       await waitFor(() =>
         expect(screen.getByRole('button', { name: /Geovanni/ })).toHaveFocus()
       )
@@ -450,7 +458,7 @@ describe('BattleScreen', () => {
 
     it('shows the picker when a ▶ Battle creature is not on file', async () => {
       stubFetch()
-      renderWithClient(<BattleScreen playerId={5000} rng={alwaysZero} />)
+      renderWithClient(<BattleScreen playerId={5000} />)
       expect(
         await screen.findByRole('group', { name: 'Choose your team' })
       ).toBeInTheDocument()
@@ -485,5 +493,62 @@ describe('parsePlayerId', () => {
     ['', null]
   ])('%s → %s', (search, expected) => {
     expect(parsePlayerId(search)).toBe(expected)
+  })
+})
+
+describe('BattleScreen on the server', () => {
+  it('sends each move with its turn number', async () => {
+    const fetchMock = stubFetch()
+    save([member('a', 1)])
+    renderWithClient(<BattleScreen playerId={null} />)
+    await expectMessage('A wild Britney appeared!')
+    await readUntil(/What will .+ do\?/)
+    await userEvent.keyboard('{Enter}{ArrowDown}{Enter}') // FIGHT, Quick Tackle
+    await readUntil(/^Wild Britney used .+!$/)
+    const call = fetchMock.mock.calls.find(([url]) =>
+      String(url).endsWith('/api/battles/wild/actions')
+    )
+    expect(JSON.parse(String(call?.[1]?.body))).toEqual({
+      // Geovanni's moves: two Flying ones, then Quick Tackle.
+      action: { index: 2, type: 'move' },
+      turn: 0
+    })
+    expect(serverBattle()?.turn).toBe(1)
+  })
+
+  it('resumes a battle in progress after a reload', async () => {
+    save([member('a', 1)])
+    stubFetch()
+    const first = renderWithClient(<BattleScreen playerId={null} />)
+    await expectMessage('A wild Britney appeared!')
+    const started = serverBattle()
+    first.unmount()
+
+    renderWithClient(<BattleScreen playerId={null} />)
+    // The same battle again, not a new one.
+    await expectMessage('A wild Britney appeared!')
+    await readUntil(/What will .+ do\?/)
+    expect(serverBattle()).toBe(started)
+  })
+
+  it('shows a failed turn and lets you try again', async () => {
+    save([member('a', 1)])
+    let failNext = true
+    stubFetch((url, init) => {
+      if (url.pathname === '/api/battles/wild/actions' && failNext) {
+        failNext = false
+        return Response.json({ error: 'Server unavailable' }, { status: 503 })
+      }
+      return apiResponse(url, init)
+    })
+    renderWithClient(<BattleScreen playerId={null} />)
+    await expectMessage('A wild Britney appeared!')
+    await readUntil(/What will .+ do\?/)
+    await userEvent.keyboard('{Enter}{ArrowDown}{Enter}')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      "Couldn't reach the server"
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }))
+    await readUntil(/^Wild Britney used .+!$/)
   })
 })

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 
 import { DialogBox } from '@/components/DialogBox'
 import { TypeBadge } from '@/components/TypeBadge'
@@ -7,16 +7,13 @@ import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { useSettings } from '@/hooks/useSettings'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import {
-  activeFighter,
-  type BattleEvent,
-  type BattleState,
-  createBattle,
-  type Fighter,
-  MAX_TEAM,
-  resolveTurn,
-  type Rng,
-  sendOut
-} from '@/lib/battle/engine'
+  abandonWildBattle,
+  BattleRequestError,
+  sendWildAction,
+  type WildAction,
+  type WildBattle
+} from '@/lib/battle/api'
+import { activeFighter, MAX_TEAM } from '@/lib/battle/engine'
 import {
   currentStep,
   flowReducer,
@@ -36,34 +33,40 @@ import { BattleScene } from './BattleScene'
 import { TimingBar } from './TimingBar'
 
 type BattleArenaProps = {
-  enemy: Fighter
+  // The battle as the server has it: a new one, or one resumed after a reload.
+  initial: WildBattle
   onBattleAgain: () => void
   onChangeTeam?: () => void
-  // Called after every turn so HP, XP and catches survive a closed tab.
-  onSave: (state: BattleState) => void
-  party: Fighter[]
-  rng: Rng
-  // The saved team can be bigger than `party` (members no longer on file),
+  // After every turn: the server has saved HP, XP and catches to the team.
+  onTurn: () => void
+  // The saved team can be bigger than the party (members no longer on file),
   // and a catch only sticks if the saved team has room.
   teamSize: number
 }
 
-type Result = { events: BattleEvent[]; state: BattleState }
-
 // One battle from "A wild X appeared!" to the end screen. Remount (new `key`)
 // to start over.
 export function BattleArena({
-  enemy,
+  initial,
   onBattleAgain,
   onChangeTeam,
-  onSave,
-  party,
-  rng,
+  onTurn,
   teamSize
 }: BattleArenaProps) {
   const [flow, dispatch] = useReducer(flowReducer, null, () =>
-    startFlow(createBattle(party, enemy))
+    startFlow(initial.state)
   )
+  const enemy = initial.state.enemy
+  // The turn the next action is for; the server rejects any other (a double
+  // click or a stale retry).
+  const turn = useRef(initial.turn)
+  // A request is on its way: the menus wait for its answer.
+  const [busy, setBusy] = useState(false)
+  // The action that failed and why, for "Try again".
+  const [failed, setFailed] = useState<null | {
+    action: WildAction
+    message: string
+  }>(null)
   const instant = usePrefersReducedMotion()
   const [settings] = useSettings()
   // The timing bar needs motion; reduced motion falls back to plain moves.
@@ -100,9 +103,32 @@ export function BattleArena({
 
   useBodyAdvance(canAdvance, advance)
 
-  const act = (result: Result) => {
-    dispatch({ type: 'resolved', ...result })
-    onSave(result.state)
+  // One action to the server, then its events into the message flow.
+  const act = (action: WildAction) => {
+    setBusy(true)
+    setFailed(null)
+    sendWildAction(turn.current, action)
+      .then(
+        result => {
+          turn.current = result.turn
+          dispatch({
+            events: result.events,
+            state: result.state,
+            type: 'resolved'
+          })
+          onTurn()
+        },
+        (error: unknown) => {
+          // A refusal (4xx) says why; anything else is the server or network.
+          const refused =
+            error instanceof BattleRequestError && error.status < 500
+          setFailed({
+            action,
+            message: refused ? error.message : "Couldn't reach the server"
+          })
+        }
+      )
+      .finally(() => setBusy(false))
   }
 
   const teamFull = Math.max(battle.party.length, teamSize) >= MAX_TEAM
@@ -118,9 +144,16 @@ export function BattleArena({
       disabled: teamFull,
       key: 'catch',
       label: 'Catch',
-      onSelect: () => act(resolveTurn(battle, { type: 'catch' }, rng))
+      onSelect: () => act({ type: 'catch' })
     },
-    { key: 'run', label: 'Run', onSelect: () => dispatch({ type: 'run' }) }
+    {
+      key: 'run',
+      label: 'Run',
+      onSelect: () => {
+        void abandonWildBattle()
+        dispatch({ type: 'run' })
+      }
+    }
   ]
   const moveItems: MenuItem[] = active.moves.map((move, index) => ({
     detail: (
@@ -134,7 +167,7 @@ export function BattleArena({
     onSelect: () => {
       lastMove.current = index
       if (timingOn) setPending(index)
-      else act(resolveTurn(battle, { index, type: 'move' }, rng))
+      else act({ index, type: 'move' })
     }
   }))
   const teamItems: MenuItem[] = battle.party.map((fighter, index) => {
@@ -152,11 +185,7 @@ export function BattleArena({
       key: fighter.uid,
       label: fighter.creature.name,
       onSelect: () =>
-        act(
-          phase === 'switch'
-            ? sendOut(battle, index)
-            : resolveTurn(battle, { to: index, type: 'switch' }, rng)
-        )
+        act({ to: index, type: phase === 'switch' ? 'sendOut' : 'switch' })
     }
   })
 
@@ -181,13 +210,7 @@ export function BattleArena({
         onCancel={() => setPending(null)}
         onDone={bonus => {
           setPending(null)
-          act(
-            resolveTurn(
-              battle,
-              { index: pending, timing: bonus, type: 'move' },
-              rng
-            )
-          )
+          act({ index: pending, timing: bonus, type: 'move' })
         }}
       />
     )
@@ -195,6 +218,7 @@ export function BattleArena({
     menu = (
       <BattleMenu
         cols={2}
+        disabled={busy}
         items={moveItems}
         label="Moves"
         onBack={() => dispatch({ type: 'back' })}
@@ -205,6 +229,7 @@ export function BattleArena({
     menu = (
       <BattleMenu
         cols={2}
+        disabled={busy}
         items={teamItems}
         label="Team"
         // A forced switch has no way back: someone must go out.
@@ -216,7 +241,7 @@ export function BattleArena({
     menu = (
       <BattleMenu
         cols={2}
-        disabled={phase !== 'menu'}
+        disabled={busy || phase !== 'menu'}
         items={mainItems}
         label="Actions"
         ref={menuRef}
@@ -285,7 +310,19 @@ export function BattleArena({
               />
             )}
           </DialogBox>
-          <DialogBox className="p-2 sm:p-3">{menu}</DialogBox>
+          <DialogBox className="flex flex-col gap-2 p-2 sm:p-3">
+            {failed && (
+              <div className="flex flex-wrap items-center gap-2" role="alert">
+                <p className="text-body font-bold text-danger">
+                  {failed.message}
+                </p>
+                <Button onClick={() => act(failed.action)} variant="secondary">
+                  Try again
+                </Button>
+              </div>
+            )}
+            {menu}
+          </DialogBox>
         </div>
       )}
     </section>
