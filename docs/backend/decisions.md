@@ -362,3 +362,35 @@ Template:
 - **What:** teams reference `pokemon` rows, and custom creatures still live only in the browser.
 - **Trade-off:** a temporary step back in slice 4b ("Add to team" disabled for custom creatures), accepted by the
   owner to keep battles first.
+
+## 2026-10-28: The browser plays wild battles through the API; sign-in now required
+
+- **What:** `BattleArena` sends each action with its turn number to `/api/battles/wild/actions` and plays back the
+  events the server returns; the browser no longer rolls any dice for wild battles. The battle screen resumes a battle
+  in progress after a reload. Battles, the team bar and "Add to team" need an account (friend battles wait for slice
+  5).
+- **Why:** the server is the only source of truth for a battle, so progress survives a reload or another device, and
+  nobody can edit their way to a win in the browser.
+- **Trade-off:** one request per turn; the menus wait for it (the attack animation hides most of it).
+
+## 2026-10-28: `useTeam` keeps its shape, backed by the API
+
+- **What:** `useTeam()` still returns `[team, setTeam(change)]`, so the seven screens using it barely changed. Behind
+  it, a small store applies each change at once (optimistic), queues the requests so they arrive in order, and replaces
+  the local copy with the server's answer; a refused change rolls back to the last confirmed team and `TeamBar` shows
+  why.
+- **Why:** the server's answer is authoritative (it assigns uids and owns stats), but waiting for it on every click
+  would make the team feel slow.
+- **Rejected:** TanStack Query mutations (the rest of the team code is a plain external store; one pattern is easier to
+  explain); no optimism (a visible delay on every add/remove).
+- **Trade-off:** a change can appear and then roll back if the server refuses it.
+
+## 2026-10-28: UI tests run against a fake server built on the TypeScript engine
+
+- **What:** `src/test/fake-server.ts` implements the team and wild-battle routes in memory with the same contract as
+  the Python routes (members and order only, turn numbers, 409s), playing turns with the TypeScript engine and a
+  scriptable rng. Tests seed it instead of `localStorage`.
+- **Why:** the existing battle tests encode a lot of exact game behavior (who moves first, damage, messages); keeping
+  them meant giving them a server that plays the same game. The slice 3 golden battles already prove the two engines
+  match.
+- **Trade-off:** the fake could drift from the real API; its rules mirror the Python route tests.
