@@ -19,7 +19,8 @@ export function CreationCard({
   onAddToTeam,
   onDelete,
   onTeam,
-  teamFull
+  teamFull,
+  teamLoading
 }: {
   className?: string
   creature: Pokemon
@@ -27,6 +28,8 @@ export function CreationCard({
   onDelete: (id: number) => void
   onTeam: boolean
   teamFull: boolean
+  // The team hasn't loaded yet: + Team waits, so the change isn't lost.
+  teamLoading: boolean
 }) {
   // The image lives in the bucket under a random name; save it under the
   // creature's. (Browsers ignore `download` across origins and open it instead.)
@@ -88,7 +91,7 @@ export function CreationCard({
                     ? 'Team full'
                     : `Add ${creature.name} to team`
               }
-              disabled={onTeam || teamFull}
+              disabled={onTeam || teamFull || teamLoading}
               onClick={() => onAddToTeam(creature)}
               variant="secondary"
             >

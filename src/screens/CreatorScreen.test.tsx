@@ -168,6 +168,50 @@ describe('CreatorScreen', () => {
     ).toBeDisabled()
   })
 
+  it('keeps + Team off until your team has loaded', async () => {
+    seedCreations([creature(1001)])
+    let release = () => {}
+    const loaded = new Promise<void>(resolve => (release = resolve))
+    stubFetch(async (url, init) => {
+      if (url.pathname === '/api/team' && (init?.method ?? 'GET') === 'GET') {
+        await loaded
+      }
+      return apiResponse(url, init)
+    })
+    renderWithClient(<CreatorScreen />)
+    const card = await screen.findByRole('article')
+    const add = within(card).getByRole('button', { name: /to team/ })
+    expect(add).toBeDisabled()
+    release()
+    await waitFor(() =>
+      expect(
+        within(card).getByRole('button', { name: 'Add Embercub to team' })
+      ).toBeEnabled()
+    )
+  })
+
+  it('says why the server refused a team change', async () => {
+    seedCreations([creature(1001)])
+    stubFetch((url, init) =>
+      url.pathname === '/api/team' && init?.method === 'PUT'
+        ? Response.json(
+            { error: 'That creature is not yours' },
+            { status: 400 }
+          )
+        : apiResponse(url, init)
+    )
+    renderWithClient(<CreatorScreen />)
+    const card = await screen.findByRole('article')
+    const add = await within(card).findByRole('button', {
+      name: 'Add Embercub to team'
+    })
+    await waitFor(() => expect(add).toBeEnabled())
+    await userEvent.click(add)
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'That creature is not yours'
+    )
+  })
+
   it('allows at most two types', async () => {
     const user = userEvent.setup()
     stubFetch()

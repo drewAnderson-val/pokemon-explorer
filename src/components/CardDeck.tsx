@@ -18,6 +18,8 @@ type CardDeckProps = {
   onDelete: (id: number) => void
   teamFull: boolean
   teamIds: ReadonlySet<number>
+  // The team hasn't loaded yet: + Team waits, so the change isn't lost.
+  teamLoading: boolean
 }
 
 // Up to this many card edges peek out from under the top card.
@@ -34,7 +36,8 @@ export function CardDeck({
   onDealt,
   onDelete,
   teamFull,
-  teamIds
+  teamIds,
+  teamLoading
 }: CardDeckProps) {
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState<'newer' | 'older'>()
@@ -112,6 +115,7 @@ export function CardDeck({
                   onDelete={onDelete}
                   onTeam={teamIds.has(card.id)}
                   teamFull={teamFull}
+                  teamLoading={teamLoading}
                 />
                 {flipping && (
                   <CardBack className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]" />

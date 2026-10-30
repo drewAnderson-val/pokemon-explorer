@@ -7,7 +7,7 @@ import { HomeLink } from '@/components/HomeLink'
 import { TypeFilterChip } from '@/components/TypeFilterChip'
 import { Button } from '@/components/ui/button'
 import { useCreations } from '@/hooks/useCreations'
-import { useTeam } from '@/hooks/useTeam'
+import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import {
   MAX_CREATURE_TYPES,
   MAX_DESCRIPTION_LENGTH,
@@ -44,6 +44,8 @@ export function CreatorScreen() {
     )
   }
   const [team, setTeam] = useTeam()
+  // A change before the team loads would be lost; a refused one is said here.
+  const { error: teamError, loaded: teamLoaded } = useTeamStatus()
   const addToTeam = (creature: Pokemon) =>
     setTeam(current => addMember(current, newMember(creature, makeUid())))
 
@@ -159,9 +161,9 @@ export function CreatorScreen() {
               </p>
             </DialogBox>
           )}
-          {deleteError && (
+          {(deleteError ?? teamError) && (
             <p className="text-body-lg font-bold text-danger" role="alert">
-              {deleteError}
+              {deleteError ?? teamError}
             </p>
           )}
           {(creations.length > 0 || create.isPending) && (
@@ -174,6 +176,7 @@ export function CreatorScreen() {
               onDelete={deleteCard}
               teamFull={isTeamFull(team)}
               teamIds={new Set(team.map(member => member.creatureId))}
+              teamLoading={!teamLoaded}
             />
           )}
         </section>
