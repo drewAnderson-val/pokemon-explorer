@@ -1,37 +1,42 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
-import type { CreatedCreature } from '@/lib/creature'
+import type { Pokemon } from '@/lib/pokemon'
 
+import { teamStatus } from '@/lib/team/serverTeam'
+import { apiResponse, stubFetch } from '@/test/fake-api'
 import {
-  clearCreations,
-  loadCreations,
-  saveCreation
-} from '@/lib/creation-store'
-import { stubFetch } from '@/test/fake-api'
+  failLab,
+  seedCreations,
+  seedTeam,
+  serverCreations,
+  serverTeam
+} from '@/test/fake-server'
 import { renderWithClient } from '@/test/render'
+import { signIn } from '@/test/session'
 
 import { CreatorScreen } from './CreatorScreen'
 
-const creature: CreatedCreature = {
+const creature = (id: number, name = 'Embercub'): Pokemon => ({
   attack: 80,
   defense: 70,
   description: 'A sleepy fox',
   generation: 10,
   height: 0.6,
   hp: 55,
-  imageUrl: 'data:image/jpeg;base64,AAAA',
+  id,
+  imageUrl: `https://img.test/creatures/${id}.png`,
   isLegendary: false,
-  name: 'Embercub',
+  name,
   specialAttack: 90,
   specialDefense: 60,
   speed: 100,
   types: ['Fire'],
   weight: 9.5
-}
+})
 
-afterEach(() => clearCreations())
+beforeEach(() => signIn())
 
 async function createEmbercub() {
   const user = userEvent.setup()
@@ -43,61 +48,47 @@ async function createEmbercub() {
 }
 
 describe('CreatorScreen', () => {
-  it('sends the form and shows the creation with alt text and a download', async () => {
-    const user = userEvent.setup()
-    const fetchMock = stubFetch(() => Response.json({ creature }))
+  it('sends the form with your token and shows the creation the server made', async () => {
+    const fetchMock = stubFetch()
     renderWithClient(<CreatorScreen />)
-
-    const create = screen.getByRole('button', { name: 'Create' })
-    expect(create).toBeDisabled()
-
-    await user.type(screen.getByLabelText('Name'), 'Embercub')
-    await user.click(screen.getByRole('button', { name: 'Fire' }))
-    await user.type(screen.getByLabelText(/Description/), 'A sleepy fox')
-    await user.click(create)
+    expect(screen.getByRole('button', { name: 'Create' })).toBeDisabled()
+    await createEmbercub()
 
     const card = await screen.findByRole('article')
     expect(
       within(card).getByRole('img', { name: 'Generated artwork of Embercub' })
-    ).toHaveAttribute('src', creature.imageUrl)
+    ).toHaveAttribute('src', 'https://img.test/creatures/1001.png')
     expect(within(card).getByText('No.1001')).toBeInTheDocument()
     expect(
       within(card).getByRole('link', { name: 'Download' })
-    ).toHaveAttribute('download', 'embercub.jpg')
+    ).toHaveAttribute('href', 'https://img.test/creatures/1001.png')
 
-    const init = fetchMock.mock.calls[0]?.[1]
-    expect(init?.method).toBe('POST')
+    const [, init] = fetchMock.mock.calls.find(
+      ([url, init]) =>
+        String(url).endsWith('/api/creatures') && init?.method === 'POST'
+    )!
+    expect(new Headers(init?.headers).get('Authorization')).toBe(
+      'Bearer test-token'
+    )
     expect(JSON.parse(String(init?.body))).toEqual({
       description: 'A sleepy fox',
       name: 'Embercub',
       types: ['Fire']
     })
+    expect(serverCreations().map(c => c.name)).toEqual(['Embercub'])
   })
 
-  it('saves custom cards in the browser and deletes them', async () => {
-    stubFetch(() => Response.json({ creature }))
-    const first = renderWithClient(<CreatorScreen />)
-    const user = await createEmbercub()
-    await screen.findByRole('heading', { name: /Custom cards/ })
-    await waitFor(async () =>
-      expect((await loadCreations()).map(c => c.id)).toEqual([1001])
-    )
-    first.unmount()
-
-    // A fresh page load reads them back from IndexedDB.
+  it('a new account starts with an empty lab', async () => {
+    stubFetch()
     renderWithClient(<CreatorScreen />)
-    const card = await screen.findByRole('article')
-    await user.click(
-      within(card).getByRole('button', { name: 'Delete Embercub' })
-    )
-    expect(screen.queryByRole('article')).not.toBeInTheDocument()
-    await waitFor(async () => expect(await loadCreations()).toEqual([]))
+    expect(
+      await screen.findByText(/Your cards will appear here/)
+    ).toBeInTheDocument()
   })
 
-  it('shows one card at a time, newest on top, and deals new ones on top', async () => {
-    await saveCreation({ ...creature, id: 1001, name: 'Oldie' })
-    await saveCreation({ ...creature, id: 1002, name: 'Newer' })
-    stubFetch(() => Response.json({ creature }))
+  it('shows your creatures from your account, newest on top, and deals new ones on top', async () => {
+    seedCreations([creature(1001, 'Oldie'), creature(1002, 'Newer')])
+    stubFetch()
     renderWithClient(<CreatorScreen />)
 
     const card = () => screen.getByRole('article')
@@ -107,27 +98,74 @@ describe('CreatorScreen', () => {
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: 'Older card' }))
     expect(within(card()).getByText('Oldie')).toBeInTheDocument()
-    expect(screen.getByText('2 of 2')).toBeInTheDocument()
 
     await createEmbercub()
     expect(await screen.findByText('1 of 3')).toBeInTheDocument()
     expect(within(card()).getByText('Embercub')).toBeInTheDocument()
+    expect(within(card()).getByText('No.1003')).toBeInTheDocument()
   })
 
-  it("can't add a custom card to the team or battle with it yet", async () => {
-    // Teams live on the server, which doesn't know custom creatures until the
-    // Creature Lab moves there too.
-    await saveCreation({ ...creature, id: 1001 })
+  it('deletes a creature from your account, and from your team', async () => {
+    seedCreations([creature(1001)])
+    seedTeam([{ creatureId: 1001, hp: null, level: 5, uid: 's1', xp: 125 }])
     stubFetch()
     renderWithClient(<CreatorScreen />)
+    const card = await screen.findByRole('article')
+    await userEvent.click(
+      within(card).getByRole('button', { name: 'Delete Embercub' })
+    )
+    await waitFor(() => expect(serverCreations()).toEqual([]))
+    expect(serverTeam()).toEqual([])
+    // The team in this browser drops it too (it reloads from the server).
+    await waitFor(() => expect(teamStatus.read().members).toEqual([]))
+    expect(screen.queryByRole('article')).not.toBeInTheDocument()
+  })
+
+  it("keeps a creature the server won't delete, and says why", async () => {
+    seedCreations([creature(1001)])
+    let answer: () => void = () => {}
+    stubFetch(async (url, init) => {
+      if (init?.method !== 'DELETE') return apiResponse(url, init)
+      await new Promise<void>(resolve => (answer = resolve))
+      return Response.json(
+        { error: 'That creature is in a friend match' },
+        { status: 409 }
+      )
+    })
+    renderWithClient(<CreatorScreen />)
+    const card = await screen.findByRole('article')
+    await userEvent.click(
+      within(card).getByRole('button', { name: 'Delete Embercub' })
+    )
+    // Gone at once, while the server thinks about it…
+    expect(screen.queryByRole('article')).not.toBeInTheDocument()
+    answer()
+    // …then back when it refuses.
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'That creature is in a friend match'
+    )
+    expect(await screen.findByRole('article')).toBeInTheDocument()
+  })
+
+  it('adds a creature to your team, and links to a battle with it', async () => {
+    seedCreations([creature(1001)])
+    stubFetch()
+    renderWithClient(<CreatorScreen />)
+    const card = await screen.findByRole('article')
     expect(
-      await screen.findByRole('button', {
-        name: 'Custom creatures can join teams soon'
-      })
+      within(card).getByRole('link', { name: 'Battle with Embercub' })
+    ).toHaveAttribute('href', '/battle?id=1001')
+    const add = await within(card).findByRole('button', {
+      name: 'Add Embercub to team'
+    })
+    await waitFor(() => expect(add).toBeEnabled())
+    await userEvent.click(add)
+    await waitFor(() =>
+      expect(serverTeam().map(m => m.creatureId)).toEqual([1001])
+    )
+    expect(
+      await within(card).findByRole('button', { name: 'On your team' })
     ).toBeDisabled()
-    expect(
-      screen.queryByRole('link', { name: 'Battle with Embercub' })
-    ).toBeNull()
   })
 
   it('allows at most two types', async () => {
@@ -144,19 +182,10 @@ describe('CreatorScreen', () => {
   })
 
   it("shows the API's error message", async () => {
-    const user = userEvent.setup()
-    stubFetch(() =>
-      Response.json(
-        { error: "You've made a lot of creatures! Try again in an hour." },
-        { status: 429 }
-      )
-    )
+    failLab(429, "You've made a lot of creatures! Try again in an hour.")
+    stubFetch()
     renderWithClient(<CreatorScreen />)
-
-    await user.type(screen.getByLabelText('Name'), 'Embercub')
-    await user.click(screen.getByRole('button', { name: 'Fire' }))
-    await user.click(screen.getByRole('button', { name: 'Create' }))
-
+    await createEmbercub()
     expect(await screen.findByRole('alert')).toHaveTextContent(
       "You've made a lot of creatures! Try again in an hour."
     )
