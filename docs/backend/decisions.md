@@ -538,3 +538,14 @@ Template:
 - **Rejected:** reading the URLs from the frontend service's outputs (it would make the API's deploy depend on the
   frontend's); a wildcard on `*.run.app` (any Cloud Run app on the internet could call the API as a signed-in user's
   browser).
+
+## 2026-10-29: Sign in before anything else
+
+- **What:** signed out, every page except `/login` shows the sign-in screen (with "Create an account"); signing in
+  carries on to the page you opened, so an invite link lands you in the match.
+- **Why:** teams, battles and friend matches all need an account, and asking for one only when you first used them
+  sent people to `/login` from four different places mid-click. One entry point is easier to follow. (Owner's call.)
+- **Rejected:** keeping the catalog public and only smoothing the prompts (sign-in still appears in several places).
+- **Kept:** each screen's own sign-in prompt. A session can expire while a page is open, and nothing re-renders the
+  app when it does, so those prompts still catch it.
+- **Trade-off:** a reviewer can't look at the catalog without making an account.
