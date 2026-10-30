@@ -66,6 +66,7 @@ export function useMatch(matchId: string) {
       // match keeps its end screen when the server drops it.
       source.addEventListener('gone', () => {
         source?.close()
+        setReconnecting(false)
         setState(previous =>
           previous.view?.phase === 'over'
             ? previous
@@ -76,12 +77,14 @@ export function useMatch(matchId: string) {
       // login and brings you back here.
       source.addEventListener('unauthorized', () => {
         source?.close()
+        setReconnecting(false)
         setState(previous => ({ ...previous, status: 'signin' }))
         logout()
       })
       // A newer stream took the seat (another tab, usually).
       source.addEventListener('replaced', () => {
         source?.close()
+        setReconnecting(false)
         setState(previous => ({ ...previous, status: 'replaced' }))
       })
       // Plain network errors are left to the browser's auto-reconnect, which

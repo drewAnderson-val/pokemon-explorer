@@ -15,6 +15,7 @@ import {
 } from '@/lib/creature'
 import { createCreature } from '@/lib/creatures-api'
 import { type Pokemon, POKEMON_TYPES, type PokemonType } from '@/lib/pokemon'
+import { retryTeamLoad } from '@/lib/team/serverTeam'
 import { addMember, isTeamFull, makeUid, newMember } from '@/lib/team/team'
 
 const field =
@@ -46,8 +47,11 @@ export function CreatorScreen() {
   const [team, setTeam] = useTeam()
   // A change before the team loads would be lost; a refused one is said here.
   const { error: teamError, loaded: teamLoaded } = useTeamStatus()
-  const addToTeam = (creature: Pokemon) =>
+  const addToTeam = (creature: Pokemon) => {
+    // The newest problem is the one to show.
+    setDeleteError(null)
     setTeam(current => addMember(current, newMember(creature, makeUid())))
+  }
 
   const toggleType = (type: PokemonType) =>
     setTypes(previous =>
@@ -165,6 +169,16 @@ export function CreatorScreen() {
             <p className="text-body-lg font-bold text-danger" role="alert">
               {deleteError ?? teamError}
             </p>
+          )}
+          {/* The team never loaded: + Team can't work until it does. */}
+          {teamError && !teamLoaded && (
+            <Button
+              className="self-start"
+              onClick={() => void retryTeamLoad()}
+              variant="secondary"
+            >
+              Try again
+            </Button>
           )}
           {(creations.length > 0 || create.isPending) && (
             <CardDeck

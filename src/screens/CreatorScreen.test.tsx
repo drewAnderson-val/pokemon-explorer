@@ -212,6 +212,62 @@ describe('CreatorScreen', () => {
     )
   })
 
+  it("offers to try again when your team couldn't load", async () => {
+    seedCreations([creature(1001)])
+    let failTeam = true
+    stubFetch((url, init) => {
+      if (url.pathname === '/api/team' && failTeam) {
+        return Response.json({ error: 'down' }, { status: 500 })
+      }
+      return apiResponse(url, init)
+    })
+    renderWithClient(<CreatorScreen />)
+    const retry = await screen.findByRole('button', { name: 'Try again' })
+    failTeam = false
+    await userEvent.click(retry)
+    const card = await screen.findByRole('article')
+    await waitFor(() =>
+      expect(
+        within(card).getByRole('button', { name: 'Add Embercub to team' })
+      ).toBeEnabled()
+    )
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull()
+  })
+
+  it('shows a refused team change even after an earlier delete error', async () => {
+    seedCreations([creature(1001)])
+    stubFetch((url, init) => {
+      if (init?.method === 'DELETE') {
+        return Response.json(
+          { error: 'That creature is in a friend match' },
+          { status: 409 }
+        )
+      }
+      if (url.pathname === '/api/team' && init?.method === 'PUT') {
+        return Response.json(
+          { error: 'That creature is not yours' },
+          { status: 400 }
+        )
+      }
+      return apiResponse(url, init)
+    })
+    renderWithClient(<CreatorScreen />)
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Delete Embercub' })
+    )
+    expect(await screen.findByRole('alert')).toHaveTextContent('friend match')
+    const add = await screen.findByRole('button', {
+      name: 'Add Embercub to team'
+    })
+    await waitFor(() => expect(add).toBeEnabled())
+    await userEvent.click(add)
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'That creature is not yours'
+      )
+    )
+  })
+
   it('allows at most two types', async () => {
     const user = userEvent.setup()
     stubFetch()

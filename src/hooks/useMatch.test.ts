@@ -120,6 +120,21 @@ describe('useMatch', () => {
     expect(result.current.reconnecting).toBe(false)
   })
 
+  it.each(['gone', 'replaced', 'unauthorized'])(
+    'stops saying it is reconnecting when the stream ends with %s',
+    async event => {
+      stubFetch(joined)
+      const Source = stubEventSource()
+      const { result } = renderHook(() => useMatch('abc'))
+      await waitFor(() => expect(Source.last).not.toBeNull())
+      act(() => Source.last?.emit('view', view))
+      act(() => Source.last?.fail(FakeEventSource.CONNECTING))
+      expect(result.current.reconnecting).toBe(true)
+      act(() => Source.last?.emit(event))
+      expect(result.current.reconnecting).toBe(false)
+    }
+  )
+
   it('reports a stream the browser gave up on, and retries', async () => {
     stubFetch(joined)
     const Source = stubEventSource()
