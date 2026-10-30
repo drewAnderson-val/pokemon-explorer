@@ -69,6 +69,8 @@ describe('useMatch', () => {
     act(() => Source.last?.emit('unauthorized'))
     expect(result.current.status).toBe('signin')
     expect(Source.last?.closed).toBe(true)
+    // Signed out for real, so the app asks for a login instead of a dead session.
+    expect(authStore.read()).toBeNull()
   })
 
   it('closes the source on gone so it does not reconnect', async () => {
@@ -103,15 +105,19 @@ describe('useMatch', () => {
     expect(Source.last?.closed).toBe(true)
   })
 
-  it('leaves a reconnecting stream to the browser', async () => {
+  it('leaves a reconnecting stream to the browser, and says it is reconnecting', async () => {
     stubFetch(joined)
     const Source = stubEventSource()
     const { result } = renderHook(() => useMatch('abc'))
     await waitFor(() => expect(Source.last).not.toBeNull())
     act(() => Source.last?.emit('view', view))
+    expect(result.current.reconnecting).toBe(false)
     act(() => Source.last?.fail(FakeEventSource.CONNECTING))
     expect(result.current.status).toBe('live')
+    expect(result.current.reconnecting).toBe(true)
     expect(Source.last?.closed).toBe(false)
+    act(() => Source.last?.emit('view', view))
+    expect(result.current.reconnecting).toBe(false)
   })
 
   it('reports a stream the browser gave up on, and retries', async () => {
@@ -244,22 +250,49 @@ describe('useMatch sessions and sends', () => {
     ).toHaveLength(1)
   })
 
-  it('sends a team lock-in once, with no idempotency key', async () => {
+  it('retries a lost team lock-in with the same key', async () => {
     signIn()
+    let calls = 0
     const fetchMock = stubFetch(url => {
       if (url.pathname.endsWith('/join')) return joined()
-      throw new TypeError('Failed to fetch')
+      calls += 1
+      if (calls === 1) throw new TypeError('Failed to fetch')
+      return new Response(null, { status: 204 })
     })
     const Source = stubEventSource()
     const { result } = renderHook(() => useMatch('abc'))
     await waitFor(() => expect(Source.last).not.toBeNull())
-    await expect(
-      result.current.send({ creatureIds: [1], type: 'team' })
-    ).rejects.toThrow()
-    const sends = fetchMock.mock.calls.filter(([url]) =>
-      String(url).endsWith('/actions')
-    )
-    expect(sends).toHaveLength(1)
-    expect(new Headers(sends[0][1]?.headers).get('Idempotency-Key')).toBeNull()
+    await act(() => result.current.send({ creatureIds: [1], type: 'team' }))
+    const keys = fetchMock.mock.calls
+      .filter(([url]) => String(url).endsWith('/actions'))
+      .map(([, init]) => new Headers(init?.headers).get('Idempotency-Key'))
+    expect(keys).toHaveLength(2)
+    expect(keys[0]).toBeTruthy()
+    expect(keys[1]).toBe(keys[0])
+  })
+
+  it('waits half a second before retrying a lost request', async () => {
+    signIn()
+    let calls = 0
+    stubFetch(url => {
+      if (url.pathname.endsWith('/join')) return joined()
+      calls += 1
+      if (calls === 1) throw new TypeError('Failed to fetch')
+      return new Response(null, { status: 204 })
+    })
+    const Source = stubEventSource()
+    const { result } = renderHook(() => useMatch('abc'))
+    await waitFor(() => expect(Source.last).not.toBeNull())
+    vi.useFakeTimers()
+    try {
+      const sent = result.current.send({ index: 0, timing: 1, type: 'move' })
+      await vi.advanceTimersByTimeAsync(400)
+      expect(calls).toBe(1)
+      await vi.advanceTimersByTimeAsync(200)
+      await sent
+      expect(calls).toBe(2)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

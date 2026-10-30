@@ -118,7 +118,32 @@ function Lobby({
   inviteSlot: HTMLElement | null
   matchId: string
 }) {
-  const { retry, send, status, view } = useMatch(matchId)
+  const match = useMatch(matchId)
+  return (
+    <>
+      {match.reconnecting && (
+        // Over whatever the match shows: the view stays, it's just stale for now.
+        <p
+          className="fixed inset-x-0 top-3 z-50 mx-auto w-fit rounded-tag frame-tag bg-box px-3 py-1 text-body font-bold"
+          role="status"
+        >
+          Reconnecting…
+        </p>
+      )}
+      <LobbyView inviteSlot={inviteSlot} match={match} matchId={matchId} />
+    </>
+  )
+}
+
+function LobbyView({
+  inviteSlot,
+  match: { retry, send, status, view },
+  matchId
+}: {
+  inviteSlot: HTMLElement | null
+  match: ReturnType<typeof useMatch>
+  matchId: string
+}) {
   // The friend match's own team: seeded from the saved one, never written
   // back to it.
   // Until you change it, it is the saved team (which loads from the API a moment

@@ -256,6 +256,22 @@ describe('VersusScreen', () => {
     })
   })
 
+  it('says it is reconnecting over the match while the stream drops', async () => {
+    stubFetch(matchApi)
+    renderWithClient(<VersusScreen matchId={ID} />)
+    await waitFor(() => expect(FakeEventSource.last).not.toBeNull())
+    emit(view())
+    expect(screen.queryByText('Reconnecting…')).toBeNull()
+    act(() => FakeEventSource.last?.fail(FakeEventSource.CONNECTING))
+    expect(screen.getByText('Reconnecting…')).toHaveAttribute('role', 'status')
+    // The match stays on screen underneath.
+    expect(
+      screen.getByLabelText("Your friend's team is a secret")
+    ).toBeInTheDocument()
+    emit(view())
+    expect(screen.queryByText('Reconnecting…')).toBeNull()
+  })
+
   it('hands a started battle to the arena', async () => {
     stubFetch(matchApi)
     renderWithClient(<VersusScreen matchId={ID} />)

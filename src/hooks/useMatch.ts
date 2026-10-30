@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import { currentSession, type Session } from '@/lib/auth'
+import { currentSession, logout, type Session } from '@/lib/auth'
 import {
   joinMatch,
   type MatchAction,
@@ -39,6 +39,8 @@ export function useMatch(matchId: string) {
     status: MatchStatus
     view: MatchView | null
   }>({ status: 'connecting', view: null })
+  // The stream dropped and the browser is reconnecting: the view stays up.
+  const [reconnecting, setReconnecting] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const token = useAuth()?.token ?? null
 
@@ -57,6 +59,7 @@ export function useMatch(matchId: string) {
           console.warn('Ignored a malformed match view')
           return
         }
+        setReconnecting(false)
         setState({ status: 'live', view })
       })
       // Terminal. Closing stops the browser's auto-reconnect. A finished
@@ -69,10 +72,12 @@ export function useMatch(matchId: string) {
             : { ...previous, status: 'gone' }
         )
       })
-      // The token expired (it lasts an hour): sign in again to carry on.
+      // The token expired (it lasts an hour): sign out, so the app asks for a
+      // login and brings you back here.
       source.addEventListener('unauthorized', () => {
         source?.close()
         setState(previous => ({ ...previous, status: 'signin' }))
+        logout()
       })
       // A newer stream took the seat (another tab, usually).
       source.addEventListener('replaced', () => {
@@ -83,7 +88,11 @@ export function useMatch(matchId: string) {
       // is how a Cloud Run request timeout is survived. Once it gives up
       // (an error status on reconnect), `retry` opens a new stream.
       source.addEventListener('error', () => {
-        if (source?.readyState !== EventSource.CLOSED) return
+        if (source?.readyState !== EventSource.CLOSED) {
+          setReconnecting(true)
+          return
+        }
+        setReconnecting(false)
         setState(previous => ({ ...previous, status: 'error' }))
       })
     }
@@ -111,6 +120,7 @@ export function useMatch(matchId: string) {
     }
 
     setState({ status: 'connecting', view: null })
+    setReconnecting(false)
     void start()
     return () => {
       ignore = true
@@ -123,7 +133,7 @@ export function useMatch(matchId: string) {
     (action: MatchAction) => sendAction(matchId, action),
     [matchId]
   )
-  return { retry, send, status: state.status, view: state.view }
+  return { reconnecting, retry, send, status: state.status, view: state.view }
 }
 
 function joinOnce(matchId: string) {
