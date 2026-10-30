@@ -113,20 +113,20 @@ jobs:
         run: curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$URL/api/health"
       - name: SPA shell is served
         run: curl -fsS "$URL/" | grep -q '<div id="root">'
-      - name: API returns paginated data
-        run: |
-          body=$(curl -fsS "$URL/api/pokemon?page=1&limit=5")
-          echo "$body" | jq -e '(.data | length) == 5 and .pagination.total > 0' >/dev/null
-      - name: Search filters results
-        run: |
-          curl -fsS "$URL/api/pokemon?search=fire&limit=50" \
-            | jq -e '.data | length > 0 and all(.[]; (.types | index("Fire")) or (.name + .description | test("fire"; "i")))' >/dev/null
-      # Last, so an API failure never hides the Express checks above.
+      - name: Deep links serve the app
+        run: curl -fsS "$URL/team" | grep -q '<div id="root">'
+      - name: Unknown API paths are a JSON 404 on the frontend
+        run: test "$(curl -sS -o /dev/null -w '%{http_code}' "$URL/api/nope")" = 404
+      # After the frontend's checks, so an API failure never hides them.
       - name: API health check (FastAPI, reaches the database)
         run: |
           curl -fsS --retry 5 --retry-all-errors --retry-delay 3 "$API_URL/api/health" \
             | jq -e '.status == "ok"' >/dev/null
-      - name: API search matches the Express behavior
+      - name: API returns paginated data
+        run: |
+          body=$(curl -fsS "$API_URL/api/pokemon?page=1&limit=5")
+          echo "$body" | jq -e '(.data | length) == 5 and .pagination.total > 0' >/dev/null
+      - name: API search filters results
         run: |
           curl -fsS "$API_URL/api/pokemon?search=fire&limit=50" \
             | jq -e '.data | length > 0 and all(.[]; (.types | index("Fire")) or (.name + .description | test("fire"; "i")))' >/dev/null
