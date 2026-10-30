@@ -8,16 +8,18 @@ edit a rule here. That's its memory.
 
 ## Context
 
-- Public repo; React SPA + Express 5 JSON API on Cloud Run, publicly reachable. Data is static fake records: there's
-  no auth, database or user data, so don't report missing auth on the read-only API. Do report input handling that
-  can crash the process, consume unbounded memory/CPU, or reflect input unsafely.
+- Public repo. A static React SPA (Caddy on Cloud Run) and a FastAPI JSON API (`api/`, its own Cloud Run service) on
+  Cloud SQL Postgres, both publicly reachable. The API has user accounts (argon2id passwords, 1-hour JWTs), per-user
+  teams, creatures and battles, so report missing or bypassable auth, one user reaching another's data, and SQL built
+  from strings. Also report input handling that can crash the process, consume unbounded memory/CPU, or reflect input
+  unsafely.
 
 ## Everywhere
 
 - **Public repo:** no interview correspondence, product take-home material, credentials, tokens, or absolute personal
   paths (`/Users/...`). Severity: critical.
 - **Decisions are logged:** a PR that picks between real alternatives (library, architecture, infra shape) should add
-  an entry to `docs/decisions.md`. Severity: low.
+  an entry to `docs/backend/decisions.md`. Severity: low.
 
 ## `src/**`
 
@@ -30,12 +32,22 @@ edit a rule here. That's its memory.
 - No `dangerouslySetInnerHTML` with API data. Severity: critical.
 - Height and weight are formatted, never rendered as raw floats. Severity: low.
 
-## `server/**`
+## `api/**`
 
-- Query params are validated and bounded (`page >= 1`, `1 <= limit <= 100`, `search` length capped); invalid input
-  returns 400, not nonsense. Severity: medium.
-- API routes live in `app.ts` (dev and prod); prod-only concerns in `index.ts`. Severity: low.
+- Every route that reads or changes a user's data depends on `current_user`, and its SQL filters by that user's id
+  (catalog queries keep `owner_id IS NULL`). Severity: critical.
+- SQL uses bound parameters (`%s`), never values formatted into the string. Severity: critical.
+- Query params and bodies are validated and bounded (`page >= 1`, `1 <= limit <= 100`, `search` length capped); invalid
+  input returns 400 `{"error": ...}`, not nonsense or a 500. Severity: medium.
+- Schema changes are a new numbered file in `app/db/migrations/`; applied migrations are never edited. Severity: high.
+- No lock or open transaction is held across a slow outside call (Vertex AI, the bucket). Severity: high.
 - No route path ends in `z` (Cloud Run reserves them). Severity: high.
+
+## `Caddyfile`
+
+- App routes fall back to `index.html`; `/api/*` is a JSON 404 (except `/api/health`), and a missing `/assets/*` file
+  is a 404, never `index.html`. Severity: high.
+- Only found `/assets/*` files are cached long (`immutable`); `index.html` is `no-cache`. Severity: high.
 
 ## `src/data/pokemon.json`
 

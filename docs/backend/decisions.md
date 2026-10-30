@@ -621,8 +621,8 @@ Template:
 
 - **What:** the frontend's image is the Vite build served by Caddy (`Caddyfile`, `caddy:2.10.2-alpine`) on the same
   Cloud Run service Express used. Caddy falls back to `index.html` for app routes, answers `/api/health` for the probe,
-  returns a JSON 404 for any other `/api` path and for missing `/assets/*` files, caches hashed assets for a year and
-  `index.html` not at all. Express and `server/` are deleted; in dev, Vite proxies every `/api` request to FastAPI.
+  returns a JSON 404 for any other `/api` path and a plain 404 for a missing `/assets/*` file, caches found hashed
+  assets for a year and `index.html` not at all. Express and `server/` are deleted; in dev, Vite proxies every `/api` request to FastAPI.
 - **Why:** it changes only the container. The URL, the pipeline, PR previews and the API's CORS rule all stay as they
   are, and there is one small config file to explain. Nothing the frontend serves needs Node any more.
 - **Rejected:** Firebase Hosting, because it adds a tool and a deploy step to CI, and a new URL means a CORS change;
