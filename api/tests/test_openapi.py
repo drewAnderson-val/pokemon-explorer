@@ -13,6 +13,7 @@ PUBLIC = {
     # /api/pokemon/{id} takes a token if you have one (your own creatures), so the
     # docs show it with the lock; without one it still answers for the catalog.
     ("post", "/api/auth/signup"),
+    ("post", "/api/auth/guest"),
     ("post", "/api/auth/login"),
     # EventSource can't send headers: the stream checks a ?token= itself.
     ("get", "/api/matches/{match_id}/events"),

@@ -66,6 +66,8 @@ Deploys go through GitHub Actions and Pulumi ([`docs/deployment.md`](docs/deploy
 **Keeping tenants apart:**
 
 - The user id comes from a verified JWT, never from the request body, and every query filters by it.
+- **Play as guest** makes a throwaway account (random name, no password) so anyone can try everything; guests and
+  their data are deleted after a day, and at most 300 are made an hour.
 - Someone else's creature is a 404, not a 403.
 - In a match each player gets their own view: the opponent's move shows only as "acted" until the turn resolves.
 - A locked-in creature is read `FOR SHARE`, so its owner can't delete it mid-match.

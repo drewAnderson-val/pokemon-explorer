@@ -662,3 +662,18 @@ Template:
 - **Trade-off:** the framing is a centre square, not the old per-view crop, so some cards are framed a little
   differently. Objects are cached as immutable and the script skips existing names, so a redo means a new prefix and
   a new migration, not an overwrite. A new catalog image means running the script again.
+
+## 2026-10-30: Play as guest
+
+- **What:** `POST /api/auth/guest` makes a throwaway account (`guest_` plus 8 random characters, a random password
+  nobody is told, `is_guest` set) and returns the usual 1-hour token. The sign-in screen has a "Play as guest" button.
+  Every instance's sweep deletes guests a day after they're made; their teams, battles, matches and creatures go with
+  them through the existing cascades. At most 300 guests are made an hour, and signup refuses names starting with
+  `guest_`.
+- **Why:** reviewers and friends should be able to try everything (battles, friend matches, the Lab) without making
+  an account. A guest is an ordinary user row, so no route, limit or ownership check changes.
+- **Rejected:** letting the Explorer work signed out (the rest still needs an account, so it doesn't let anyone try
+  battles); a separate guest mode in the browser (a second code path for every feature).
+- **Trade-off:** a guest can't come back after its token expires (no password), and its data is gone a day later.
+  Guests count against the Lab's daily total like anyone else; making many guests to get more drawings is capped by
+  that total.
