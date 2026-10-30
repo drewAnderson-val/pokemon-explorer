@@ -7,11 +7,17 @@ from typing import Any
 
 import anyio
 import psycopg
+import pytest
 from fastapi.testclient import TestClient
+from psycopg_pool import AsyncConnectionPool
 
+from app import main
+from app.config import Settings
 from app.lab.images import GeneratedImage, ImageBlocked, ImageBusy
+from app.routes import creatures
 from app.routes.creatures import Lab
 from tests.accounts import sign_up
+from tests.conftest import TEST_JWT_SECRET
 
 PNG = b"\x89PNG fake"
 BODY = {"name": "Embercub", "types": ["Fire"], "description": "a tiny dragon"}
@@ -304,3 +310,74 @@ def test_a_creature_locked_into_a_running_match_cant_be_deleted(
         match_id,
     )
     assert client.delete(f"/api/creatures/{made['id']}", headers=host).status_code == 204
+
+
+# --- the drawing holds nothing and gives up ---
+
+
+def test_a_hung_drawing_is_503_within_the_timeout(client: TestClient) -> None:
+    generator, store = FakeGenerator(), FakeStore()
+    generator.release = threading.Event()  # never set: the drawing hangs
+    client.app.state.lab = Lab(generator=generator, store=store, timeout=0.2)  # type: ignore[attr-defined]
+    started = time.monotonic()
+    response = create(client, sign_up(client))
+    assert (response.status_code, response.json()) == (
+        503,
+        {"error": "The lab is busy right now. Try again in a minute."},
+    )
+    assert time.monotonic() - started < 2
+    assert store.saved == []
+
+
+def test_the_drawing_holds_no_database_connection(
+    test_database_url: str, reset_db: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # One connection in the pool: if the drawing kept it, nothing else could run.
+    monkeypatch.setattr(
+        main,
+        "open_pool",
+        lambda url: AsyncConnectionPool(
+            url, min_size=1, max_size=1, kwargs={"autocommit": True}, open=False, timeout=2
+        ),
+    )
+    app = main.create_app(Settings(test_database_url, TEST_JWT_SECRET))
+    with TestClient(app) as one_conn:
+        generator, _ = lab(one_conn)
+        generator.release = threading.Event()
+        h = sign_up(one_conn, "maker")
+        with ThreadPoolExecutor(2) as pool:
+            making = pool.submit(create, one_conn, h)
+            try:
+                while not generator.prompts:
+                    time.sleep(0.01)
+                browsing = pool.submit(one_conn.get, "/api/pokemon?limit=1")
+                assert browsing.result(timeout=5).status_code == 200
+            finally:
+                generator.release.set()
+            assert making.result().status_code == 201
+
+
+def test_a_declared_body_over_4kb_is_413_before_reading(client: TestClient) -> None:
+    lab(client)
+    h = sign_up(client)
+    response = client.post(
+        "/api/creatures",
+        content=b'{"name": "A", "types": ["Fire"]}',
+        headers={**h, "content-type": "application/json", "content-length": "1000000"},
+    )
+    assert response.status_code == 413
+
+
+def test_a_failed_save_deletes_the_uploaded_image(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, store = lab(client)
+    real_roll = creatures.roll_creature  # type: ignore[attr-defined]
+    # hp NULL breaks the insert's NOT NULL constraint after the upload.
+    monkeypatch.setattr(creatures, "roll_creature", lambda *a: {**real_roll(*a), "hp": None})
+    response = create(client, sign_up(client))
+    assert (response.status_code, response.json()) == (
+        502,
+        {"error": "The drawing machine jammed. Try again."},
+    )
+    assert store.deleted == ["https://img.test/creatures/1.png"]
