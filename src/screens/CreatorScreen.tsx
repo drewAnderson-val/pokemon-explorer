@@ -7,7 +7,7 @@ import { HomeLink } from '@/components/HomeLink'
 import { TypeFilterChip } from '@/components/TypeFilterChip'
 import { Button } from '@/components/ui/button'
 import { useCreations } from '@/hooks/useCreations'
-import { useTeam } from '@/hooks/useTeam'
+import { useTeam, useTeamStatus } from '@/hooks/useTeam'
 import {
   MAX_CREATURE_TYPES,
   MAX_DESCRIPTION_LENGTH,
@@ -15,6 +15,7 @@ import {
 } from '@/lib/creature'
 import { createCreature } from '@/lib/creatures-api'
 import { type Pokemon, POKEMON_TYPES, type PokemonType } from '@/lib/pokemon'
+import { retryTeamLoad } from '@/lib/team/serverTeam'
 import { addMember, isTeamFull, makeUid, newMember } from '@/lib/team/team'
 
 const field =
@@ -44,8 +45,13 @@ export function CreatorScreen() {
     )
   }
   const [team, setTeam] = useTeam()
-  const addToTeam = (creature: Pokemon) =>
+  // A change before the team loads would be lost; a refused one is said here.
+  const { error: teamError, loaded: teamLoaded } = useTeamStatus()
+  const addToTeam = (creature: Pokemon) => {
+    // The newest problem is the one to show.
+    setDeleteError(null)
     setTeam(current => addMember(current, newMember(creature, makeUid())))
+  }
 
   const toggleType = (type: PokemonType) =>
     setTypes(previous =>
@@ -159,10 +165,20 @@ export function CreatorScreen() {
               </p>
             </DialogBox>
           )}
-          {deleteError && (
+          {(deleteError ?? teamError) && (
             <p className="text-body-lg font-bold text-danger" role="alert">
-              {deleteError}
+              {deleteError ?? teamError}
             </p>
+          )}
+          {/* The team never loaded: + Team can't work until it does. */}
+          {teamError && !teamLoaded && (
+            <Button
+              className="self-start"
+              onClick={() => void retryTeamLoad()}
+              variant="secondary"
+            >
+              Try again
+            </Button>
           )}
           {(creations.length > 0 || create.isPending) && (
             <CardDeck
@@ -174,6 +190,7 @@ export function CreatorScreen() {
               onDelete={deleteCard}
               teamFull={isTeamFull(team)}
               teamIds={new Set(team.map(member => member.creatureId))}
+              teamLoading={!teamLoaded}
             />
           )}
         </section>

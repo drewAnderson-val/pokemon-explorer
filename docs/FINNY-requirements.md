@@ -1,5 +1,8 @@
 # FINNY requirements — Pokemon Explorer
 
+> **Superseded for the backend.** This describes the original take-home, whose API was Express in `server/`. The
+> API is now FastAPI on Postgres in `api/` (see the README), and `server/` is gone. The UI requirements still apply.
+
 The frontend take-home for the FINNY Senior Product Engineer second round. Source of truth for
 what to build; `README.md` in this folder is the original brief from FINNY.
 

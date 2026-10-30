@@ -201,3 +201,15 @@ def test_a_big_body_is_refused(client: TestClient) -> None:
         headers={**host, "content-type": "application/json"},
     )
     assert response.status_code == 413
+
+
+def test_a_retried_team_lock_in_with_its_key_is_answered_as_before(client: TestClient) -> None:
+    # The browser resends a lock-in whose response was lost, with the same key.
+    host, guest = sign_up(client, "host"), sign_up(client, "guest")
+    match_id = client.post("/api/matches", headers=host).json()["matchId"]
+    client.post(f"/api/matches/{match_id}/join", headers=guest)
+    team = {"type": "team", "creatureIds": [1, 2]}
+    assert act(client, host, match_id, team, key="lock").status_code == 204
+    assert act(client, host, match_id, team, key="lock").status_code == 204
+    # Without the key the same resend is refused: the team is already locked in.
+    assert act(client, host, match_id, team).status_code != 204

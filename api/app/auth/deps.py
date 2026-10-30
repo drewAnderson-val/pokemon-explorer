@@ -59,3 +59,17 @@ async def optional_user(
 
 
 OptionalUser = Annotated[User | None, Depends(optional_user)]
+
+
+async def current_user_released(
+    request: Request,
+    _documented: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)] = None,
+) -> User:
+    """current_user for a route that waits on something slow (the lab's drawing):
+    it borrows a connection only for the check and gives it back, where
+    current_user's stays checked out until the response is sent."""
+    async with request.app.state.pool.connection() as conn:
+        return await current_user(request, conn)
+
+
+ReleasedUser = Annotated[User, Depends(current_user_released)]

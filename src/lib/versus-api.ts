@@ -75,33 +75,30 @@ export async function joinMatch(
   return (await response.json()) as { seat: Seat }
 }
 
-// Moves, switches and send-outs carry an idempotency key. If the network drops
-// the request, it's sent once more with the same key: when the first one did
-// reach the server, the server answers the retry without playing it twice.
+// Every action carries an idempotency key. If the network drops the request,
+// it's sent once more with the same key after a short pause: when the first one
+// did reach the server, the server answers the retry without playing it twice.
+const RETRY_DELAY_MS = 500
+
 export async function sendAction(
   matchId: string,
   action: MatchAction
 ): Promise<void> {
-  const key =
-    action.type === 'move' ||
-    action.type === 'switch' ||
-    action.type === 'sendOut'
-      ? crypto.randomUUID()
-      : null
+  const key = crypto.randomUUID()
   const send = () =>
     authFetch(`/api/matches/${matchId}/actions`, {
       body: JSON.stringify({ action }),
       headers: {
         'content-type': 'application/json',
-        ...(key ? { 'Idempotency-Key': key } : {})
+        'Idempotency-Key': key
       },
       method: 'POST'
     })
   let response: Response
   try {
     response = await send()
-  } catch (error) {
-    if (!key) throw error
+  } catch {
+    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS))
     response = await send()
   }
   if (!response.ok) {

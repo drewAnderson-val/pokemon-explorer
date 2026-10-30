@@ -91,7 +91,7 @@ To step through API requests, use VS Code's **API: FastAPI (debug)** launch conf
 
 ```bash
 pnpm install && pnpm lint && pnpm test && pnpm build   # lint, tests, typecheck, client bundle
-docker build -t web . && docker run --rm -p 8080:8080 web   # the frontend image, as Cloud Run runs it
+docker build --build-arg VITE_API_URL=http://localhost:8000 -t web . && docker run --rm -p 8080:8080 web
 curl -fsS localhost:8080/api/health && curl -fsS localhost:8080/team | grep -q 'id="root"'
 cd infra && pnpm install && pnpm types                 # Pulumi typecheck
 docker compose up -d --wait db                        # Postgres for the API
