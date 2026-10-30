@@ -19,7 +19,11 @@ _WHY = {
     401: "No token, or an expired or invalid one: sign in again",
     404: "Not found",
     409: "Valid, but not now: the message says why",
-    503: "The database is unavailable",
+    413: "The request body is too big",
+    422: "The image model refused to draw it: try a different idea",
+    429: "Too many requests: the message says when to come back",
+    502: "The image model or the image bucket failed: try again",
+    503: "Unavailable: the database, or the creature lab (not configured, or busy)",
 }
 
 
@@ -138,6 +142,30 @@ WILD_ACTION_BODY: dict[str, Any] = {
                     "value": {"turn": 0, "action": {"type": "sendOut", "to": 1}},
                 },
             },
+        }
+    },
+}
+
+
+CREATURE_BODY: dict[str, Any] = {
+    "required": True,
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "required": ["name", "types"],
+                "properties": {
+                    "name": {"type": "string", "maxLength": 30},
+                    "types": {
+                        "type": "array",
+                        "items": {"type": "string", "enum": list(POKEMON_TYPES)},
+                        "minItems": 1,
+                        "maxItems": 2,
+                    },
+                    "description": {"type": "string", "maxLength": 200},
+                },
+            },
+            "example": {"name": "Embercub", "types": ["Fire"], "description": "a tiny dragon"},
         }
     },
 }

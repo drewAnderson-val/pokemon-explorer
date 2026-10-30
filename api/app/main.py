@@ -14,9 +14,12 @@ from psycopg_pool import AsyncConnectionPool
 from app.config import Settings
 from app.db.migrate import migrate
 from app.db.pool import open_pool
+from app.lab.images import vertex_generator
+from app.lab.storage import bucket_store
 from app.matches.live import LiveMatches
 from app.matches.sweep import sweep
-from app.routes import auth, health, matches, pokemon, team, wild
+from app.routes import auth, creatures, health, matches, pokemon, team, wild
+from app.routes.creatures import Lab
 
 
 def create_app(settings: Settings) -> FastAPI:
@@ -57,6 +60,16 @@ def create_app(settings: Settings) -> FastAPI:
     # Every random roll in battles. Tests replace it with scripted numbers.
     app.state.rng = random.random
     app.state.live = LiveMatches()
+    # The Creature Lab needs Vertex AI and the image bucket; without both it
+    # answers 503 (local dev and tests, which put in fakes).
+    app.state.lab = (
+        Lab(
+            generator=vertex_generator(settings.google_cloud_project, settings.image_model),
+            store=bucket_store(settings.creature_bucket),
+        )
+        if settings.google_cloud_project and settings.creature_bucket
+        else None
+    )
     if settings.cors_origin_regex:
         # The frontend is served from another origin, so browsers only let it read
         # API responses that name its origin in Access-Control-Allow-Origin.
@@ -72,6 +85,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.include_router(team.router)
     app.include_router(wild.router)
     app.include_router(matches.router)
+    app.include_router(creatures.router)
 
     # Errors routes raise (like current_user's 401) come out as {"error": ...}. Routing
     # errors (unknown path, wrong method) are raised by Starlette and keep {"detail"}.
