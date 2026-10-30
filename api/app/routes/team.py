@@ -11,7 +11,7 @@ from app.db.pool import get_conn
 from app.docs import errors
 from app.engine.stats import START_LEVEL, xp_for_level
 from app.engine.wild import MAX_TEAM
-from app.pokemon.queries import find_many
+from app.pokemon.queries import find_many, find_usable
 from app.teams.store import TeamMember, load_team, lock_user, save_members
 
 router = APIRouter()
@@ -73,7 +73,8 @@ async def put_team(
         return error(f"A team is 0 to {MAX_TEAM} creatures")
     if len(set(ids)) != len(ids):
         return error("Each creature can only be on the team once")
-    known = await find_many(conn, ids)
+    # Someone else's creature is treated as unknown.
+    known = await find_usable(conn, ids, user.id)
     missing = next((i for i in ids if i not in known), None)
     if missing is not None:
         return error(f"No creature #{missing}")

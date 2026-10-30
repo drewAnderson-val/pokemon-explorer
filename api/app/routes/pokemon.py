@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from psycopg import AsyncConnection
 
+from app.auth.deps import OptionalUser
 from app.db.pool import get_conn
 from app.docs import POKEMON_QUERY_PARAMETERS, errors
 from app.pokemon.params import parse_pokemon_query
@@ -35,8 +36,8 @@ async def list_pokemon(request: Request, conn: Conn) -> JSONResponse:
     summary="One creature by id",
     responses=errors(400, 404),
 )
-async def get_pokemon(pokemon_id: int, conn: Conn) -> JSONResponse:
-    found = await find_by_id(conn, pokemon_id)
+async def get_pokemon(pokemon_id: int, conn: Conn, user: OptionalUser) -> JSONResponse:
+    found = await find_by_id(conn, pokemon_id, user.id if user else None)
     if found is None:
         return JSONResponse({"error": f"No creature #{pokemon_id}"}, status_code=404)
     return JSONResponse(found)

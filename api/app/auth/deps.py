@@ -44,3 +44,18 @@ async def current_user(
 
 
 CurrentUser = Annotated[User, Depends(current_user)]
+
+
+async def optional_user(
+    request: Request,
+    conn: Annotated[AsyncConnection, Depends(get_conn)],
+    _documented: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)] = None,
+) -> User | None:
+    """No token: nobody. A token: the same check as current_user, so a bad or
+    expired one is still a 401 (the browser then signs out)."""
+    if "Authorization" not in request.headers:
+        return None
+    return await current_user(request, conn)
+
+
+OptionalUser = Annotated[User | None, Depends(optional_user)]
