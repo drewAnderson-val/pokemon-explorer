@@ -7,14 +7,9 @@ COPY . .
 # The FastAPI service's origin, baked into the client bundle at build time.
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
-RUN pnpm build && pnpm prune --prod
+RUN pnpm build
 
-FROM node:24-slim
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=build /app/package.json ./
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/dist-server ./dist-server
-USER node
-CMD ["node", "dist-server/index.js"]
+# Static files only: Caddy serves the build (routing rules in Caddyfile).
+FROM caddy:2.10.2-alpine
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv
