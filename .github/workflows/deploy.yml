@@ -151,6 +151,11 @@ jobs:
               -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' \
               | grep -qi "^access-control-allow-origin: $origin" || { echo "CORS refused $origin"; exit 1; }
           done
+      # No smoke test makes a creature: each one costs money and writes to prod.
+      - name: API creatures need a token
+        run: |
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$API_URL/api/creatures")" = 401
+          test "$(curl -sS -o /dev/null -w '%{http_code}' "$API_URL/api/creatures")" = 401
       - name: API friend matches need a token
         run: test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$API_URL/api/matches")" = 401
       - name: API team and battles need a token

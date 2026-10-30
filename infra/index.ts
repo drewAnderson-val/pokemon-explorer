@@ -182,6 +182,10 @@ function deployApi() {
         {
           envs: [
             { name: 'CORS_ORIGIN_REGEX', value: frontendOrigins },
+            // The Creature Lab: Vertex AI in this project, images in the bucket the
+            // bootstrap stack creates (named after the project, so no lookup).
+            { name: 'GOOGLE_CLOUD_PROJECT', value: project },
+            { name: 'CREATURE_BUCKET', value: `${project}-creature-images` },
             secretEnv('DATABASE_URL', 'api-database-url'),
             secretEnv('JWT_SECRET', 'api-jwt-secret')
           ],
