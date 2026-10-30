@@ -67,7 +67,8 @@ const frontendOrigins = `^https://${appName}(-pr-\\d+)?-(${CLOUD_RUN_HASH}-uc\\.
 
 // The FastAPI service (api/), prod only: PR previews would share the prod
 // database, so a PR's migrations would change prod. Previews build their
-// frontend against the prod API (read-only routes so far). Its Cloud SQL
+// frontend against the prod API, so signing up or playing in a preview writes to
+// the prod database (docs/backend/decisions.md). Its Cloud SQL
 // instance, runtime account and secrets come from the bootstrap stack.
 const apiService = isProd ? deployApi() : undefined
 const apiUri: pulumi.Output<string> = apiService

@@ -629,3 +629,15 @@ Template:
   a Cloud Storage bucket behind Cloud CDN, because the load balancer costs about $18 a month and has the most parts.
 - **Trade-off:** no CDN in front, so every visitor reaches the one region (us-central1). For a global audience,
   Firebase Hosting or Cloud CDN would be the next step.
+
+## 2026-10-30: PR previews share the prod API and database
+
+- **What:** each PR's preview deploys only its own frontend, built against the prod API (`pokemon-api`). Signing up,
+  editing a team, battling or making a creature in a preview writes to the prod database and bucket.
+- **Why:** a database per preview means a Cloud SQL instance (or a schema and migration run) per PR: minutes to
+  create and a monthly cost each, for a project with one developer. The API's own changes are tested in CI against a
+  real Postgres before they reach prod.
+- **Rejected:** a Cloud SQL instance per preview (slow, costly); one shared staging database (needs its own API
+  service and keeps drifting from prod); previews with no API (nothing past the catalog would work).
+- **Trade-off:** test accounts, matches and creatures made in previews land in prod, and a preview can't try an API
+  change. If more people worked on this, a staging API and database would be the next step.

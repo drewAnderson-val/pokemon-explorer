@@ -13,7 +13,8 @@
 		respond `{"status":"ok"}` 200
 	}
 	# The API lives on its own service; an /api path here is a mistake, so a JSON 404, not the app.
-	handle /api/* {
+	@api path /api /api/*
+	handle @api {
 		header Content-Type application/json
 		respond `{"error":"Not found"}` 404
 	}

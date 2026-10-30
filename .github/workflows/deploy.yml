@@ -121,7 +121,9 @@ jobs:
           echo "$headers" | grep -q '^HTTP/[0-9.]* 404'
           ! echo "$headers" | grep -qi immutable
       - name: Unknown API paths are a JSON 404 on the frontend
-        run: test "$(curl -sS -o /dev/null -w '%{http_code}' "$URL/api/nope")" = 404
+        run: |
+          test "$(curl -sS -o /dev/null -w '%{http_code}' "$URL/api/nope")" = 404
+          curl -sS "$URL/api/nope" | jq -e '.error == "Not found"' >/dev/null
       # After the frontend's checks, so an API failure never hides them.
       - name: API health check (FastAPI, reaches the database)
         run: |
