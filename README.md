@@ -1,6 +1,6 @@
 # Pokemon Explorer: the backend
 
-A FastAPI service on Postgres behind a Pokémon-style game: accounts, a 1,000-creature catalog, teams, wild battles,
+A Full FastAPI service on Postgres behind a Pokémon-style game: accounts, a 1,000-creature catalog, teams, wild battles,
 friend battles between two players, and AI-drawn creatures. It replaces the mocked Express API of FINNY's frontend
 take-home. The app itself: [`docs/frontend.md`](docs/frontend.md).
 
