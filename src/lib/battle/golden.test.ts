@@ -2,8 +2,9 @@
 // Records scripted battles: real creatures, exact random numbers, and every event
 // and state that comes out. The Python engine (api/app/engine/) replays the same
 // file and must produce identical output, random draw for random draw.
-// Regenerate with: UPDATE_GOLDEN=1 pnpm vitest run src/lib/battle/golden.test.ts
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+// The file is fixed now: the Python engine is the source of truth, and this keeps
+// the TypeScript engine (the UI tests' fake server plays battles with it) in step.
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { expect, it } from 'vitest'
 
@@ -392,9 +393,5 @@ function wildState(setup: { enemy: Member; party: Member[] }): BattleState {
 
 it('matches the golden file', () => {
   const computed = JSON.parse(JSON.stringify(SCENARIOS.map(record)))
-  if (process.env.UPDATE_GOLDEN) {
-    writeFileSync(GOLDEN, `${JSON.stringify(computed, null, 2)}\n`)
-  }
-  expect(existsSync(GOLDEN)).toBe(true)
   expect(computed).toEqual(JSON.parse(readFileSync(GOLDEN, 'utf8')))
 })

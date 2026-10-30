@@ -5,8 +5,7 @@ export const MAX_NAME_LENGTH = 30
 export const MAX_DESCRIPTION_LENGTH = 200
 export const MAX_CREATURE_TYPES = 2
 
-// The Express lab's answer (server/, deleted in slice 8): a full Pokemon minus
-// the id, with a data: URL image. The FastAPI lab returns the stored creature.
+// A creature before it has an id (the test fake lab rolls these).
 export type CreatedCreature = Omit<Pokemon, 'id'>
 
 export type CreatureRequest = {
@@ -14,5 +13,3 @@ export type CreatureRequest = {
   name: string
   types: PokemonType[]
 }
-
-export type CreatureResponse = { creature: CreatedCreature }

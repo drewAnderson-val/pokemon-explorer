@@ -8,6 +8,7 @@ import {
   clampTiming,
   createBattle,
   createFighter,
+  type Fighter,
   MAX_TEAM,
   type PlayerAction,
   resolveTurn,
@@ -17,7 +18,7 @@ import {
 } from '@/lib/battle/engine'
 import { START_LEVEL, xpForLevel } from '@/lib/battle/stats'
 import { type Pokemon } from '@/lib/pokemon'
-import { saveBattle, type TeamMember } from '@/lib/team/team'
+import { addMember, type TeamMember } from '@/lib/team/team'
 
 import { parseCreatureRequest, rollCreature } from './fake-lab'
 
@@ -130,6 +131,16 @@ function deleteCreature(id: number) {
   return new Response(null, { status: 204 })
 }
 
+function fromFighter(fighter: Fighter): TeamMember {
+  return {
+    creatureId: fighter.creature.id,
+    hp: fighter.hp >= fighter.maxHp ? null : fighter.hp,
+    level: fighter.level,
+    uid: fighter.uid,
+    xp: fighter.xp
+  }
+}
+
 function makeCreature(body: unknown) {
   const parsed = parseCreatureRequest(body)
   if (!parsed.ok) return error(parsed.error, 400)
@@ -173,6 +184,19 @@ function putTeam(body: unknown) {
         }
   })
   return json(teamBody())
+}
+
+// Writes a battle's HP, XP and levels back by uid, and adds a caught creature
+// once, as the API does after each wild turn.
+function saveBattle(team: TeamMember[], state: BattleState) {
+  const fighters = new Map(state.party.map(fighter => [fighter.uid, fighter]))
+  const saved = team.map(member => {
+    const fighter = fighters.get(member.uid)
+    return fighter ? fromFighter(fighter) : member
+  })
+  const caught =
+    state.caught && !saved.some(member => member.uid === state.enemy.uid)
+  return caught ? addMember(saved, fromFighter(state.enemy)) : saved
 }
 
 function startBattle() {

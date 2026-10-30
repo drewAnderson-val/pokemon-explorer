@@ -9,8 +9,6 @@ import {
 
 import { useAuth } from './useAuth'
 
-export const updateTeam = changeTeam
-
 // The signed-in user's team (empty when signed out), shared by every screen.
 // The setter takes the same "current team → new team" function as before; it
 // shows the change at once, saves it to the API, and returns whether it applied.
