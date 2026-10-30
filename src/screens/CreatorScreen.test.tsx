@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import type { Pokemon } from '@/lib/pokemon'
 
+import { teamStatus } from '@/lib/team/serverTeam'
 import { apiResponse, stubFetch } from '@/test/fake-api'
 import {
   failLab,
@@ -115,24 +116,31 @@ describe('CreatorScreen', () => {
     )
     await waitFor(() => expect(serverCreations()).toEqual([]))
     expect(serverTeam()).toEqual([])
+    // The team in this browser drops it too (it reloads from the server).
+    await waitFor(() => expect(teamStatus.read().members).toEqual([]))
     expect(screen.queryByRole('article')).not.toBeInTheDocument()
   })
 
   it("keeps a creature the server won't delete, and says why", async () => {
     seedCreations([creature(1001)])
-    stubFetch((url, init) =>
-      init?.method === 'DELETE'
-        ? Response.json(
-            { error: 'That creature is in a friend match' },
-            { status: 409 }
-          )
-        : apiResponse(url, init)
-    )
+    let answer: () => void = () => {}
+    stubFetch(async (url, init) => {
+      if (init?.method !== 'DELETE') return apiResponse(url, init)
+      await new Promise<void>(resolve => (answer = resolve))
+      return Response.json(
+        { error: 'That creature is in a friend match' },
+        { status: 409 }
+      )
+    })
     renderWithClient(<CreatorScreen />)
     const card = await screen.findByRole('article')
     await userEvent.click(
       within(card).getByRole('button', { name: 'Delete Embercub' })
     )
+    // Gone at once, while the server thinks about it…
+    expect(screen.queryByRole('article')).not.toBeInTheDocument()
+    answer()
+    // …then back when it refuses.
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'That creature is in a friend match'
     )

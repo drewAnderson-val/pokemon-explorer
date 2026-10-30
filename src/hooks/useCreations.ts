@@ -41,14 +41,21 @@ export function useCreations() {
   const remove = useCallback(
     async (id: number) => {
       const creationsKey = ['creations', userId]
-      const before = client.getQueryData<Pokemon[]>(creationsKey)
+      const removed = client
+        .getQueryData<Pokemon[]>(creationsKey)
+        ?.find(c => c.id === id)
       client.setQueryData<Pokemon[]>(creationsKey, previous =>
         previous?.filter(c => c.id !== id)
       )
       try {
         await deleteCreature(id)
       } catch (error) {
-        client.setQueryData(creationsKey, before)
+        // Put back only this card: others may have been deleted meanwhile.
+        if (removed) {
+          client.setQueryData<Pokemon[]>(creationsKey, previous =>
+            [...(previous ?? []), removed].sort((a, b) => b.id - a.id)
+          )
+        }
         throw error
       }
       client.removeQueries({ queryKey: creatureQuery(id).queryKey })

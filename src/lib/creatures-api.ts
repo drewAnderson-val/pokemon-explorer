@@ -19,9 +19,12 @@ export async function createCreature(
   return ((await response.json()) as { creature: Pokemon }).creature
 }
 
+// Already gone (404: deleted in another tab, say) counts as deleted.
 export async function deleteCreature(id: number): Promise<void> {
   const response = await authFetch(`/api/creatures/${id}`, { method: 'DELETE' })
-  if (!response.ok) throw new Error(await errorMessage(response))
+  if (!response.ok && response.status !== 404) {
+    throw new Error(await errorMessage(response))
+  }
 }
 
 // A catalog creature, or one of yours (the token says whose): anyone else's is
