@@ -1,11 +1,10 @@
 import { useState } from 'react'
 
-import { cardImageUrl } from '@/lib/format'
 import { typeStyle } from '@/lib/type-colors'
 import { cn } from '@/lib/utils'
 
 type CreatureArtProps = {
-  // Requested image size in device pixels; defaults to the card art panel.
+  // The image's layout size hint (width/height attributes); defaults to the card art panel.
   height?: number
   // Size of the fallback letter, which has no image to scale with.
   letterClassName?: string
@@ -37,7 +36,7 @@ export function CreatureArt({
       height={height}
       loading="lazy"
       onError={() => setFailed(true)}
-      src={cardImageUrl(src, width, height)}
+      src={src}
       width={width}
     />
   ) : (

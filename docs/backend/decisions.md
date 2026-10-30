@@ -629,3 +629,20 @@ Template:
   a Cloud Storage bucket behind Cloud CDN, because the load balancer costs about $18 a month and has the most parts.
 - **Trade-off:** no CDN in front, so every visitor reaches the one region (us-central1). For a global audience,
   Firebase Hosting or Cloud CDN would be the next step.
+
+## 2026-10-30: Catalog images are copied into the bucket
+
+- **What:** `api/scripts/copy_catalog_images.py` (owner-run, re-runnable) downloads each of the 1,000 catalog images,
+  resizes it to a WebP of at most 640 px on its longest side (never enlarged), and uploads it to the creature bucket
+  as `catalog/<id>.webp`, cached for a year. Migration 0007 points the catalog rows there, and `pokemon.json` and the
+  golden test files carry the same URLs. Migration 0002 keeps the original URLs, which the script reads.
+- **Why:** the originals were placeholders on loremflickr.com and picsum.photos: slow, up to about 4000 px for a
+  140 px card, and unreliable. loremflickr answers images with HTTP 500, so the frontend had been rewriting every
+  URL on the fly (`cardImageUrl`: loremflickr to a picsum image seeded by its lock, picsum without its blur, resized
+  per request). Copies in our bucket are small, fast, as available as the app, and need no rewriting, so
+  `cardImageUrl` is gone.
+- **Rejected:** hotlinking the originals (the problem above); resizing on the fly through an image proxy or CDN
+  transform (more moving parts and cost for 1,000 images that never change).
+- **Trade-off:** the copies are what players already saw: a loremflickr original that won't download is replaced by
+  the same lock-seeded picsum image the cards showed, and picsum images lose their blur, as before (the script
+  reports how many stand-ins it used). A new catalog image means running the script again.

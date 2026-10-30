@@ -51,7 +51,8 @@ edit a rule here. That's its memory.
 
 ## `src/data/pokemon.json`
 
-- Must not be regenerated (the generator is unseeded). Any large diff here is a bug. Severity: high.
+- Must not be regenerated (the generator is unseeded). A large diff is a bug unless it rewrites one field
+  deterministically, with a migration and a decision entry (as `imageUrl` did with 0007). Severity: high.
 
 ## `infra/**`
 

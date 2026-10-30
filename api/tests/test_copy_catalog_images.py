@@ -11,6 +11,7 @@ from scripts.copy_catalog_images import (
     catalog_url,
     copy_all,
     resize_to_webp,
+    source_url,
     stand_in_url,
 )
 
@@ -79,10 +80,28 @@ def test_copy_skips_existing_retries_then_reports_failures() -> None:
     assert store.ids == {1, 2}
 
 
-def test_stand_in_is_a_picsum_image_of_the_same_size_seeded_by_id() -> None:
+def test_stand_in_is_the_picsum_image_the_cards_already_show() -> None:
+    # The frontend has shown loremflickr cards as picsum seeded by the lock since
+    # loremflickr started failing (docs/decisions.md): the copy keeps that photo.
     url = "https://loremflickr.com/3266/1298?lock=2718838203017904"
-    assert stand_in_url(1, url) == "https://picsum.photos/seed/pokemon-1/3266/1298"
+    assert stand_in_url(1, url) == "https://picsum.photos/seed/lock-2718838203017904/3266/1298"
+    assert (
+        stand_in_url(9, "https://loremflickr.com/9/9") == "https://picsum.photos/seed/pokemon-9/9/9"
+    )
     assert stand_in_url(4, "https://picsum.photos/seed/Sg0khOc/2174/2575") is None
+
+
+def test_picsum_sources_drop_the_blur_like_the_cards_do() -> None:
+    assert (
+        source_url("https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8")
+        == "https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale"
+    )
+    assert (
+        source_url("https://picsum.photos/seed/x/10/20?blur=3")
+        == "https://picsum.photos/seed/x/10/20"
+    )
+    loremflickr = "https://loremflickr.com/320/240?lock=1"
+    assert source_url(loremflickr) == loremflickr
 
 
 def test_a_dead_original_falls_back_to_its_stand_in() -> None:
@@ -99,5 +118,5 @@ def test_a_dead_original_falls_back_to_its_stand_in() -> None:
     report = copy_all(sources, fetch, store, workers=1, delays=(0, 0))
     assert report.uploaded == [1, 2]
     assert report.stand_ins == [1, 2]
-    assert "https://picsum.photos/seed/pokemon-1/320/240" in fetched
+    assert "https://picsum.photos/seed/lock-1/320/240" in fetched
     assert fetched.count("https://loremflickr.com/320/240?lock=1") == 3

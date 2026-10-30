@@ -14,7 +14,8 @@ const pokemon: Pokemon = {
   height: 3.44,
   hp: 80,
   id: 4,
-  imageUrl: 'https://loremflickr.com/3266/1298?lock=1',
+  imageUrl:
+    'https://storage.googleapis.com/finny-take-home-creature-images/catalog/4.webp',
   isLegendary: true,
   name: 'Geovanni',
   specialAttack: 30,
@@ -136,6 +137,23 @@ describe('CreatureCard', () => {
     expect(screen.getByRole('button', { name: 'Team full' })).toBeDisabled()
   })
 
+  // Images are already card-sized copies in the bucket: the URL is used as is,
+  // even one whose path happens to end in /<number>/<number>.
+  it('uses the image URL as given', () => {
+    const { container } = render(
+      <ul>
+        <CreatureCard
+          expanded={false}
+          onToggle={() => {}}
+          pokemon={{ ...pokemon, imageUrl: 'https://img.test/100/200' }}
+        />
+      </ul>
+    )
+    expect(container.querySelector('img')!.getAttribute('src')).toBe(
+      'https://img.test/100/200'
+    )
+  })
+
   it('swaps a failed image for the letter fallback', () => {
     const { container } = render(
       <ul>
@@ -143,9 +161,7 @@ describe('CreatureCard', () => {
       </ul>
     )
     const img = container.querySelector('img')!
-    expect(img.getAttribute('src')).toBe(
-      'https://picsum.photos/seed/lock-1/640/320'
-    )
+    expect(img.getAttribute('src')).toBe(pokemon.imageUrl)
     fireEvent.error(img)
     expect(container.querySelector('img')).toBeNull()
     expect(screen.getByText('G')).toBeInTheDocument()

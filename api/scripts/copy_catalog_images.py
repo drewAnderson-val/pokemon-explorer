@@ -39,10 +39,13 @@ ATTEMPTS = 3
 DELAYS = (1.0, 3.0)
 CACHE_CONTROL = "public, max-age=31536000, immutable"
 
-# loremflickr URLs are /<width>/<height>?lock=<n>. When loremflickr is down (it
-# answered every image with HTTP 500 on 2026-10-30), a picsum image of the same size,
-# seeded by the creature's id, stands in. Once copied, the bucket keeps it.
-LOREMFLICKR = re.compile(r"^https://loremflickr\.com/(\d+)/(\d+)")
+# loremflickr URLs are /<width>/<height>?lock=<n>. loremflickr answers images with
+# HTTP 500, so since the Express app the cards have shown a picsum image seeded by
+# the lock instead (docs/decisions.md). That's the stand-in, so each card keeps the
+# photo players already see. Once copied, the bucket keeps it.
+LOREMFLICKR = re.compile(r"^https://loremflickr\.com/(\d+)/(\d+)(?:\?lock=(\d+))?")
+# The cards also drop picsum's baked-in blur; so does the copy.
+BLUR = re.compile(r"([?&])blur=\d+&?")
 
 # One seed row per line: "(id, 'name', ..., 'https://...', generation, legendary),".
 # The image URL is the last https literal on the line.
@@ -66,7 +69,14 @@ def stand_in_url(pokemon_id: int, url: str) -> str | None:
     match = LOREMFLICKR.match(url)
     if not match:
         return None
-    return f"https://picsum.photos/seed/pokemon-{pokemon_id}/{match[1]}/{match[2]}"
+    seed = f"lock-{match[3]}" if match[3] else f"pokemon-{pokemon_id}"
+    return f"https://picsum.photos/seed/{seed}/{match[1]}/{match[2]}"
+
+
+def source_url(url: str) -> str:
+    if not url.startswith("https://picsum.photos/"):
+        return url
+    return BLUR.sub(r"\1", url).rstrip("?&")
 
 
 def resize_to_webp(data: bytes) -> bytes:
@@ -123,7 +133,7 @@ def copy_all(
         return error
 
     def copy_one(pokemon_id: int) -> tuple[int, str | None, bool]:
-        error = copy_from(pokemon_id, sources[pokemon_id])
+        error = copy_from(pokemon_id, source_url(sources[pokemon_id]))
         stand_in = stand_in_url(pokemon_id, sources[pokemon_id])
         if error is None or stand_in is None:
             return pokemon_id, error, False
