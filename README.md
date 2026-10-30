@@ -134,7 +134,7 @@ sequenceDiagram
   end
   A->>P: first: lock, store pending move, commit
   A->>P: second: waits for lock, sees both moves → resolve turn → append events → commit · NOTIFY
-  Note over A,P: sweep every 5 s: no stream for 5 s → "away"; away 60 s → forfeit
+  Note over A,P: sweep every 5 s: no stream for 5 s → away, away 60 s → forfeit
 ```
 
 **The design, piece by piece:**
