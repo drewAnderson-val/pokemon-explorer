@@ -10,7 +10,6 @@ export default [
     ignores: [
       'node_modules/**',
       'dist/**',
-      'dist-server/**',
       'build/**',
       '*.min.js',
       '*.d.ts',
