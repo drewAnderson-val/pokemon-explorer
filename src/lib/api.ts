@@ -45,35 +45,3 @@ export async function fetchPokemonPage({
   }
   return (await response.json()) as PokemonPage
 }
-
-// A random creature not in `excludeIds` (the team), by position in id order.
-export async function fetchRandomPokemon(
-  excludeIds: readonly number[],
-  rng: () => number,
-  signal?: AbortSignal
-) {
-  const { pagination } = await fetchPokemonAt(1, signal)
-  const total = pagination.total
-  const taken = [...new Set(excludeIds)]
-    .filter(id => id >= 1 && id <= total)
-    .sort((a, b) => a - b)
-  const free = total - taken.length
-  if (free < 1) throw new CreatureNotFoundError('No other creature to battle')
-  // Pick one of the free slots, then step over the taken ids below it.
-  let position = 1 + Math.floor(rng() * free)
-  for (const id of taken) if (id <= position) position += 1
-  const found = (await fetchPokemonAt(position, signal)).data[0]
-  if (!found) throw new CreatureNotFoundError(`No creature at #${position}`)
-  return found
-}
-
-function fetchPokemonAt(position: number, signal?: AbortSignal) {
-  return fetchPokemonPage({
-    limit: 1,
-    page: position,
-    search: '',
-    signal,
-    sort: 'id',
-    type: null
-  })
-}

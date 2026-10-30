@@ -1,8 +1,8 @@
 import { vi } from 'vitest'
 
 import pokemonData from '@/data/pokemon.json'
+import { parsePokemonQuery, queryPokemon } from '@/lib/query'
 
-import { parsePokemonQuery, queryPokemon } from '../../server/query'
 import { fakeServerResponse } from './fake-server'
 
 type Handler = (url: URL, init?: RequestInit) => Promise<Response> | Response

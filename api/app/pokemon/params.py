@@ -1,6 +1,6 @@
 """Turns the query string of GET /api/pokemon into a PokemonQuery.
 
-A port of parsePokemonQuery in server/query.ts, with the same defaults, limits
+A port of parsePokemonQuery in src/lib/query.ts (moved from server/), with the same defaults, limits
 and error messages, so the frontend can't tell the two APIs apart.
 """
 

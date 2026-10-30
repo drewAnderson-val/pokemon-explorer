@@ -270,4 +270,5 @@ moving on. The API is live from slice 0; Express is retired in slice 8.
 
 ## Open, decided in slice 8
 
-- Where the static frontend is hosted (Firebase Hosting or a Cloud Storage bucket behind a CDN).
+- Where the static frontend is hosted (Firebase Hosting or a Cloud Storage bucket behind a CDN). **Decided
+  2026-10-30:** neither; a static Caddy container on the existing Cloud Run service (`docs/backend/decisions.md`).

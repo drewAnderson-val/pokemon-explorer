@@ -1,11 +1,13 @@
+// The Express lab's request checks and stat roll, kept for the fake server only:
+// the real ones are the API's (api/app/lab/request.py).
 import {
   type CreatedCreature,
   type CreatureRequest,
   MAX_CREATURE_TYPES,
   MAX_DESCRIPTION_LENGTH,
   MAX_NAME_LENGTH
-} from '../src/lib/creature'
-import { isPokemonType, type PokemonType } from '../src/lib/pokemon'
+} from '@/lib/creature'
+import { isPokemonType, type PokemonType } from '@/lib/pokemon'
 
 type ParseResult =
   | { error: string; ok: false }
@@ -13,8 +15,7 @@ type ParseResult =
 
 const fail = (error: string): ParseResult => ({ error, ok: false })
 
-// User text ends up inside a quoted prompt field, so flatten newlines and
-// quotes rather than letting it restructure the prompt.
+// Flattens newlines and quotes, as the API's lab does.
 const clean = (text: string) =>
   text
     .replace(/["“”\n\r\t]+/g, ' ')
@@ -22,23 +23,6 @@ const clean = (text: string) =>
     .trim()
 
 type Random = () => number
-
-// The style is fixed here so every creature looks like it belongs on a card;
-// the user only fills in the quoted fields.
-export function buildPrompt({ description, name, types }: CreatureRequest) {
-  return [
-    'Create an original creature character as a trading-card style illustration.',
-    `Name: "${name}".`,
-    `Type: ${types.join('/')}. Let the type shape its colours, body and features.`,
-    description ? `Concept: "${description}".` : '',
-    'One creature, full body, centred, friendly cartoon style with bold outlines,',
-    'on a simple background in its type colours.',
-    'No text, letters, logos or card frames in the image.',
-    'It must be a new design, not an existing Pokémon or other copyrighted character.'
-  ]
-    .filter(Boolean)
-    .join(' ')
-}
 
 export function parseCreatureRequest(body: unknown): ParseResult {
   if (typeof body !== 'object' || body === null) {

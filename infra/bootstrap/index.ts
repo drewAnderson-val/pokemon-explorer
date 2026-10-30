@@ -67,19 +67,6 @@ for (const role of [
   })
 }
 
-// The creature lab calls Nano Banana on Vertex AI as the Cloud Run runtime
-// account (created by the app stack). Granted here because project IAM is
-// owner-only; the deployer can't grant roles.
-new gcp.projects.IAMMember(
-  'runtime-aiplatform-user',
-  {
-    member: `serviceAccount:pokemon-explorer-run@${project}.iam.gserviceaccount.com`,
-    project,
-    role: 'roles/aiplatform.user'
-  },
-  { dependsOn: apis }
-)
-
 // The FastAPI service: its Postgres (Cloud SQL), runtime identity and secrets.
 // All owner-run and protected, like the state bucket: CI can never delete the
 // database or the secrets. The runtime account lives here, not in the app stack,

@@ -56,7 +56,7 @@ if (isProd) {
 }
 
 // Cloud Run's URL hash for this project and region (in every service's URL).
-// A constant: reading it from the Express service's URI would make the API
+// A constant: reading it from the frontend service's URI would make the API
 // depend on the frontend's deploy.
 const CLOUD_RUN_HASH = 'ogxllptvoa'
 // Every Cloud Run service also answers at <name>-<project number>.<region>.run.app,
@@ -109,8 +109,6 @@ const service = new gcp.cloudrunv2.Service(
     template: {
       containers: [
         {
-          // Vertex AI project for the creature lab's image generation.
-          envs: [{ name: 'GOOGLE_CLOUD_PROJECT', value: project }],
           image: pulumi.interpolate`${imageName}@${image.digest}`,
           resources: { cpuIdle: true, limits: { cpu: '1', memory: '512Mi' } },
           // A revision only receives traffic once /api/health answers; ~20s budget.
@@ -122,10 +120,8 @@ const service = new gcp.cloudrunv2.Service(
           }
         }
       ],
-      // Idle SSE streams are cheap; the default of 80 would cap the one instance at ~40 friend battles.
-      maxInstanceRequestConcurrency: 1000,
-      // One instance in prod: friend battles live in memory, so both players must reach the same server.
-      scaling: { maxInstanceCount: 1, minInstanceCount: 0 },
+      // Static files only (friend battles live in the API now), so instances are interchangeable; the cap bounds cost.
+      scaling: { maxInstanceCount: 2, minInstanceCount: 0 },
       serviceAccount: `${runtimeAccountId}@${project}.iam.gserviceaccount.com`
     }
   },
