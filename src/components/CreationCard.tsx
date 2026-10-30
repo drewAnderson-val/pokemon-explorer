@@ -16,15 +16,22 @@ import { Button, buttonClass } from './ui/button'
 export function CreationCard({
   className,
   creature,
-  onDelete
+  onAddToTeam,
+  onDelete,
+  onTeam,
+  teamFull
 }: {
   className?: string
   creature: Pokemon
+  onAddToTeam: (creature: Pokemon) => void
   onDelete: (id: number) => void
+  onTeam: boolean
+  teamFull: boolean
 }) {
-  // Vertex returns JPEG today; take the extension from the data URL anyway.
-  const extension = /^data:image\/(\w+)/.exec(creature.imageUrl)?.[1] ?? 'png'
-  const fileName = `${creature.name.replace(/[^\w-]+/g, '-').toLowerCase()}.${extension === 'jpeg' ? 'jpg' : extension}`
+  // The image lives in the bucket under a random name; save it under the
+  // creature's. (Browsers ignore `download` across origins and open it instead.)
+  const extension = /\.(\w+)$/.exec(creature.imageUrl)?.[1] ?? 'png'
+  const fileName = `${creature.name.replace(/[^\w-]+/g, '-').toLowerCase()}.${extension}`
   return (
     // Side by side once the card is ≥ 36rem wide (container query, not the
     // viewport): a ~320px image beside ~400px of details keeps the whole card
@@ -66,23 +73,33 @@ export function CreationCard({
             <p className="text-body">{creature.description}</p>
           </DialogBox>
           <div className="grid grid-cols-2 gap-2">
-            {/* Teams and battles live on the server, which doesn't know custom
-                creatures until the Creature Lab moves there too (slice 6). */}
-            <Button disabled title="Custom creatures can join battles soon">
+            <a
+              aria-label={`Battle with ${creature.name}`}
+              className={buttonClass()}
+              href={`/battle?id=${creature.id}`}
+            >
               ▶ Battle
-            </Button>
+            </a>
             <Button
-              aria-label="Custom creatures can join teams soon"
-              disabled
-              title="Custom creatures can join teams soon"
+              aria-label={
+                onTeam
+                  ? 'On your team'
+                  : teamFull
+                    ? 'Team full'
+                    : `Add ${creature.name} to team`
+              }
+              disabled={onTeam || teamFull}
+              onClick={() => onAddToTeam(creature)}
               variant="secondary"
             >
-              + Team
+              {onTeam ? 'On team' : teamFull ? 'Team full' : '+ Team'}
             </Button>
             <a
               className={buttonClass('secondary')}
               download={fileName}
               href={creature.imageUrl}
+              rel="noreferrer"
+              target="_blank"
             >
               Download
             </a>

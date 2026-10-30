@@ -3,9 +3,8 @@ import { useQueries } from '@tanstack/react-query'
 import type { Pokemon } from '@/lib/pokemon'
 import type { TeamMember } from '@/lib/team/team'
 
-import { CreatureNotFoundError, fetchPokemonById } from '@/lib/api'
-import { getCreation } from '@/lib/creation-store'
-import { isCustomId } from '@/lib/creature'
+import { CreatureNotFoundError } from '@/lib/api'
+import { fetchPokemonById } from '@/lib/creatures-api'
 
 const retryUnlessMissing = (failures: number, error: Error) =>
   !(error instanceof CreatureNotFoundError) && failures < 1
@@ -13,7 +12,7 @@ const retryUnlessMissing = (failures: number, error: Error) =>
 export function creatureQuery(id: number) {
   return {
     queryFn: ({ signal }: { signal: AbortSignal }) =>
-      isCustomId(id) ? loadCreation(id) : fetchPokemonById(id, signal),
+      fetchPokemonById(id, signal),
     queryKey: ['pokemon', 'by-id', id],
     retry: retryUnlessMissing,
     staleTime: Infinity
@@ -45,12 +44,4 @@ export function useTeamCreatures(team: readonly TeamMember[]) {
       }
     }
   }
-}
-
-// Custom cards from the Creature Lab live in this browser, not the API; a
-// deleted one is "missing" like a catalog id that's gone.
-async function loadCreation(id: number) {
-  const creation = await getCreation(id)
-  if (!creation) throw new CreatureNotFoundError(`No custom card #${id}`)
-  return creation
 }

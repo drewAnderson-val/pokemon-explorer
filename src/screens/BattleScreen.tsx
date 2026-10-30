@@ -17,7 +17,6 @@ import { creatureQuery, useTeamCreatures } from '@/hooks/useTeamCreatures'
 import { signInPath } from '@/lib/auth'
 import { fetchWildBattle, startWildBattle } from '@/lib/battle/api'
 import { createFighter } from '@/lib/battle/engine'
-import { isCustomId } from '@/lib/creature'
 import { reloadTeam, restTeam, retryTeamLoad } from '@/lib/team/serverTeam'
 import {
   addMember,
@@ -68,12 +67,7 @@ export function BattleScreen({ playerId }: BattleScreenProps) {
           </button>
         )}
         <Handheld classic={settings.classic}>
-          <BattleLoader
-            // Custom creatures can't join a server team until slice 6.
-            playerId={
-              playerId !== null && isCustomId(playerId) ? null : playerId
-            }
-          />
+          <BattleLoader playerId={playerId} />
         </Handheld>
       </div>
     </main>

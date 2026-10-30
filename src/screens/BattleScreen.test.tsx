@@ -1,13 +1,13 @@
 import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SETTINGS_STORAGE_KEY } from '@/hooks/useSettings'
 import { authStore } from '@/lib/auth'
-import { clearCreations, saveCreation } from '@/lib/creation-store'
 import { type TeamMember } from '@/lib/team/team'
 import { apiResponse, stubFetch } from '@/test/fake-api'
 import {
+  seedCreations,
   seedTeam,
   serverBattle,
   serverTeam,
@@ -78,34 +78,33 @@ async function readUntil(text: RegExp | string) {
   )
 }
 
-afterEach(() => clearCreations())
-
 describe('BattleScreen', () => {
-  it("ignores a ▶ Battle link to a custom card, which can't battle yet", async () => {
-    // Custom creatures live in this browser; the server can't put them on a
-    // team until the Creature Lab moves there (slice 6). The picker opens.
-    await saveCreation({
-      attack: 80,
-      defense: 70,
-      description: 'A sleepy fox',
-      generation: 10,
-      height: 0.6,
-      hp: 55,
-      id: 1001,
-      imageUrl: 'data:image/jpeg;base64,AAAA',
-      name: 'Embercub',
-      specialAttack: 90,
-      specialDefense: 60,
-      speed: 100,
-      types: ['Fire'],
-      weight: 9.5
-    })
+  it('leads with a custom creature from its ▶ Battle link', async () => {
+    seedCreations([
+      {
+        attack: 80,
+        defense: 70,
+        description: 'A sleepy fox',
+        generation: 10,
+        height: 0.6,
+        hp: 55,
+        id: 1001,
+        imageUrl: 'https://img.test/creatures/1001.png',
+        name: 'Embercub',
+        specialAttack: 90,
+        specialDefense: 60,
+        speed: 100,
+        types: ['Fire'],
+        weight: 9.5
+      }
+    ])
+    save([member('ten', 10)])
     stubFetch()
     renderWithClient(<BattleScreen playerId={1001} />)
     expect(
-      await screen.findByRole('group', { name: 'Choose your team' })
-    ).toBeInTheDocument()
-    expect(savedTeam()).toEqual([])
+      await screen.findByRole('region', { name: 'Your creature' })
+    ).toHaveTextContent('Embercub')
+    expect(savedTeam().map(m => m.creatureId)).toEqual([1001, 10])
   })
 
   // The bug: ▶ Battle on a card sent out whoever already led the team.

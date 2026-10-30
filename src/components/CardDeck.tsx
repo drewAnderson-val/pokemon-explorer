@@ -13,8 +13,11 @@ type CardDeckProps = {
   // The card just made in this visit: it's revealed with a flip, once.
   dealtId?: number
   drawing: boolean
+  onAddToTeam: (creature: Pokemon) => void
   onDealt: () => void
   onDelete: (id: number) => void
+  teamFull: boolean
+  teamIds: ReadonlySet<number>
 }
 
 // Up to this many card edges peek out from under the top card.
@@ -27,8 +30,11 @@ export function CardDeck({
   cards,
   dealtId,
   drawing,
+  onAddToTeam,
   onDealt,
-  onDelete
+  onDelete,
+  teamFull,
+  teamIds
 }: CardDeckProps) {
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState<'newer' | 'older'>()
@@ -102,7 +108,10 @@ export function CardDeck({
                 <CreationCard
                   className="[backface-visibility:hidden]"
                   creature={card}
+                  onAddToTeam={onAddToTeam}
                   onDelete={onDelete}
+                  onTeam={teamIds.has(card.id)}
+                  teamFull={teamFull}
                 />
                 {flipping && (
                   <CardBack className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]" />

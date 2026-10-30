@@ -3,67 +3,64 @@ import { useCallback } from 'react'
 
 import type { Pokemon } from '@/lib/pokemon'
 
-import {
-  deleteCreation,
-  loadCreations,
-  saveCreation
-} from '@/lib/creation-store'
-import { type CreatedCreature, FIRST_CREATION_ID } from '@/lib/creature'
+import { deleteCreature, listCreations } from '@/lib/creatures-api'
+import { reloadTeam } from '@/lib/team/serverTeam'
 
-import { updateTeam } from './useTeam'
+import { useAuth } from './useAuth'
 import { creatureQuery } from './useTeamCreatures'
 
-const CREATIONS_KEY = ['creations']
-
-// The query cache is the source of truth for the UI, so a card still shows for
-// this visit if the browser refuses to store it (e.g. private mode).
+// The signed-in user's Creature Lab creatures, from the API. Keyed by user, so
+// switching accounts never shows the last one's cards.
 export function useCreations() {
   const client = useQueryClient()
+  const userId = useAuth()?.user.id ?? null
+  const key = ['creations', userId]
   const query = useQuery({
-    queryFn: loadCreations,
-    queryKey: CREATIONS_KEY,
+    enabled: userId !== null,
+    queryFn: listCreations,
+    queryKey: key,
     staleTime: Infinity
   })
 
-  // Returns the new card's id at once (the UI animates it in the same render);
-  // the IndexedDB write finishes in the background.
+  // A creature the server just made: shown at once, newest first. Returns its id
+  // (the UI deals it in the same render).
   const add = useCallback(
-    (creature: CreatedCreature) => {
-      const existing = client.getQueryData<Pokemon[]>(CREATIONS_KEY) ?? []
-      const id = Math.max(FIRST_CREATION_ID - 1, ...existing.map(c => c.id)) + 1
-      const saved = { ...creature, id }
-      client.setQueryData<Pokemon[]>(CREATIONS_KEY, [saved, ...existing])
-      // Ids are reused after a delete; the battle caches creatures by id forever.
-      client.setQueryData(creatureQuery(id).queryKey, saved)
-      saveCreation(saved).catch((error: unknown) =>
-        console.warn('Could not save the custom card', error)
-      )
-      return id
+    (creature: Pokemon) => {
+      client.setQueryData<Pokemon[]>(['creations', userId], previous => [
+        creature,
+        ...(previous ?? [])
+      ])
+      client.setQueryData(creatureQuery(creature.id).queryKey, creature)
+      return creature.id
     },
-    [client]
+    [client, userId]
   )
 
+  // Gone from the list at once; back if the server refuses (the error says why,
+  // e.g. it's locked into a friend match). The server takes it off the team too.
   const remove = useCallback(
     async (id: number) => {
-      client.setQueryData<Pokemon[]>(CREATIONS_KEY, previous =>
+      const creationsKey = ['creations', userId]
+      const before = client.getQueryData<Pokemon[]>(creationsKey)
+      client.setQueryData<Pokemon[]>(creationsKey, previous =>
         previous?.filter(c => c.id !== id)
       )
-      client.removeQueries({ queryKey: creatureQuery(id).queryKey })
-      // A deleted card leaves the team too, so battles never meet a ghost.
-      updateTeam(team => team.filter(member => member.creatureId !== id))
       try {
-        await deleteCreation(id)
+        await deleteCreature(id)
       } catch (error) {
-        console.warn('Could not delete the custom card', error)
+        client.setQueryData(creationsKey, before)
+        throw error
       }
+      client.removeQueries({ queryKey: creatureQuery(id).queryKey })
+      reloadTeam()
     },
-    [client]
+    [client, userId]
   )
 
   return {
     add,
     creations: query.data ?? [],
-    isPending: query.isPending,
+    isPending: query.isPending && userId !== null,
     remove
   }
 }

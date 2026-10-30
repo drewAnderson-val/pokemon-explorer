@@ -16,7 +16,6 @@ import { lastsAMatch, useMatch } from '@/hooks/useMatch'
 import { useSettings } from '@/hooks/useSettings'
 import { useTeam } from '@/hooks/useTeam'
 import { signInPath } from '@/lib/auth'
-import { isCustomId } from '@/lib/creature'
 import {
   addMember,
   hasCreature,
@@ -120,13 +119,13 @@ function Lobby({
   matchId: string
 }) {
   const { retry, send, status, view } = useMatch(matchId)
-  // The friend match's own team: seeded from the saved one (minus Creature
-  // Lab creatures, which the server can't know), never written back to it.
+  // The friend match's own team: seeded from the saved one, never written
+  // back to it.
   // Until you change it, it is the saved team (which loads from the API a moment
   // after the screen opens); from your first change on, it's this match's own.
   const [saved] = useTeam()
   const [picked, setPicked] = useState<null | TeamMember[]>(null)
-  const team = picked ?? saved.filter(member => !isCustomId(member.creatureId))
+  const team = picked ?? saved
   const setTeam = (change: (current: TeamMember[]) => TeamMember[]) =>
     setPicked(change(team))
   const [sendError, setSendError] = useState(false)
@@ -236,7 +235,6 @@ function Lobby({
       )}
       <div className="min-h-0 flex-1">
         <TeamPicker
-          allowCustom={false}
           onStart={() => {
             setSendError(false)
             send({
