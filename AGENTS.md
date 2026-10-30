@@ -18,9 +18,10 @@ The app lives at the repo root; `infra/AGENTS.md` adds rules for the deploy code
 
 ## Direction (from 2026-10-26)
 
-The Express backend is being rebuilt in **Python (FastAPI) on Postgres**. The React app stays and changes only where
-it meets the new API. Backend decisions and their reasons go in `docs/backend/decisions.md` (append one entry per
-decision, using its template); `docs/decisions.md` keeps the Express app's history.
+The Express backend was rebuilt in **Python (FastAPI) on Postgres**, and the cutover (slice 8) retired Express. The
+React app stays and changes only where it meets the new API. Backend decisions and their reasons go in
+`docs/backend/decisions.md` (append one entry per decision, using its template); `docs/decisions.md` keeps the Express
+app's history.
 
 - **Auth is built in-house:** a users table, password hashing, signup and login routes, one 1-hour access token signed
   with PyJWT. No refresh tokens, no Supabase Auth or Auth0. Keep it small.
@@ -33,16 +34,16 @@ decision, using its template); `docs/decisions.md` keeps the Express app's histo
   events.
 - **Postgres is Cloud SQL** (`pokemon-db`, owner-run bootstrap stack, reached through Cloud Run's built-in connector). The frontend and API deploy
   separately, and **each slice ships live**: the API has its own Cloud Run service from slice 0.
-- **Plan:** `docs/superpowers/specs/2026-10-26-fastapi-backend-design.md` (slices, tables, endpoints). Until slice 8,
-  the Express code below still serves the React build and any endpoints not yet moved.
+- **Plan:** `docs/superpowers/specs/2026-10-26-fastapi-backend-design.md` (slices, tables, endpoints). Slice 7
+  (catalog images into the bucket) is still to do.
 
 ## Layout
 
 | Path | What |
 | --- | --- |
 | `src/` | React 19 + Vite 8 SPA (`@/` aliases `src/`; shadcn/ui primitives in `src/components/ui/`) |
-| `server/` | Express 5 API (`app.ts`) and prod entry (`index.ts`); one container in prod |
 | `api/` | FastAPI service (Python 3.13, uv): `app/` code, `app/db/migrations/` numbered SQL, `tests/` (pytest, real Postgres) |
+| `Dockerfile`, `Caddyfile` | The frontend's image: the Vite build served by Caddy (SPA fallback, `/api/health`) |
 | `docker-compose.yml` | Local Postgres 17 on port 54329 for the API's dev and tests |
 | `infra/` | Pulumi (TypeScript): app stack (CI-run) and `bootstrap/` stack (owner-run). Own `package.json` |
 | `.github/review/rules.md` | AI reviewer's custom rules; add a rule to teach it |
@@ -57,8 +58,11 @@ decision, using its template); `docs/decisions.md` keeps the Express app's histo
   `loading="lazy"` and a fallback.
 - **Height and weight are unrounded floats.** Format them for display.
 - **Health route is `/api/health`, not `/healthz`.** Cloud Run reserves paths ending in `z`.
-- **`server/app.ts` serves both dev (Vite middleware) and prod (`server/index.ts`).** Keep API routes there; keep
-  prod-only concerns (static files, health route, port) in `index.ts`.
+- **The frontend container has no API.** Every `/api` route is FastAPI's; the Caddyfile only answers `/api/health`
+  (its probe) and a JSON 404 for any other `/api` path. In dev, Vite proxies `/api` to FastAPI on :8000.
+- **The TypeScript battle engine (`src/lib/battle/`) is the UI tests' copy.** Battles run in Python; the fake server
+  plays them with the TS engine, and `golden.test.ts` keeps it matched to `api/tests/golden/battles.json`. Change the
+  Python engine first.
 - **`infra/` is a separate pnpm project.** The app's lint, typecheck and Docker image all exclude it; install and
   check it from inside `infra/`.
 
@@ -66,17 +70,17 @@ decision, using its template); `docs/decisions.md` keeps the Express app's histo
 
 - Lint is strict (`eslint . --quiet`): `no-console` allows only `debug`, `warn` and `error`; imports are sorted by
   `perfectionist`. Prettier: no semicolons, single quotes, no trailing commas.
-- Tests: Vitest + Testing Library (`pnpm test`). UI tests use `src/test/fake-api.ts`, which runs the real
-  `server/query.ts` over the fixture data, so expected counts come from `src/data/pokemon.json`.
+- Tests: Vitest + Testing Library (`pnpm test`). UI tests use `src/test/fake-api.ts`, which runs
+  `src/lib/query.ts` over the fixture data, so expected counts come from `src/data/pokemon.json`.
 
 ## Run it locally
 
-`/api/pokemon` is served by FastAPI (`api/`); every other route is still Express inside Vite. Three things:
+Every `/api` route is FastAPI (`api/`). Three things:
 
 ```bash
 docker compose up -d --wait db   # Postgres (dev database `pokemon`; tests use `postgres` and wipe it)
 pnpm dev:api                     # FastAPI on :8000 (runs migrations on start)
-pnpm dev                         # Vite on :5173; proxies /api/pokemon to :8000
+pnpm dev                         # Vite on :5173; proxies /api to :8000
 ```
 
 To step through API requests, use VS Code's **API: FastAPI (debug)** launch config (`.vscode/launch.json`) instead of
@@ -85,9 +89,9 @@ To step through API requests, use VS Code's **API: FastAPI (debug)** launch conf
 ## Verify before you say it works
 
 ```bash
-pnpm install && pnpm lint && pnpm test && pnpm build   # lint, tests, typecheck, client + server bundles
-pnpm start                                             # prod server on :3000
-curl -fsS localhost:3000/api/health && curl -fsS 'localhost:3000/api/pokemon?limit=1'
+pnpm install && pnpm lint && pnpm test && pnpm build   # lint, tests, typecheck, client bundle
+docker build -t web . && docker run --rm -p 8080:8080 web   # the frontend image, as Cloud Run runs it
+curl -fsS localhost:8080/api/health && curl -fsS localhost:8080/team | grep -q 'id="root"'
 cd infra && pnpm install && pnpm types                 # Pulumi typecheck
 docker compose up -d --wait db                        # Postgres for the API
 cd api && uv sync && uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest

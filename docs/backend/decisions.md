@@ -1,6 +1,6 @@
 # Backend decisions
 
-The Express API is being rebuilt in Python (FastAPI) on Postgres. Each entry records one decision: what was chosen,
+The Express API was rebuilt in Python (FastAPI) on Postgres; the cutover (slice 8) retired Express. Each entry records one decision: what was chosen,
 why, what was rejected, and the cost accepted. Append new entries at the bottom; if a decision is reversed, add a new
 entry that says so rather than editing the old one.
 
@@ -616,3 +616,16 @@ Template:
 - **Trade-off:** the first lab request after a start pays for the credentials lookup. Two first requests at once may
   each create a client; one is kept and the other is thrown away. The exact network call that stalled isn't
   confirmed; if a lab request now hangs instead, the logs will show it at that request.
+
+## 2026-10-30: The frontend is a static Caddy container on its Cloud Run service
+
+- **What:** the frontend's image is the Vite build served by Caddy (`Caddyfile`, `caddy:2.10.2-alpine`) on the same
+  Cloud Run service Express used. Caddy falls back to `index.html` for app routes, answers `/api/health` for the probe,
+  returns a JSON 404 for any other `/api` path and for missing `/assets/*` files, caches hashed assets for a year and
+  `index.html` not at all. Express and `server/` are deleted; in dev, Vite proxies every `/api` request to FastAPI.
+- **Why:** it changes only the container. The URL, the pipeline, PR previews and the API's CORS rule all stay as they
+  are, and there is one small config file to explain. Nothing the frontend serves needs Node any more.
+- **Rejected:** Firebase Hosting, because it adds a tool and a deploy step to CI, and a new URL means a CORS change;
+  a Cloud Storage bucket behind Cloud CDN, because the load balancer costs about $18 a month and has the most parts.
+- **Trade-off:** no CDN in front, so every visitor reaches the one region (us-central1). For a global audience,
+  Firebase Hosting or Cloud CDN would be the next step.
