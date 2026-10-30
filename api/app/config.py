@@ -9,6 +9,11 @@ class Settings:
     run_migrations: bool = True
     # Browser origins allowed to call the API (CORS). None: no CORS headers at all.
     cors_origin_regex: str | None = None
+    # The Creature Lab draws with Vertex AI in this project and stores images in
+    # this bucket. Either missing: the lab answers 503 (local dev, tests).
+    google_cloud_project: str | None = None
+    creature_bucket: str | None = None
+    image_model: str = "gemini-3.1-flash-lite-image"
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -17,6 +22,9 @@ class Settings:
             jwt_secret=_jwt_secret(),
             run_migrations=os.environ.get("RUN_MIGRATIONS", "true").lower() != "false",
             cors_origin_regex=os.environ.get("CORS_ORIGIN_REGEX", "").strip() or None,
+            google_cloud_project=os.environ.get("GOOGLE_CLOUD_PROJECT", "").strip() or None,
+            creature_bucket=os.environ.get("CREATURE_BUCKET", "").strip() or None,
+            image_model=os.environ.get("IMAGE_MODEL", "").strip() or "gemini-3.1-flash-lite-image",
         )
 
 
