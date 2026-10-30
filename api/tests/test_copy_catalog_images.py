@@ -12,7 +12,6 @@ from scripts.copy_catalog_images import (
     copy_all,
     resize_to_webp,
     source_url,
-    stand_in_url,
 )
 
 SEED = (MIGRATIONS_DIR / "0002_seed_pokemon.sql").read_text()
@@ -80,43 +79,37 @@ def test_copy_skips_existing_retries_then_reports_failures() -> None:
     assert store.ids == {1, 2}
 
 
-def test_stand_in_is_the_picsum_image_the_cards_already_show() -> None:
-    # The frontend has shown loremflickr cards as picsum seeded by the lock since
-    # loremflickr started failing (docs/decisions.md): the copy keeps that photo.
-    url = "https://loremflickr.com/3266/1298?lock=2718838203017904"
-    assert stand_in_url(1, url) == "https://picsum.photos/seed/lock-2718838203017904/3266/1298"
+def test_every_source_is_a_square_crop_of_the_photo_the_cards_showed() -> None:
+    # The frontend asked picsum for the shape it showed (loremflickr swapped for
+    # the lock-seeded picsum image, blur dropped). The copy asks for one sharp
+    # square, which the 2:1 card and the square battle sprite both crop well.
     assert (
-        stand_in_url(9, "https://loremflickr.com/9/9") == "https://picsum.photos/seed/pokemon-9/9/9"
-    )
-    assert stand_in_url(4, "https://picsum.photos/seed/Sg0khOc/2174/2575") is None
-
-
-def test_picsum_sources_drop_the_blur_like_the_cards_do() -> None:
-    assert (
-        source_url("https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8")
-        == "https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale"
+        source_url(1, "https://loremflickr.com/3266/1298?lock=2718838203017904")
+        == "https://picsum.photos/seed/lock-2718838203017904/640/640"
     )
     assert (
-        source_url("https://picsum.photos/seed/x/10/20?blur=3")
-        == "https://picsum.photos/seed/x/10/20"
+        source_url(9, "https://loremflickr.com/9/9")
+        == "https://picsum.photos/seed/pokemon-9/640/640"
     )
-    loremflickr = "https://loremflickr.com/320/240?lock=1"
-    assert source_url(loremflickr) == loremflickr
+    assert (
+        source_url(4, "https://picsum.photos/seed/ps3GTyrI/1827/3861?grayscale&blur=8")
+        == "https://picsum.photos/seed/ps3GTyrI/640/640?grayscale"
+    )
+    assert (
+        source_url(5, "https://picsum.photos/seed/x/3744/46?blur=3")
+        == "https://picsum.photos/seed/x/640/640"
+    )
 
 
-def test_a_dead_original_falls_back_to_its_stand_in() -> None:
+def test_loremflickr_is_never_fetched() -> None:
     fetched: list[str] = []
 
     def fetch(url: str) -> bytes:
         fetched.append(url)
-        if "loremflickr" in url:
-            raise OSError("HTTP Error 500")
-        return png(20, 10)
+        return png(640, 640)
 
     store = FakeStore(set())
-    sources = {1: "https://loremflickr.com/320/240?lock=1", 2: "https://loremflickr.com/9/9"}
+    sources = {1: "https://loremflickr.com/320/240?lock=1"}
     report = copy_all(sources, fetch, store, workers=1, delays=(0, 0))
-    assert report.uploaded == [1, 2]
-    assert report.stand_ins == [1, 2]
-    assert "https://picsum.photos/seed/lock-1/320/240" in fetched
-    assert fetched.count("https://loremflickr.com/320/240?lock=1") == 3
+    assert report.uploaded == [1]
+    assert fetched == ["https://picsum.photos/seed/lock-1/640/640"]

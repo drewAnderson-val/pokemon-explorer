@@ -54,7 +54,7 @@ app's history.
 - **Never run `node scripts/generate-pokemon.mjs`.** It's unseeded and overwrites `src/data/pokemon.json` with
   different random records.
 - **Key cards by `id`, never `name`.** Names repeat (835 unique of 1,000).
-- **Catalog images are WebPs in the creature bucket** (`catalog/<id>.webp`, at most 640 px, any shape), copied once
+- **Catalog images are WebPs in the creature bucket** (`catalog/<id>.webp`, 640x640), copied once
   by `api/scripts/copy_catalog_images.py`; custom creatures' images come from the lab. Use a fixed aspect ratio,
   `loading="lazy"` and a fallback. Migration 0002 keeps the original placeholder URLs; don't regenerate it.
 - **Height and weight are unrounded floats.** Format them for display.

@@ -1,9 +1,12 @@
 """Copies the 1,000 catalog images into the creature bucket, resized.
 
 The catalog's original images are placeholders on loremflickr.com and picsum.photos:
-slow, up to ~4000 px, and sometimes down. This copies each one once, as
-`catalog/<id>.webp` no larger than 640 px, and migration 0007 points the catalog at
-the copies. The original URLs come from the seed migration, which never changes.
+slow, odd shapes up to ~4000 px (some 3744x46), and loremflickr answers images with
+HTTP 500. The cards never showed them as they were: the frontend asked picsum for a
+crop at the size it showed. This copies each one once, the same way: the same picsum
+photo as a sharp 640x640 square, as `catalog/<id>.webp`; migration 0007 points the
+catalog at the copies. The original URLs come from the seed migration, which never
+changes.
 
 Owner-run, from api/, with application-default credentials:
 
@@ -39,13 +42,12 @@ ATTEMPTS = 3
 DELAYS = (1.0, 3.0)
 CACHE_CONTROL = "public, max-age=31536000, immutable"
 
-# loremflickr URLs are /<width>/<height>?lock=<n>. loremflickr answers images with
-# HTTP 500, so since the Express app the cards have shown a picsum image seeded by
-# the lock instead (docs/decisions.md). That's the stand-in, so each card keeps the
-# photo players already see. Once copied, the bucket keeps it.
-LOREMFLICKR = re.compile(r"^https://loremflickr\.com/(\d+)/(\d+)(?:\?lock=(\d+))?")
-# The cards also drop picsum's baked-in blur; so does the copy.
-BLUR = re.compile(r"([?&])blur=\d+&?")
+# loremflickr URLs are /<width>/<height>?lock=<n>. Since the Express app, the cards
+# have shown a picsum image seeded by the lock instead (docs/decisions.md): that's
+# the photo players know, so it's the one copied. loremflickr itself is never asked.
+LOREMFLICKR = re.compile(r"^https://loremflickr\.com/\d+/\d+(?:\?lock=(\d+))?")
+# picsum URLs are /seed/<seed>/<width>/<height>[?grayscale][&blur=<n>].
+PICSUM = re.compile(r"^https://picsum\.photos/seed/([^/]+)/\d+/\d+(?:\?(.*))?$")
 
 # One seed row per line: "(id, 'name', ..., 'https://...', generation, legendary),".
 # The image URL is the last https literal on the line.
@@ -65,18 +67,19 @@ def catalog_sources(seed_sql: str) -> dict[int, str]:
     return sources
 
 
-def stand_in_url(pokemon_id: int, url: str) -> str | None:
-    match = LOREMFLICKR.match(url)
-    if not match:
-        return None
-    seed = f"lock-{match[3]}" if match[3] else f"pokemon-{pokemon_id}"
-    return f"https://picsum.photos/seed/{seed}/{match[1]}/{match[2]}"
-
-
-def source_url(url: str) -> str:
-    if not url.startswith("https://picsum.photos/"):
-        return url
-    return BLUR.sub(r"\1", url).rstrip("?&")
+def source_url(pokemon_id: int, url: str) -> str:
+    """The picsum crop the cards showed for this creature, as a MAX_SIDE square:
+    loremflickr becomes its lock-seeded picsum image, picsum keeps its seed and
+    grayscale but drops its blur (as the cards did). Anything else is fetched as is."""
+    square = f"{MAX_SIDE}/{MAX_SIDE}"
+    if match := LOREMFLICKR.match(url):
+        seed = f"lock-{match[1]}" if match[1] else f"pokemon-{pokemon_id}"
+        return f"https://picsum.photos/seed/{seed}/{square}"
+    if match := PICSUM.match(url):
+        flags = [flag for flag in (match[2] or "").split("&") if flag == "grayscale"]
+        query = f"?{'&'.join(flags)}" if flags else ""
+        return f"https://picsum.photos/seed/{match[1]}/{square}{query}"
+    return url
 
 
 def resize_to_webp(data: bytes) -> bytes:
@@ -101,8 +104,6 @@ class CopyReport:
     uploaded: list[int] = field(default_factory=list)
     skipped: list[int] = field(default_factory=list)
     failed: dict[int, str] = field(default_factory=dict)
-    # Uploaded from a picsum stand-in because the original wouldn't download.
-    stand_ins: list[int] = field(default_factory=list)
 
 
 def copy_all(
@@ -114,49 +115,36 @@ def copy_all(
     delays: Sequence[float] = DELAYS,
 ) -> CopyReport:
     """Copies every source not already in the store. A source that still fails
-    after ATTEMPTS tries is replaced by its stand-in if it has one; otherwise it
-    is reported, and the batch carries on."""
+    after ATTEMPTS tries is reported, and the batch carries on."""
     report = CopyReport()
     done = store.existing()
 
-    def copy_from(pokemon_id: int, url: str) -> str | None:
-        """None when uploaded, else the last error."""
+    def copy_one(pokemon_id: int) -> tuple[int, str | None]:
+        url = source_url(pokemon_id, sources[pokemon_id])
         error = ""
         for attempt in range(ATTEMPTS):
             if attempt:
                 time.sleep(delays[attempt - 1])
             try:
                 store.upload(pokemon_id, resize_to_webp(fetch(url)))
-                return None
+                return pokemon_id, None
             except Exception as exc:  # any failure is worth a retry, then a report
                 error = f"{type(exc).__name__}: {exc}"
-        return error
-
-    def copy_one(pokemon_id: int) -> tuple[int, str | None, bool]:
-        error = copy_from(pokemon_id, source_url(sources[pokemon_id]))
-        stand_in = stand_in_url(pokemon_id, sources[pokemon_id])
-        if error is None or stand_in is None:
-            return pokemon_id, error, False
-        fallback_error = copy_from(pokemon_id, stand_in)
-        if fallback_error is None:
-            return pokemon_id, None, True
-        return pokemon_id, f"{error}; stand-in: {fallback_error}", False
+        return pokemon_id, error
 
     todo = sorted(set(sources) - done)
     report.skipped = sorted(set(sources) & done)
     with ThreadPoolExecutor(workers) as pool:
-        for pokemon_id, error, used_stand_in in pool.map(copy_one, todo):
+        for pokemon_id, error in pool.map(copy_one, todo):
             if error is None:
                 report.uploaded.append(pokemon_id)
-                if used_stand_in:
-                    report.stand_ins.append(pokemon_id)
             else:
                 report.failed[pokemon_id] = error
     return report
 
 
 def fetch_url(url: str) -> bytes:
-    # urllib follows redirects (loremflickr answers with one).
+    # urllib follows redirects (picsum answers /seed/... with one).
     request = urllib.request.Request(url, headers={"User-Agent": "pokemon-explorer-copy"})
     with urllib.request.urlopen(request, timeout=20) as response:
         data: bytes = response.read()
@@ -216,7 +204,7 @@ def main(argv: list[str]) -> int:
     report = copy_all(sources, fetch_url, store)
     print(
         f"uploaded {len(report.uploaded)}, skipped {len(report.skipped)},"
-        f" failed {len(report.failed)} (stand-ins used: {len(report.stand_ins)})"
+        f" failed {len(report.failed)}"
     )
     for pokemon_id, error in sorted(report.failed.items()):
         print(f"  #{pokemon_id}: {error}")
