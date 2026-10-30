@@ -115,6 +115,11 @@ jobs:
         run: curl -fsS "$URL/" | grep -q '<div id="root">'
       - name: Deep links serve the app
         run: curl -fsS "$URL/team" | grep -q '<div id="root">'
+      - name: A missing build file is a 404 that isn't cached
+        run: |
+          headers=$(curl -sS -o /dev/null -D - "$URL/assets/missing-file.js")
+          echo "$headers" | grep -q '^HTTP/[0-9.]* 404'
+          ! echo "$headers" | grep -qi immutable
       - name: Unknown API paths are a JSON 404 on the frontend
         run: test "$(curl -sS -o /dev/null -w '%{http_code}' "$URL/api/nope")" = 404
       # After the frontend's checks, so an API failure never hides them.
