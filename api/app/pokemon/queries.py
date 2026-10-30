@@ -3,6 +3,7 @@ built from the request is ORDER BY, and that comes from a fixed dict."""
 
 import math
 from typing import Any
+from uuid import UUID
 
 from psycopg import AsyncConnection
 
@@ -23,8 +24,10 @@ ORDER_BY = {
 
 # Search matches name, any type or description. ILIKE isn't used because lower()
 # matches the trigram indexes, which are built on lower(name) and lower(description).
+# The catalog only: custom creatures (owner_id set) are listed by /api/creatures.
 WHERE = """
-    (%(type)s::text IS NULL OR %(type)s = ANY(types))
+    owner_id IS NULL
+    AND (%(type)s::text IS NULL OR %(type)s = ANY(types))
     AND (
         %(pattern)s::text IS NULL
         OR lower(name) LIKE %(pattern)s
@@ -86,17 +89,36 @@ def page_body(data: list[dict[str, Any]], total: int, query: PokemonQuery) -> di
     }
 
 
-async def find_by_id(conn: AsyncConnection, pokemon_id: int) -> dict[str, Any] | None:
+async def find_by_id(
+    conn: AsyncConnection, pokemon_id: int, viewer: UUID | None
+) -> dict[str, Any] | None:
+    """A catalog record, or one of the viewer's own creatures. Anyone else's is
+    None (a 404), so its existence isn't confirmed."""
     cursor = await conn.execute(
-        f"SELECT {COLUMNS} FROM pokemon WHERE id = %s",
-        (pokemon_id,),
+        f"SELECT {COLUMNS} FROM pokemon WHERE id = %s AND (owner_id IS NULL OR owner_id = %s)",
+        (pokemon_id, viewer),
     )
     row = await cursor.fetchone()
     return to_json(row) if row else None
 
 
+async def find_usable(
+    conn: AsyncConnection, ids: list[int], user_id: UUID, *, lock: bool = False
+) -> dict[int, dict[str, Any]]:
+    """The ids this user may put on a team: catalog records and their own creatures.
+    lock=True (inside a transaction) holds them FOR SHARE until it commits, so a
+    delete of one waits, and one already being deleted is waited for and then gone."""
+    cursor = await conn.execute(
+        f"SELECT {COLUMNS} FROM pokemon WHERE id = ANY(%s) AND (owner_id IS NULL OR owner_id = %s)"
+        + (" FOR SHARE" if lock else ""),
+        (ids, user_id),
+    )
+    return {row[0]: to_json(row) for row in await cursor.fetchall()}
+
+
 async def find_many(conn: AsyncConnection, ids: list[int]) -> dict[int, dict[str, Any]]:
-    """Several records by id, in one query."""
+    """Several records by id, in one query, whoever owns them: for ids already
+    checked (a saved team, the opponent's locked-in team)."""
     cursor = await conn.execute(f"SELECT {COLUMNS} FROM pokemon WHERE id = ANY(%s)", (ids,))
     return {row[0]: to_json(row) for row in await cursor.fetchall()}
 

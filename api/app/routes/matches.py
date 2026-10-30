@@ -23,7 +23,7 @@ from app.matches.live import GONE, UNAUTHORIZED, LiveMatches, Stream, frame
 from app.matches.store import create_match, load_match, notify, save_changes, seat_of
 from app.matches.sweep import sweep
 from app.matches.views import view_for
-from app.pokemon.queries import find_many
+from app.pokemon.queries import find_many, find_usable
 
 router = APIRouter()
 
@@ -189,8 +189,17 @@ async def take_action(
         # A team action may start the battle, which needs both teams' creatures.
         ids = action.get("creatureIds") if kind == "team" else None
         wanted = [i for i in ids if isinstance(i, int)] if isinstance(ids, list) else []
-        wanted += (match["host_team"] or []) + (match["guest_team"] or [])
-        creatures = await find_many(conn, wanted) if kind == "team" else {}
+        creatures: dict[int, Any] = {}
+        if kind == "team":
+            # Teams already locked in were checked when they were; the new one may
+            # only use the catalog and this player's own creatures. An id that's
+            # neither is left out, so the lock-in is refused as unknown.
+            locked = (match["host_team"] or []) + (match["guest_team"] or [])
+            creatures = await find_many(conn, locked)
+            for i in wanted:
+                creatures.pop(i, None)
+            # FOR SHARE: a delete of one of them can't slip in before this commits.
+            creatures |= await find_usable(conn, wanted, user.id, lock=True)
         try:
             changes = apply_action(match, seat, action, creatures, request.app.state.rng)  # type: ignore[arg-type]
         except Refused as refusal:

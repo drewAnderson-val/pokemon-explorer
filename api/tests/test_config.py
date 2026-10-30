@@ -28,3 +28,26 @@ def test_short_jwt_secret_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("JWT_SECRET", "too-short")
     with pytest.raises(RuntimeError, match="32"):
         Settings.from_env()
+
+
+def test_the_lab_reads_its_project_bucket_and_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABASE_URL", "postgresql://u:p@localhost/db")
+    monkeypatch.setenv("JWT_SECRET", "s" * 32)
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "proj\n")
+    monkeypatch.setenv("CREATURE_BUCKET", "proj-creature-images")
+    monkeypatch.delenv("IMAGE_MODEL", raising=False)
+    settings = Settings.from_env()
+    assert (settings.google_cloud_project, settings.creature_bucket) == (
+        "proj",
+        "proj-creature-images",
+    )
+    assert settings.image_model == "gemini-3.1-flash-lite-image"
+
+
+def test_without_a_bucket_the_lab_is_off(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABASE_URL", "postgresql://u:p@localhost/db")
+    monkeypatch.setenv("JWT_SECRET", "s" * 32)
+    monkeypatch.delenv("GOOGLE_CLOUD_PROJECT", raising=False)
+    monkeypatch.delenv("CREATURE_BUCKET", raising=False)
+    settings = Settings.from_env()
+    assert (settings.google_cloud_project, settings.creature_bucket) == (None, None)

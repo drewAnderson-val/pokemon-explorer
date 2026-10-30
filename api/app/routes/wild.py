@@ -68,7 +68,7 @@ async def start(request: Request, user: CurrentUser, conn: Conn) -> JSONResponse
         # A random catalog creature not on the team, then a level near the team's:
         # the same two draws, in the same order, as the browser version.
         cursor = await conn.execute(
-            "SELECT id FROM pokemon WHERE id <> ALL(%s) ORDER BY id",
+            "SELECT id FROM pokemon WHERE owner_id IS NULL AND id <> ALL(%s) ORDER BY id",
             ([m["creatureId"] for m in members],),
         )
         ids = [row[0] for row in await cursor.fetchall()]

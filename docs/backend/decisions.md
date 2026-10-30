@@ -549,3 +549,42 @@ Template:
 - **Kept:** each screen's own sign-in prompt. A session can expire while a page is open, and nothing re-renders the
   app when it does, so those prompts still catch it.
 - **Trade-off:** a reviewer can't look at the catalog without making an account.
+
+## 2026-10-30: Custom creatures are rows in pokemon, with an owner
+
+- **What:** a Creature Lab creature is a `pokemon` row with `owner_id` set and an id from a sequence starting at
+  1001 (never reused). Catalog rows have `owner_id IS NULL`. Teams and match lock-ins accept the catalog and your own
+  creatures; anyone else's is "no such creature", and `GET /api/pokemon/{id}` is a 404 for it.
+- **Why:** teams, wild battles and friend matches all look creatures up by id in `pokemon`. One table means they work
+  for custom creatures without a second lookup path. A friend sees your creature in a match because the battle state
+  carries the whole creature record.
+- **Rejected:** a separate `creatures` table (every team and battle lookup would have to check two tables);
+  mixing your creatures into `GET /api/pokemon`'s pages (the Explorer already shows them under their own filter,
+  from `GET /api/creatures`).
+- **Trade-off:** every catalog query needs `owner_id IS NULL`; forgetting it would show one user's creatures to
+  others. Tests cover the list, the by-id lookup, teams, match lock-ins and the wild enemy.
+
+## 2026-10-30: The lab's limits live in Postgres and are counted before the drawing
+
+- **What:** each lab request adds a `lab_requests` row: at most 5 per user per hour and 100 a day overall, as the
+  Express lab had. Failed and blocked drawings count too (each costs money). The count runs in its own transaction,
+  under the user's row lock and an advisory lock for the daily total, and commits before the image is drawn.
+- **Why:** the Express lab kept its counters in memory, so a deploy reset them and each instance counted
+  separately. In Postgres they're shared and survive restarts. The locks stop two requests both seeing 4 and both
+  taking the 5th. Committing first matters because a drawing takes seconds, and the user's row lock would stall
+  their team edits and battles all that time.
+- **Rejected:** keeping in-memory counters; holding one transaction across the drawing and the insert (simpler, but
+  holds locks for seconds).
+- **Trade-off:** a request that's counted and then fails still uses up a slot.
+
+## 2026-10-30: Creature images in a public bucket
+
+- **What:** generated images go to `finny-take-home-creature-images` as `creatures/<random uuid>.<ext>`, and the row
+  stores the public URL. Anyone can read an object by name (`legacyObjectReader`), but nobody can list the bucket;
+  only the API's service account writes and deletes.
+  Deleting a creature deletes its image (best effort: a failure is logged and the creature is still deleted).
+- **Why:** the browser loads images straight from the bucket, never through the API, as the spec says. The Express
+  lab returned a base64 `data:` URL that the browser kept in IndexedDB, which only worked on that one device.
+- **Rejected:** serving images through the API (each image view would use an API instance); signed URLs (they
+  expire, and the cards are meant to be seen by friends in matches).
+- **Trade-off:** anyone with an image's URL can see it. The names are random, so URLs can't be guessed.

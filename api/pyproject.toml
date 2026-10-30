@@ -6,6 +6,8 @@ requires-python = ">=3.13"
 dependencies = [
     "argon2-cffi>=25.1.0",
     "fastapi>=0.162.0",
+    "google-cloud-storage>=3.17.1",
+    "google-genai>=2.34.0",
     "psycopg-pool>=3.3.3",
     "psycopg[binary]>=3.3.6",
     "pyjwt>=2.15.1",
@@ -30,6 +32,11 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 [tool.mypy]
 strict = true
 files = ["app", "scripts", "tests"]
+
+# google-cloud-storage ships no type information.
+[[tool.mypy.overrides]]
+module = ["google.cloud", "google.cloud.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

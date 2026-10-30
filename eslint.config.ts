@@ -15,7 +15,9 @@ export default [
       '*.min.js',
       '*.d.ts',
       // Separate pnpm project with its own tsconfig; checked with `pnpm types` in infra/.
-      'infra/**'
+      'infra/**',
+      // The Python API: its virtualenv holds packages' own JavaScript (urllib3 ships some).
+      'api/**'
     ]
   },
 

@@ -54,7 +54,8 @@ def test_tampered_payload_is_rejected() -> None:
 
 def test_alg_none_is_rejected() -> None:
     now = int(datetime.now(UTC).timestamp())
-    forged = jwt.encode({"sub": str(uuid4()), "iat": now, "exp": now + 60}, None, algorithm="none")
+    # An unsigned token has no key; with cryptography installed, PyJWT types the key as required.
+    forged = jwt.encode({"sub": str(uuid4()), "iat": now, "exp": now + 60}, None, algorithm="none")  # type: ignore[arg-type]
     with pytest.raises(InvalidToken):
         read_token(forged, SECRET)
 

@@ -142,6 +142,37 @@ for (const secretId of ['api-database-url', 'api-jwt-secret']) {
   })
 }
 
+// Creature Lab images (slice 6). Public read: the browser loads each image from
+// its URL, like the catalog's images. Names are random, so a URL isn't guessable,
+// but anyone with one can see the image. The API writes and deletes them, and
+// draws them with Vertex AI.
+const creatureImages = new gcp.storage.Bucket(
+  'creature-images',
+  {
+    location: region.toUpperCase(),
+    name: `${project}-creature-images`,
+    uniformBucketLevelAccess: true
+  },
+  { dependsOn: apis, protect: true }
+)
+// legacyObjectReader reads an object by name and nothing else. objectViewer
+// would also let anyone list the bucket, and so find every user's images.
+new gcp.storage.BucketIAMMember('creature-images-public', {
+  bucket: creatureImages.name,
+  member: 'allUsers',
+  role: 'roles/storage.legacyObjectReader'
+})
+new gcp.storage.BucketIAMMember('creature-images-api-writer', {
+  bucket: creatureImages.name,
+  member: apiRuntimeMember,
+  role: 'roles/storage.objectAdmin'
+})
+new gcp.projects.IAMMember('api-runtime-aiplatform-user', {
+  member: apiRuntimeMember,
+  project,
+  role: 'roles/aiplatform.user'
+})
+
 new gcp.storage.BucketIAMMember('deployer-state', {
   bucket: stateBucket.name,
   member: deployerMember,
@@ -179,3 +210,4 @@ export const GCP_WORKLOAD_IDENTITY_PROVIDER = provider.name
 export const GCP_SERVICE_ACCOUNT = deployer.email
 export const PULUMI_BACKEND_URL = pulumi.interpolate`gs://${stateBucket.name}`
 export const API_DB_CONNECTION_NAME = database.connectionName
+export const CREATURE_BUCKET = creatureImages.name
