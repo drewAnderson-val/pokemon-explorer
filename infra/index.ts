@@ -120,10 +120,8 @@ const service = new gcp.cloudrunv2.Service(
           }
         }
       ],
-      // Idle SSE streams are cheap; the default of 80 would cap the one instance at ~40 friend battles.
-      maxInstanceRequestConcurrency: 1000,
-      // One instance in prod: friend battles live in memory, so both players must reach the same server.
-      scaling: { maxInstanceCount: 1, minInstanceCount: 0 },
+      // Static files only (friend battles live in the API now), so instances are interchangeable; the cap bounds cost.
+      scaling: { maxInstanceCount: 2, minInstanceCount: 0 },
       serviceAccount: `${runtimeAccountId}@${project}.iam.gserviceaccount.com`
     }
   },
