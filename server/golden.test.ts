@@ -8,7 +8,7 @@ import path from 'node:path'
 import { expect, it } from 'vitest'
 
 import pokemonData from '../src/data/pokemon.json'
-import { parsePokemonQuery, queryPokemon } from './query'
+import { parsePokemonQuery, queryPokemon } from '../src/lib/query'
 
 const GOLDEN = path.resolve(
   __dirname,

@@ -19,7 +19,7 @@ import { START_LEVEL, xpForLevel } from '@/lib/battle/stats'
 import { type Pokemon } from '@/lib/pokemon'
 import { saveBattle, type TeamMember } from '@/lib/team/team'
 
-import { parseCreatureRequest, rollCreature } from '../../server/create'
+import { parseCreatureRequest, rollCreature } from './fake-lab'
 
 const pokemon = pokemonData as Pokemon[]
 const byId = new Map(pokemon.map(p => [p.id, p]))

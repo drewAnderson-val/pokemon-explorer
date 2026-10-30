@@ -8,7 +8,7 @@ import {
   SORT_KEYS,
   type SortKey,
   totalStats
-} from '../src/lib/pokemon'
+} from './pokemon'
 
 export const MAX_LIMIT = 100
 

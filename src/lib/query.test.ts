@@ -1,8 +1,9 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 
-import pokemonData from '../src/data/pokemon.json'
-import { type Pokemon, totalStats } from '../src/lib/pokemon'
+import pokemonData from '@/data/pokemon.json'
+import { type Pokemon, totalStats } from '@/lib/pokemon'
+
 import { parsePokemonQuery, queryPokemon } from './query'
 
 const data = pokemonData as Pokemon[]

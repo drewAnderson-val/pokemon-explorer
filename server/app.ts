@@ -3,6 +3,7 @@ import express from 'express'
 import type { Pokemon } from '../src/lib/pokemon'
 
 import pokemonData from '../src/data/pokemon.json'
+import { parsePokemonQuery, queryPokemon } from '../src/lib/query'
 import { creaturesRoute } from './creatures-route'
 import {
   createVertexImageGenerator,
@@ -10,7 +11,6 @@ import {
 } from './image-generator'
 import { createMatchStore } from './matches'
 import { matchesRoute } from './matches-route'
-import { parsePokemonQuery, queryPokemon } from './query'
 import { createWindowLimiter } from './rate-limit'
 
 const pokemon = pokemonData as Pokemon[]

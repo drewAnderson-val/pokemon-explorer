@@ -21,10 +21,9 @@ import {
   type PokemonType,
   type SortKey
 } from '@/lib/pokemon'
+import { queryPokemon } from '@/lib/query'
 import { addMember, isTeamFull, makeUid, newMember } from '@/lib/team/team'
 import { cn } from '@/lib/utils'
-
-import { queryPokemon } from '../../server/query'
 
 const SEARCH_DEBOUNCE_MS = 250
 const FIRST_PAGE_SKELETONS = 10
