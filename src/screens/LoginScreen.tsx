@@ -3,7 +3,7 @@ import { type FormEvent, useId, useState } from 'react'
 import { DialogBox } from '@/components/DialogBox'
 import { HomeLink } from '@/components/HomeLink'
 import { Button } from '@/components/ui/button'
-import { login, signup } from '@/lib/auth'
+import { login, playAsGuest, signup } from '@/lib/auth'
 
 const field =
   'w-full min-w-0 border-b-2 border-ink bg-transparent py-1 text-body-lg outline-none placeholder:text-ink-muted focus-visible:focus-ring'
@@ -20,10 +20,14 @@ export function LoginScreen({ next }: { next: null | string }) {
 
   async function submit(event: FormEvent) {
     event.preventDefault()
+    await enter(() => (creating ? signup : login)(username, password))
+  }
+
+  async function enter(start: () => Promise<unknown>) {
     setBusy(true)
     setError(null)
     try {
-      await (creating ? signup : login)(username, password)
+      await start()
       window.location.assign(safeNext(next))
     } catch (caught) {
       setError(
@@ -93,6 +97,21 @@ export function LoginScreen({ next }: { next: null | string }) {
           </button>
         </DialogBox>
       </form>
+
+      {/* Outside the form, so its required fields don't stop it. */}
+      <DialogBox className="flex flex-col gap-3">
+        <p className="text-body-lg">
+          Just looking? Play as a guest: no account needed. A guest lasts an
+          hour.
+        </p>
+        <Button
+          disabled={busy}
+          onClick={() => void enter(playAsGuest)}
+          variant="secondary"
+        >
+          Play as guest
+        </Button>
+      </DialogBox>
     </main>
   )
 }

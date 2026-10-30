@@ -47,16 +47,27 @@ export const login = (username: string, password: string) =>
 export const signup = (username: string, password: string) =>
   startSession('/api/auth/signup', username, password)
 
+// A throwaway account: no password, so it lasts as long as its 1-hour token.
+export const playAsGuest = () => startSession('/api/auth/guest')
+
 // The token lives only in this browser; forgetting it is signing out.
 export function logout() {
   authStore.update(() => null)
 }
 
-async function startSession(path: string, username: string, password: string) {
+async function startSession(
+  path: string,
+  username?: string,
+  password?: string
+) {
   const response = await fetch(`${API_BASE}${path}`, {
-    body: JSON.stringify({ password, username }),
-    headers: { 'content-type': 'application/json' },
-    method: 'POST'
+    method: 'POST',
+    ...(username === undefined
+      ? {}
+      : {
+          body: JSON.stringify({ password, username }),
+          headers: { 'content-type': 'application/json' }
+        })
   })
   const body = (await response.json().catch(() => null)) as
     | null

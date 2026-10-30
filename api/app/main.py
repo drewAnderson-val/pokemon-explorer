@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from psycopg import AsyncConnection
 from psycopg_pool import AsyncConnectionPool
 
+from app.auth.guests import delete_expired_guests
 from app.config import Settings
 from app.db.migrate import migrate
 from app.db.pool import open_pool
@@ -116,3 +117,4 @@ async def sweep_forever(pool: AsyncConnectionPool) -> None:
         with contextlib.suppress(Exception):
             async with pool.connection() as conn:
                 await sweep(conn)
+                await delete_expired_guests(conn)

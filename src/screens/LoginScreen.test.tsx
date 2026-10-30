@@ -53,6 +53,20 @@ describe('LoginScreen', () => {
     )
   })
 
+  it('plays as a guest with no username or password', async () => {
+    const guest = { ...SESSION, user: { id: 'g1', username: 'guest_k3x9p2m1' } }
+    const fetchMock = stubFetch(() => Response.json(guest, { status: 201 }))
+    const assign = stubNavigation()
+    render(<LoginScreen next="/battle" />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Play as guest' }))
+
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/auth/guest')
+    expect(fetchMock.mock.calls[0][1]?.method).toBe('POST')
+    expect(currentSession()?.user.username).toBe('guest_k3x9p2m1')
+    expect(assign).toHaveBeenCalledWith('/battle')
+  })
+
   it('creates an account', async () => {
     const fetchMock = stubFetch(() => Response.json(SESSION, { status: 201 }))
     const assign = stubNavigation()

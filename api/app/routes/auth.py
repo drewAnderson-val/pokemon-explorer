@@ -8,6 +8,8 @@ from pydantic import BaseModel, ConfigDict
 from starlette.concurrency import run_in_threadpool
 
 from app.auth.deps import CurrentUser
+from app.auth.guests import PREFIX as GUEST_PREFIX
+from app.auth.guests import create_guest
 from app.auth.passwords import DUMMY_HASH, hash_password, verify_password
 from app.auth.tokens import issue_token
 from app.auth.users import User, UsernameTaken, create_user, find_login
@@ -62,6 +64,8 @@ def error(message: str, status_code: int) -> JSONResponse:
 async def signup(credentials: Credentials, request: Request, conn: Conn) -> JSONResponse:
     if not USERNAME.fullmatch(credentials.username):
         return error("username must be 3-20 letters, digits or underscores", 400)
+    if credentials.username.lower().startswith(GUEST_PREFIX):
+        return error("Names starting with guest_ are for guests", 400)
     if len(credentials.password) not in PASSWORD_LENGTH:
         return error("password must be 8-128 characters", 400)
 
@@ -72,6 +76,20 @@ async def signup(credentials: Credentials, request: Request, conn: Conn) -> JSON
         user = await create_user(conn, credentials.username, password_hash)
     except UsernameTaken:
         return error("That username is taken", 409)
+    return session(request, user, status_code=201)
+
+
+@router.post(
+    "/api/auth/guest",
+    summary="Play as guest: a throwaway account; returns a 1-hour token",
+    description="No password: when the token expires, the guest is over. Deleted after a day.",
+    status_code=201,
+    responses=errors(429),
+)
+async def guest(request: Request, conn: Conn) -> JSONResponse:
+    user = await create_guest(conn)
+    if user is None:
+        return error("Lots of guests right now. Try again soon, or create an account.", 429)
     return session(request, user, status_code=201)
 
 
