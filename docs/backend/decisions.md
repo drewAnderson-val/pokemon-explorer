@@ -641,3 +641,24 @@ Template:
   service and keeps drifting from prod); previews with no API (nothing past the catalog would work).
 - **Trade-off:** test accounts, matches and creatures made in previews land in prod, and a preview can't try an API
   change. If more people worked on this, a staging API and database would be the next step.
+
+## 2026-10-30: Catalog images are copied into the bucket
+
+- **What:** `api/scripts/copy_catalog_images.py` (owner-run, re-runnable) copies each of the 1,000 catalog images into
+  the creature bucket as `catalog/<id>.webp`: a sharp 640x640 WebP, cached for a year. Migration 0007 points the
+  catalog rows there, and `pokemon.json` and the golden test files carry the same URLs. Migration 0002 keeps the
+  original URLs, which the script reads.
+- **Why:** the originals were placeholders on loremflickr.com and picsum.photos: slow, odd shapes up to about
+  4000 px (some 3744x46), and loremflickr answers images with HTTP 500. The cards never showed them as they were:
+  `cardImageUrl` rewrote every URL on each load (loremflickr to a picsum image seeded by its lock, picsum without its
+  blur, at the size shown). The copies are those same photos, made once: each card keeps the photo players saw, it
+  loads fast from our bucket, and `cardImageUrl` is gone.
+- **Square, not the original shape:** shrinking the originals as they were gave strips like 640x8 that a 2:1 card
+  blows up into a smear (about 40% of the catalog needed more than 2x enlargement). picsum crops a seed to any size,
+  so the copy asks for a square, which the 2:1 card, the square battle sprite and the team picker all crop cleanly.
+- **Rejected:** hotlinking the originals (slow, unreliable, odd shapes); resizing on the fly through an image proxy or
+  CDN transform (more parts and cost for 1,000 images that never change); trying loremflickr first (if it recovered
+  mid-run, a card would permanently get a different photo from the one players knew).
+- **Trade-off:** the framing is a centre square, not the old per-view crop, so some cards are framed a little
+  differently. Objects are cached as immutable and the script skips existing names, so a redo means a new prefix and
+  a new migration, not an overwrite. A new catalog image means running the script again.

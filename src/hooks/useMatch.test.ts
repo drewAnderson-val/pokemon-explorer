@@ -120,7 +120,7 @@ describe('useMatch', () => {
     expect(result.current.reconnecting).toBe(false)
   })
 
-  it.each(['gone', 'replaced', 'unauthorized'])(
+  it.each(['gone', 'replaced', 'unauthorized'] as const)(
     'stops saying it is reconnecting when the stream ends with %s',
     async event => {
       stubFetch(joined)

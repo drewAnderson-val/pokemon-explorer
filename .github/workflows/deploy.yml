@@ -133,6 +133,10 @@ jobs:
         run: |
           body=$(curl -fsS "$API_URL/api/pokemon?page=1&limit=5")
           echo "$body" | jq -e '(.data | length) == 5 and .pagination.total > 0' >/dev/null
+      - name: Catalog images come from the bucket
+        run: |
+          url=$(curl -fsS "$API_URL/api/pokemon/1" | jq -r .imageUrl)
+          curl -fsSI "$url" | grep -qi '^content-type: image/webp'
       - name: API search filters results
         run: |
           curl -fsS "$API_URL/api/pokemon?search=fire&limit=50" \

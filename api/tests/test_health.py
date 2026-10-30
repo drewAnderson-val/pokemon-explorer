@@ -39,4 +39,5 @@ def test_startup_runs_migrations(test_database_url: str, reset_db: None) -> None
         ("0004_teams_and_wild_battles.sql",),
         ("0005_matches.sql",),
         ("0006_creatures.sql",),
+        ("0007_catalog_images.sql",),
     ]

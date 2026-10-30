@@ -1,7 +1,9 @@
 """Writes migrations/0002_seed_pokemon.sql from src/data/pokemon.json.
 
-Run once from api/: `uv run python -m scripts.generate_seed`. The output is
-committed; a test fails if it no longer matches the JSON.
+Ran once, from api/: `uv run python -m scripts.generate_seed`. Migration 0002 is
+applied and frozen now, so don't run it again: the JSON's image URLs point at the
+bucket since 0007, and the seed keeps the originals. A test checks the seed still
+matches the JSON apart from those URLs.
 """
 
 import json

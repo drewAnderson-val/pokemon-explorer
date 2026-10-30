@@ -5,6 +5,7 @@ from typing import Any
 import psycopg
 
 from app.db.migrate import MIGRATIONS_DIR, migrate
+from scripts.copy_catalog_images import catalog_sources, catalog_url
 from scripts.generate_seed import render
 
 POKEMON_JSON = Path(__file__).parents[2] / "src" / "data" / "pokemon.json"
@@ -53,7 +54,8 @@ async def all_as_json_shape(conn: psycopg.AsyncConnection) -> list[dict[str, Any
     return rows
 
 
-async def test_seed_loads_every_record_unchanged(conn: psycopg.AsyncConnection) -> None:
+async def test_migrations_load_every_record_unchanged(conn: psycopg.AsyncConnection) -> None:
+    # The seed plus 0007 (catalog images in the bucket) is exactly pokemon.json.
     await migrate(conn)
 
     rows = await all_as_json_shape(conn)
@@ -70,11 +72,39 @@ async def test_total_stats_is_the_sum_of_six_stats(conn: psycopg.AsyncConnection
     assert await cursor.fetchone() == (28 + 128 + 162 + 193 + 140 + 132,)
 
 
-def test_seed_file_is_up_to_date() -> None:
-    assert render(json.loads(POKEMON_JSON.read_text())) == SEED_FILE.read_text()
+def test_seed_file_matches_the_json_with_its_original_images() -> None:
+    # 0002 is applied and frozen: it keeps the original placeholder image URLs,
+    # which 0007 replaced (and copy_catalog_images reads them from here).
+    seed = SEED_FILE.read_text()
+    originals = catalog_sources(seed)
+    records = json.loads(POKEMON_JSON.read_text())
+    for item in records:
+        item["imageUrl"] = originals[item["id"]]
+    assert render(records) == seed
 
 
 def test_render_escapes_quotes() -> None:
     sql = render([record(name="Farfetch'd")])
 
     assert "'Farfetch''d'" in sql
+
+
+async def test_catalog_images_are_in_the_bucket(conn: psycopg.AsyncConnection) -> None:
+    await migrate(conn)
+    owner = await conn.execute(
+        "INSERT INTO users (username, password_hash) VALUES ('maker', 'x') RETURNING id"
+    )
+    (owner_id,) = await owner.fetchone() or ()
+    await conn.execute(
+        "INSERT INTO pokemon (id, owner_id, name, types, height, weight, hp, attack, defense,"
+        " special_attack, special_defense, speed, description, image_url, generation)"
+        " VALUES (1001, %s, 'Mine', ARRAY['Fire'], 1, 1, 1, 1, 1, 1, 1, 1, '',"
+        " 'https://img.test/mine.png', 10)",
+        (owner_id,),
+    )
+
+    cursor = await conn.execute("SELECT id, image_url FROM pokemon ORDER BY id")
+    rows: dict[int, str] = dict(await cursor.fetchall())
+
+    assert all(rows[i] == catalog_url(i) for i in range(1, 1001))
+    assert rows[1001] == "https://img.test/mine.png"

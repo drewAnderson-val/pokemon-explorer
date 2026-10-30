@@ -54,8 +54,9 @@ app's history.
 - **Never run `node scripts/generate-pokemon.mjs`.** It's unseeded and overwrites `src/data/pokemon.json` with
   different random records.
 - **Key cards by `id`, never `name`.** Names repeat (835 unique of 1,000).
-- **`imageUrl`s are slow, random-sized placeholders that sometimes fail.** Use a fixed aspect ratio,
-  `loading="lazy"` and a fallback.
+- **Catalog images are WebPs in the creature bucket** (`catalog/<id>.webp`, 640x640), copied once
+  by `api/scripts/copy_catalog_images.py`; custom creatures' images come from the lab. Use a fixed aspect ratio,
+  `loading="lazy"` and a fallback. Migration 0002 keeps the original placeholder URLs; don't regenerate it.
 - **Height and weight are unrounded floats.** Format them for display.
 - **Health route is `/api/health`, not `/healthz`.** Cloud Run reserves paths ending in `z`.
 - **The frontend container has no API.** Every `/api` route is FastAPI's; the Caddyfile only answers `/api/health`
