@@ -1,6 +1,8 @@
 """Custom creatures are rows in pokemon with an owner: visible and usable only by
 that owner, and never a wild enemy."""
 
+import time
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 import psycopg
@@ -138,3 +140,24 @@ def test_the_wild_enemy_is_never_a_custom_creature(
     client.app.state.rng = ScriptedRng(0.9999, 0.5)  # type: ignore[attr-defined]
     enemy = client.post("/api/battles/wild", headers=h).json()["state"]["enemy"]
     assert enemy["creature"]["id"] == 1000
+
+
+def test_a_lock_in_waits_for_a_delete_of_that_creature(
+    client: TestClient, test_database_url: str
+) -> None:
+    host, guest = sign_up(client, "host"), sign_up(client, "guest")
+    match_id = client.post("/api/matches", headers=host).json()["matchId"]
+    client.post(f"/api/matches/{match_id}/join", headers=guest)
+    hosts = custom(test_database_url, "host")
+    # A delete of the creature is under way (not yet committed) when the lock-in
+    # arrives. The lock-in must wait for it and then refuse the gone creature, not
+    # lock in a team that points at a deleted row.
+    with psycopg.connect(test_database_url) as deleting:
+        deleting.execute("DELETE FROM pokemon WHERE id = %s", (hosts,))
+        with ThreadPoolExecutor(1) as pool:
+            locking = pool.submit(lock_in, client, host, match_id, [hosts])
+            time.sleep(0.5)
+            deleting.commit()
+            assert locking.result(timeout=5).status_code == 400
+    view = client.get(f"/api/matches/{match_id}", headers=host).json()
+    assert view["ready"] is False

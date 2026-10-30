@@ -103,11 +103,14 @@ async def find_by_id(
 
 
 async def find_usable(
-    conn: AsyncConnection, ids: list[int], user_id: UUID
+    conn: AsyncConnection, ids: list[int], user_id: UUID, *, lock: bool = False
 ) -> dict[int, dict[str, Any]]:
-    """The ids this user may put on a team: catalog records and their own creatures."""
+    """The ids this user may put on a team: catalog records and their own creatures.
+    lock=True (inside a transaction) holds them FOR SHARE until it commits, so a
+    delete of one waits, and one already being deleted is waited for and then gone."""
     cursor = await conn.execute(
-        f"SELECT {COLUMNS} FROM pokemon WHERE id = ANY(%s) AND (owner_id IS NULL OR owner_id = %s)",
+        f"SELECT {COLUMNS} FROM pokemon WHERE id = ANY(%s) AND (owner_id IS NULL OR owner_id = %s)"
+        + (" FOR SHARE" if lock else ""),
         (ids, user_id),
     )
     return {row[0]: to_json(row) for row in await cursor.fetchall()}

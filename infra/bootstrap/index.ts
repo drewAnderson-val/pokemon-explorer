@@ -155,10 +155,12 @@ const creatureImages = new gcp.storage.Bucket(
   },
   { dependsOn: apis, protect: true }
 )
+// legacyObjectReader reads an object by name and nothing else. objectViewer
+// would also let anyone list the bucket, and so find every user's images.
 new gcp.storage.BucketIAMMember('creature-images-public', {
   bucket: creatureImages.name,
   member: 'allUsers',
-  role: 'roles/storage.objectViewer'
+  role: 'roles/storage.legacyObjectReader'
 })
 new gcp.storage.BucketIAMMember('creature-images-api-writer', {
   bucket: creatureImages.name,

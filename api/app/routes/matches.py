@@ -198,7 +198,8 @@ async def take_action(
             creatures = await find_many(conn, locked)
             for i in wanted:
                 creatures.pop(i, None)
-            creatures |= await find_usable(conn, wanted, user.id)
+            # FOR SHARE: a delete of one of them can't slip in before this commits.
+            creatures |= await find_usable(conn, wanted, user.id, lock=True)
         try:
             changes = apply_action(match, seat, action, creatures, request.app.state.rng)  # type: ignore[arg-type]
         except Refused as refusal:

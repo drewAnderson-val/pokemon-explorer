@@ -580,7 +580,8 @@ Template:
 ## 2026-10-30: Creature images in a public bucket
 
 - **What:** generated images go to `finny-take-home-creature-images` as `creatures/<random uuid>.<ext>`, and the row
-  stores the public URL. The bucket allows public reads; only the API's service account writes and deletes.
+  stores the public URL. Anyone can read an object by name (`legacyObjectReader`), but nobody can list the bucket;
+  only the API's service account writes and deletes.
   Deleting a creature deletes its image (best effort: a failure is logged and the creature is still deleted).
 - **Why:** the browser loads images straight from the bucket, never through the API, as the spec says. The Express
   lab returned a base64 `data:` URL that the browser kept in IndexedDB, which only worked on that one device.
