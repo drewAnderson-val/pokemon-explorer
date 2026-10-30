@@ -7,13 +7,15 @@ import { HomeLink } from '@/components/HomeLink'
 import { TypeFilterChip } from '@/components/TypeFilterChip'
 import { Button } from '@/components/ui/button'
 import { useCreations } from '@/hooks/useCreations'
-import { createCreature } from '@/lib/api'
+import { useTeam } from '@/hooks/useTeam'
 import {
   MAX_CREATURE_TYPES,
   MAX_DESCRIPTION_LENGTH,
   MAX_NAME_LENGTH
 } from '@/lib/creature'
-import { POKEMON_TYPES, type PokemonType } from '@/lib/pokemon'
+import { createCreature } from '@/lib/creatures-api'
+import { type Pokemon, POKEMON_TYPES, type PokemonType } from '@/lib/pokemon'
+import { addMember, isTeamFull, makeUid, newMember } from '@/lib/team/team'
 
 const field =
   'w-full min-w-0 border-b-2 border-ink bg-transparent py-1 text-body-lg outline-none placeholder:text-ink-muted focus-visible:focus-ring'
@@ -30,8 +32,20 @@ export function CreatorScreen() {
 
   const create = useMutation({
     mutationFn: createCreature,
-    onSuccess: ({ creature }) => setDealtId(add(creature))
+    onSuccess: creature => setDealtId(add(creature))
   })
+  const [deleteError, setDeleteError] = useState<null | string>(null)
+  const deleteCard = (id: number) => {
+    setDeleteError(null)
+    remove(id).catch((caught: unknown) =>
+      setDeleteError(
+        caught instanceof Error ? caught.message : 'Could not delete it'
+      )
+    )
+  }
+  const [team, setTeam] = useTeam()
+  const addToTeam = (creature: Pokemon) =>
+    setTeam(current => addMember(current, newMember(creature, makeUid())))
 
   const toggleType = (type: PokemonType) =>
     setTypes(previous =>
@@ -134,7 +148,7 @@ export function CreatorScreen() {
           <h2 className="text-heading font-bold uppercase" id="custom-cards">
             Custom cards
             <span className="ml-2 align-middle text-caption font-normal text-ink-muted normal-case">
-              Saved in this browser
+              Saved to your account
             </span>
           </h2>
           {creations.length === 0 && !create.isPending && (
@@ -145,13 +159,21 @@ export function CreatorScreen() {
               </p>
             </DialogBox>
           )}
+          {deleteError && (
+            <p className="text-body-lg font-bold text-danger" role="alert">
+              {deleteError}
+            </p>
+          )}
           {(creations.length > 0 || create.isPending) && (
             <CardDeck
               cards={creations}
               dealtId={dealtId}
               drawing={create.isPending}
+              onAddToTeam={addToTeam}
               onDealt={() => setDealtId(undefined)}
-              onDelete={id => void remove(id)}
+              onDelete={deleteCard}
+              teamFull={isTeamFull(team)}
+              teamIds={new Set(team.map(member => member.creatureId))}
             />
           )}
         </section>

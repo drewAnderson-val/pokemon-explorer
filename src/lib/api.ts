@@ -1,8 +1,5 @@
-import type { CreatureRequest, CreatureResponse } from './creature'
-
 import {
   PAGE_SIZE,
-  type Pokemon,
   type PokemonPage,
   type PokemonType,
   type SortKey
@@ -25,40 +22,6 @@ type FetchArgs = PokemonFilters & {
 }
 
 export class CreatureNotFoundError extends Error {}
-
-// Errors carry the API's message, which is written for people to read.
-export async function createCreature(
-  request: CreatureRequest
-): Promise<CreatureResponse> {
-  const response = await fetch('/api/creatures', {
-    body: JSON.stringify(request),
-    headers: { 'content-type': 'application/json' },
-    method: 'POST'
-  })
-  const body = (await response.json().catch(() => null)) as
-    | CreatureResponse
-    | null
-    | { error?: string }
-  if (!response.ok || !body || !('creature' in body)) {
-    const message = body && 'error' in body ? body.error : undefined
-    throw new Error(message ?? `Creature request failed (${response.status})`)
-  }
-  return body
-}
-
-export async function fetchPokemonById(
-  id: number,
-  signal?: AbortSignal
-): Promise<Pokemon> {
-  const response = await fetch(`${API_BASE}/api/pokemon/${id}`, { signal })
-  if (response.status === 404) {
-    throw new CreatureNotFoundError(`No creature #${id}`)
-  }
-  if (!response.ok) {
-    throw new Error(`Pokemon request failed (${response.status})`)
-  }
-  return (await response.json()) as Pokemon
-}
 
 export async function fetchPokemonPage({
   limit = PAGE_SIZE,

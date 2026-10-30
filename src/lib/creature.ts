@@ -5,13 +5,8 @@ export const MAX_NAME_LENGTH = 30
 export const MAX_DESCRIPTION_LENGTH = 200
 export const MAX_CREATURE_TYPES = 2
 
-// Custom cards continue the catalog's numbering (1…1000). Their ids only mean
-// something in the browser that made them: look them up locally, not via the API.
-export const FIRST_CREATION_ID = 1001
-export const isCustomId = (id: number) => id >= FIRST_CREATION_ID
-
-// A full Pokemon minus the id, which the client assigns (they're never stored).
-// `imageUrl` is a data: URL of the generated image.
+// The Express lab's answer (server/, deleted in slice 8): a full Pokemon minus
+// the id, with a data: URL image. The FastAPI lab returns the stored creature.
 export type CreatedCreature = Omit<Pokemon, 'id'>
 
 export type CreatureRequest = {

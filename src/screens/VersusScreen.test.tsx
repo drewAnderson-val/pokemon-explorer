@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -10,7 +10,7 @@ import { battleViewFor, createVersusTeam } from '@/lib/battle/versus'
 import { type MatchView } from '@/lib/versus-api'
 import { apiResponse, stubFetch } from '@/test/fake-api'
 import { FakeEventSource, stubEventSource } from '@/test/fake-event-source'
-import { seedTeam, serverTeam } from '@/test/fake-server'
+import { seedCreations, seedTeam, serverTeam } from '@/test/fake-server'
 import { renderWithClient } from '@/test/render'
 import { signIn } from '@/test/session'
 
@@ -168,9 +168,9 @@ describe('VersusScreen', () => {
       return fetchMock
     }
 
-    it('keeps the secret, offers no Custom tab and sends the team', async () => {
+    it('keeps the secret, offers your Custom creatures and sends the team', async () => {
       const fetchMock = await renderPicking()
-      expect(screen.queryByRole('tab', { name: /custom/i })).toBeNull()
+      expect(screen.getByRole('tab', { name: /custom/i })).toBeInTheDocument()
       expect(screen.getByRole('tab', { name: 'all' })).toBeInTheDocument()
       expect(
         screen.getByLabelText("Your friend's team is a secret")
@@ -195,7 +195,7 @@ describe('VersusScreen', () => {
       expect(JSON.stringify(serverTeam())).toBe(before)
     })
 
-    it('leaves Creature Lab members of the saved team out', async () => {
+    it('brings Creature Lab members of the saved team along', async () => {
       const saved = (uid: string, creatureId: number) => ({
         creatureId,
         hp: null,
@@ -203,25 +203,40 @@ describe('VersusScreen', () => {
         uid,
         xp: 0
       })
+      seedCreations([
+        {
+          attack: 80,
+          defense: 70,
+          description: 'A sleepy fox',
+          generation: 10,
+          height: 0.6,
+          hp: 55,
+          id: 1001,
+          imageUrl: 'https://img.test/creatures/1001.png',
+          name: 'Embercub',
+          specialAttack: 90,
+          specialDefense: 60,
+          speed: 100,
+          types: ['Fire'],
+          weight: 9.5
+        }
+      ])
       seedTeam([saved('a', 1001), saved('b', 2)])
       signIn()
       const fetchMock = await renderPicking()
       expect(
-        await screen.findByRole('tab', { name: 'Team 1/6' })
+        await screen.findByRole('tab', { name: 'Team 2/6' })
       ).toBeInTheDocument()
       expect(
-        await screen.findByRole('button', { name: /Britney/ })
+        await screen.findByRole('button', { name: /Embercub/ })
       ).toBeInTheDocument()
-      expect(
-        within(screen.getByRole('tabpanel')).getAllByRole('button')
-      ).toHaveLength(1)
       await userEvent.click(screen.getByRole('button', { name: 'Start' }))
       await waitFor(() => {
         const call = fetchMock.mock.calls.find(([url]) =>
           String(url).endsWith(`/api/matches/${ID}/actions`)
         )
         expect(JSON.parse(String(call?.[1]?.body)).action.creatureIds).toEqual([
-          2
+          1001, 2
         ])
       })
     })
