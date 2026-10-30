@@ -5,6 +5,7 @@ key: it authenticates as the Cloud Run service account (locally,
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+import anyio
 from google import genai
 from google.genai import errors, types
 
@@ -76,8 +77,8 @@ def read_response(response: Any) -> GeneratedImage:
 
 
 def vertex_generator(project: str, model: str) -> ImageGenerator:
-    # The newer image models are served from the global endpoint only.
-    client = genai.Client(vertexai=True, project=project, location="global")
+    # Made on the first drawing, not at startup (see BucketStore.bucket).
+    clients: list[genai.Client] = []
     config = types.GenerateContentConfig(
         response_modalities=["IMAGE"],
         image_config=types.ImageConfig(
@@ -90,8 +91,15 @@ def vertex_generator(project: str, model: str) -> ImageGenerator:
     )
 
     async def generate(prompt: str) -> GeneratedImage:
+        if not clients:
+            # The newer image models are served from the global endpoint only.
+            clients.append(
+                await anyio.to_thread.run_sync(
+                    lambda: genai.Client(vertexai=True, project=project, location="global")
+                )
+            )
         try:
-            response = await client.aio.models.generate_content(
+            response = await clients[0].aio.models.generate_content(
                 model=model, contents=prompt, config=config
             )
         except errors.APIError as error:

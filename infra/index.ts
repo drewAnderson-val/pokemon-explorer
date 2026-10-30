@@ -191,10 +191,11 @@ function deployApi() {
           ],
           image: pulumi.interpolate`${apiImageName}@${apiImage.digest}`,
           resources: { cpuIdle: true, limits: { cpu: '1', memory: '512Mi' } },
-          // Startup runs migrations, then /api/health checks the database: ~30s
-          // budget. Cloud Run requires timeoutSeconds <= periodSeconds.
+          // Startup imports the Google clients, runs migrations, then /api/health
+          // checks the database: ~60s budget (30s wasn't enough once the Creature
+          // Lab's libraries arrived). Cloud Run requires timeoutSeconds <= periodSeconds.
           startupProbe: {
-            failureThreshold: 10,
+            failureThreshold: 20,
             httpGet: { path: '/api/health' },
             periodSeconds: 3,
             timeoutSeconds: 3

@@ -22,12 +22,20 @@ class ImageStore(Protocol):
 class BucketStore:
     def __init__(self, bucket: str) -> None:
         self.bucket_name = bucket
-        # Uses the Cloud Run service account (locally, application-default login).
-        self.bucket = storage.Client().bucket(bucket)
+        self._bucket: storage.Bucket | None = None
+
+    async def bucket(self) -> storage.Bucket:
+        # Made on first use, not at startup: creating the client looks up
+        # credentials (the Cloud Run service account; locally, application-default
+        # login), and a slow lookup must not stop the whole API from starting.
+        if self._bucket is None:
+            client = await anyio.to_thread.run_sync(storage.Client)
+            self._bucket = client.bucket(self.bucket_name)
+        return self._bucket
 
     async def save(self, data: bytes, mime_type: str) -> str:
         name = f"creatures/{uuid.uuid4()}.{EXTENSIONS.get(mime_type, 'png')}"
-        blob = self.bucket.blob(name)
+        blob = (await self.bucket()).blob(name)
         # A name is never reused, so browsers may cache it for good.
         blob.cache_control = "public, max-age=31536000, immutable"
         # The storage client is synchronous: run it on a worker thread so the
@@ -41,7 +49,7 @@ class BucketStore:
         prefix = f"{PUBLIC_HOST}/{self.bucket_name}/"
         if not url.startswith(prefix):
             return
-        blob = self.bucket.blob(url.removeprefix(prefix))
+        blob = (await self.bucket()).blob(url.removeprefix(prefix))
         await anyio.to_thread.run_sync(blob.delete)
 
 

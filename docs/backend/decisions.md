@@ -588,3 +588,31 @@ Template:
 - **Rejected:** serving images through the API (each image view would use an API instance); signed URLs (they
   expire, and the cards are meant to be seen by friends in matches).
 - **Trade-off:** anyone with an image's URL can see it. The names are random, so URLs can't be guessed.
+
+## 2026-10-30: The API gets 60 seconds to start
+
+- **What:** the API's startup probe allows 20 failures 3 seconds apart (about 60 s), up from 10 (about 30 s).
+- **Why:** the first slice 6 deploy (revision `pokemon-api-00010`) failed its probe: for 27 s it printed nothing, not
+  even uvicorn's "Started server process", so it was still importing Python modules. The previous revision took 6 s
+  to reach that line. The Creature Lab added `google-genai` and `google-cloud-storage`, which roughly double import
+  time (measured in the image: 5.3 s before, 10.8 s after, under emulation), and a fresh revision reads its files
+  from a cold image. Cloud Run kept serving the previous revision, so nothing broke.
+- **Rejected:** importing the Google libraries on the first lab request (faster start, but that request pays the
+  import, and it hides a slow start instead of budgeting for it); startup CPU boost (costs money on every cold start).
+- **Trade-off:** a revision that will never start takes about 60 s, not 30 s, to be rejected. If 60 s isn't enough
+  either, the cause is something other than slow imports, and the next step is lazy imports with timing logs.
+
+## 2026-10-30: The lab's Google clients are created on first use, not at startup
+
+- **What:** the storage client and the Vertex AI client are created the first time a lab request needs them, on a
+  worker thread, instead of when the app is built. `app/asgi.py` also logs each startup step with its time.
+- **Why:** the 60-second probe budget (entry above) didn't fix the deploy: revision `pokemon-api-00011` also printed
+  nothing for 60 s, so it was stuck, not slow. Imports alone take about 9 s in the image, and creating the clients is
+  the only other new step before uvicorn starts. Creating a client looks up credentials over the network, and a
+  lookup that stalls there stops every route from starting, not only the lab. The slow-imports explanation in the
+  entry above was wrong.
+- **Rejected:** a third, bigger probe budget (no evidence time would help); creating the clients at startup with a
+  timeout (still delays every start to protect one feature).
+- **Trade-off:** the first lab request after a start pays for the credentials lookup. Two first requests at once may
+  each create a client; one is kept and the other is thrown away. The exact network call that stalled isn't
+  confirmed; if a lab request now hangs instead, the logs will show it at that request.
