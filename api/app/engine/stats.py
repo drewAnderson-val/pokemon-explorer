@@ -48,12 +48,3 @@ def level_for_xp(xp: int) -> int:
 def xp_gain(defeated: Pokemon, defeated_level: int) -> int:
     """A quarter of the total base stats stands in for the games' base XP."""
     return math.floor((math.floor(total_stats(defeated) / 4) * defeated_level) / 7)
-
-
-def xp_progress(level: int, xp: int) -> float:
-    """0–1 through the current level, for the XP bar."""
-    if level >= MAX_LEVEL:
-        return 1
-    start = xp_for_level(level)
-    span = xp_for_level(level + 1) - start
-    return min(1, max(0, (xp - start) / span))
