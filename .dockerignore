@@ -6,7 +6,6 @@ design
 # Repo-level files that aren't part of the app image
 infra
 docs
-scripts
 .github
 .claude
 *.md

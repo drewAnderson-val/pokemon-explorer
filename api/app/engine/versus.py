@@ -24,7 +24,6 @@ from app.engine.wild import clamp_timing as clamp_timing
 from app.engine.wild import create_fighter, int_field, strike, turn_order
 
 VERSUS_LEVEL = 50
-NO_BAR_BONUS = 1.125
 
 # {"type": "move", "index", "timing"} or {"type": "switch", "to"}.
 VersusAction = dict[str, object]

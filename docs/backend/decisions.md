@@ -677,3 +677,14 @@ Template:
 - **Trade-off:** a guest can't come back after its token expires (no password), and its data is gone a day later.
   Guests count against the Lab's daily total like anyone else; making many guests to get more drawings is capped by
   that total.
+
+## 2026-11-01: Remove unused files and code
+
+- **What:** deleted `scripts/generate-pokemon.mjs` (and `@faker-js/faker`), the three Next.js starter SVGs in
+  `public/`, the unused `@radix-ui/react-slot` dependency, and two Python ports nothing calls (`xp_progress`,
+  `NO_BAR_BONUS`: the XP bar and the instant-move bonus are worked out in the browser).
+- **Why:** found with knip and vulture after the cutover; dead code is one more thing a reader has to rule out. The
+  generator was only a trap: running it overwrote the frozen catalog with different random records.
+- **Rejected:** keeping the generator to show where the data came from (`docs/brief.md` still describes it, and git
+  history has it).
+- **Trade-off:** the catalog can't be regenerated, which it never should be.

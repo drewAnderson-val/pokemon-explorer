@@ -82,7 +82,8 @@ weight, generation (1–9), description, imageUrl, isLegendary?` (52 are legenda
 ## Known traps in the starter
 
 - **Don't run `node scripts/generate-pokemon.mjs`** (the README says to). It isn't seeded, so it
-  overwrites the committed data with 1,000 new random records.
+  overwrites the committed data with 1,000 new random records. (The script has since been deleted; the data is
+  frozen.)
 - **Names aren't unique** (835 unique of 1,000). Key and track cards by `id`, never `name`.
 - **`imageUrl`s are random placeholder images** (Picsum/LoremFlickr) at odd sizes like
   3266×1298. They load slowly, don't match the creature and sometimes fail. Use a fixed aspect

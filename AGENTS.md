@@ -51,8 +51,8 @@ app's history.
 
 ## Traps that aren't obvious from the code
 
-- **Never run `node scripts/generate-pokemon.mjs`.** It's unseeded and overwrites `src/data/pokemon.json` with
-  different random records.
+- **`src/data/pokemon.json` is frozen.** FINNY's unseeded Faker script that made it was deleted; never regenerate the
+  data (`api/scripts/generate_seed.py` and the golden files depend on these exact records).
 - **Key cards by `id`, never `name`.** Names repeat (835 unique of 1,000).
 - **Catalog images are WebPs in the creature bucket** (`catalog/<id>.webp`, 640x640), copied once
   by `api/scripts/copy_catalog_images.py`; custom creatures' images come from the lab. Use a fixed aspect ratio,
